@@ -1,0 +1,1421 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script>window.MM_STANDALONE=true;</script>
+<title>Multiplication Magicians</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&family=Gochi+Hand&display=swap">
+<style>
+/* Lesson map -> one lesson at a time, five steps per day.
+   The real book page is always on screen; answers are hand-written into its blanks.
+   Colour code everywhere: multiples of 2 = blue, multiples of 5 = orange, multiples of 10 = purple. */
+:root{
+  --bg:#EEF6FF; --paper:#FFFFFF; --ink:#1D2B4F; --soft:#5B6B8F; --line:#C9D8EE;
+  --b2:#2F7BF5; --b2-soft:#DCE9FF; --b2-ink:#1450B8;
+  --b5:#FF7A3D; --b5-soft:#FFE6D9; --b5-ink:#B8410C;
+  --b10:#7A4CE0; --b10-soft:#EEE7FF; --b10-ink:#5A33B5;
+  --good:#1FA563; --good-soft:#DDF6E8; --bad:#E5484D; --bad-soft:#FFE3E3;
+  --star:#FFC21A; --gold:#F4B400; --pen:#D81B60; --teal:#16A3A3;
+  --e1:#E0559B; --e2:#FF7A3D; --e3:#2F7BF5; --e4:#1FA563; --e5:#7A4CE0;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Trebuchet MS",system-ui,sans-serif;
+  --hand:"Gochi Hand","Comic Sans MS","Segoe Print",cursive;
+  color-scheme:light;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  -webkit-tap-highlight-color:transparent;overflow-x:hidden;
+  background-image:radial-gradient(circle at 14px 14px,rgba(122,76,224,.08) 2px,transparent 3px),radial-gradient(circle at 0 0,rgba(255,194,26,.12) 2px,transparent 3px);background-size:28px 28px,56px 56px}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;touch-action:manipulation}
+button:focus-visible{outline:4px solid var(--b10);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding-block:16px 60px}
+.c2{color:var(--b2-ink);font-weight:800}.c5{color:var(--b5-ink);font-weight:800}.c10{color:var(--b10-ink);font-weight:800}
+.sub{color:var(--soft);font-size:16px;margin:0}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.center{justify-content:center}
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.bar .grow{flex:1}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:800;font-size:16px;color:var(--ink)}
+.pill:hover{border-color:var(--b10)}
+
+.big{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:60px;min-width:110px;padding:10px 24px;border-radius:18px;font-family:var(--display);font-weight:800;font-size:24px;border:3px solid transparent;box-shadow:0 5px 0 rgba(29,43,79,.2);transition:transform .08s}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(29,43,79,.2)}
+.big.magic{background:linear-gradient(135deg,#7A4CE0,#E0559B);color:#fff}
+.big.b2{background:var(--b2);color:#fff}.big.b5{background:var(--b5);color:#fff}.big.b10{background:var(--b10);color:#fff}
+.big.plain{background:var(--paper);border-color:var(--line)}.big.go{background:var(--good);color:#fff}
+.big.sel,.opt.sel{outline:5px solid var(--star);outline-offset:2px}
+.big.small{min-height:48px;font-size:19px;padding:6px 16px;min-width:0}
+.big[disabled]{opacity:.4;pointer-events:none}
+.big.on{outline:5px solid var(--star);outline-offset:2px}
+.opt{background:var(--paper);border:3px solid var(--line);border-radius:18px;padding:12px 18px;font-size:20px;font-weight:800;min-height:58px;text-align:left;box-shadow:0 4px 0 var(--line)}
+.opt:hover{border-color:var(--b10)}.opt.right{background:var(--good-soft);border-color:var(--good)}.opt.wrongpick{background:var(--bad-soft);border-color:var(--bad)}
+.opt[disabled]{opacity:.75}
+.choices{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.choices.col{flex-direction:column;align-items:stretch;max-width:680px;margin-inline:auto}
+
+/* home */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;background:var(--paper);border-radius:30px;padding:22px 26px;border:3px solid var(--line);position:relative;overflow:hidden}
+.hero h1{font-size:clamp(34px,5.6vw,58px);font-weight:800}
+.hero .sparkles{position:absolute;inset:0;pointer-events:none}
+.hero .sparkles i{position:absolute;font-style:normal;animation:twinkle 2.4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.15)}}
+.tag{font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--b10)}
+.days{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-top:18px}
+.day{text-align:left;background:var(--paper);border:3px solid var(--line);border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:10px;transition:transform .15s,border-color .15s;position:relative;min-width:0}
+.day:hover{transform:translateY(-3px);border-color:var(--c,var(--b10))}
+.day .when{font-weight:800;color:var(--c);text-transform:uppercase;letter-spacing:.06em;font-size:14px}
+.day h2{font-size:26px}
+.day .goal{background:#F4F8FE;border-radius:14px;padding:8px 12px;font-weight:700;font-size:16px}
+.epath{display:flex;gap:6px;flex-wrap:wrap}
+.echip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px 3px 4px;font-size:13px;font-weight:800;color:#fff;background:var(--ec)}
+.echip b{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.3);display:grid;place-items:center;font-size:12px}
+.echip.done::after{content:"\2713";margin-left:2px}
+.daystars{font-size:22px;letter-spacing:2px}
+.star-on{color:var(--star)}.star-off{color:#D5DEEC}
+.mini-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:16px}
+
+/* mascot + speech */
+.guide{display:flex;gap:12px;align-items:flex-start;margin:6px 0 10px}
+.mascot{flex:none;width:80px;height:80px;animation:bob 2.4s ease-in-out infinite}
+.mascot.huge{width:124px;height:124px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.say{position:relative;background:var(--paper);border:3px solid var(--ink);border-radius:22px;padding:12px 16px;font-size:clamp(19px,2.4vw,23px);font-weight:800;min-width:0;flex:1;max-width:780px}
+.say::before{content:"";position:absolute;left:-14px;top:22px;border:12px solid transparent;border-right-color:var(--ink);border-left:0}
+.say .spk{float:right;margin:-4px -6px 4px 8px;width:42px;height:42px;border-radius:50%;background:var(--b10-soft);font-size:20px}
+.say .nm{display:block;font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em}
+
+/* lesson shell */
+.lesson-head{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--paper);border:3px solid var(--line);border-radius:24px;padding:12px 16px;margin-bottom:12px}
+.lesson-head h2{font-size:clamp(22px,3vw,30px)}
+.today{font-weight:800;color:var(--soft);font-size:15px}
+.today b{color:var(--ink)}
+.stepper{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.step{display:flex;align-items:center;gap:8px;border-radius:16px;padding:6px 12px 6px 6px;background:var(--paper);border:3px solid var(--line);font-weight:800;font-size:15px;opacity:.75}
+.step .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--ec);font-family:var(--display);font-size:16px}
+.step.now{border-color:var(--ec);opacity:1;box-shadow:0 0 0 4px color-mix(in srgb,var(--ec) 20%,transparent)}
+.step.done{opacity:1}.step.done .n::after{content:"\2713"}.step.done .n span{display:none}
+.card{background:var(--paper);border-radius:28px;border:3px solid var(--line);padding:20px;min-width:0;position:relative}
+.estage-title{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.estage-title .badge{border-radius:999px;padding:4px 14px;color:#fff;font-family:var(--display);font-weight:800;font-size:20px;background:var(--ec)}
+.task{font-size:20px;font-weight:800;margin:10px 0}
+.next-row{display:flex;justify-content:flex-end;margin-top:14px}
+.qbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.qchip{display:inline-block;border-radius:999px;padding:1px 12px;font-size:16px;font-weight:800;color:#fff}
+
+/* book page */
+.bookwrap{margin:8px 0}.bookwrap>.label{display:table;margin:0 6px 8px auto;background:var(--bk,#5B6B8F);color:#fff;border-radius:999px;padding:3px 12px;font-weight:800;font-size:13px}
+.bookwrap.lb{--bk:var(--e2)} .bookwrap.wb{--bk:#5B6B8F}
+.book{position:relative;border-radius:14px;overflow:hidden;overflow:clip;box-shadow:0 10px 30px rgba(29,43,79,.18),0 0 0 3px #fff,0 0 0 6px var(--bk,#5B6B8F);background:#fff;container-type:inline-size}
+.book .sheet{position:absolute;left:0;width:100%}
+.book img{display:block;width:100%;height:100%;user-select:none;-webkit-user-drag:none}
+.book.lb{--bk:var(--e2)} .book.wb{--bk:#5B6B8F}
+.hw{position:absolute;display:flex;align-items:center;font-family:var(--hand);color:var(--pen);line-height:1;white-space:nowrap;pointer-events:none;clip-path:inset(0 100% 0 0);font-size:calc(var(--fs) * 1cqw);z-index:3}
+.hw.c{justify-content:center}
+.hw.shown{clip-path:inset(0 0 0 0)}
+.hw.go{animation:write 1.1s steps(16,end) forwards}
+.hw.ghost{color:#9AA8C4;clip-path:none}
+@keyframes write{to{clip-path:inset(0 0 0 0)}}
+.hot{position:absolute;border-radius:10px;z-index:4}
+.hot.hint{animation:hint 1.6s ease-in-out infinite}
+@keyframes hint{0%,100%{box-shadow:0 0 0 0 rgba(122,76,224,0)}50%{box-shadow:0 0 0 4px rgba(122,76,224,.55)}}
+.hot.picked{box-shadow:0 0 0 5px var(--star)!important;animation:none;background:rgba(255,194,26,.18)}
+.hot.badtap{animation:badtap .5s}
+@keyframes badtap{0%,100%{background:transparent}40%{background:rgba(229,72,77,.35)}}
+.hot.used{background:rgba(255,255,255,.72);pointer-events:none;animation:none}
+.hot.area{border-radius:0}
+.rowglow{position:absolute;border-radius:12px;box-shadow:0 0 0 5px var(--star),0 0 22px 6px rgba(255,194,26,.6);pointer-events:none;z-index:2;animation:glowp 1.4s ease-in-out infinite}
+@keyframes glowp{50%{box-shadow:0 0 0 7px var(--star),0 0 30px 10px rgba(255,194,26,.75)}}
+.marker{position:absolute;background:rgba(255,213,0,.45);mix-blend-mode:multiply;border-radius:6px;transform-origin:left;transform:scaleX(0);transition:transform .8s ease}
+.marker.on{transform:scaleX(1)}
+.book svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.book svg.lines .ink{fill:none;stroke:var(--pen);stroke-width:6;stroke-linecap:round;stroke-dasharray:1.02;stroke-dashoffset:1.02;animation:draw .8s ease forwards}
+.book svg.lines .ink.now{animation:none;stroke-dashoffset:0}
+.book svg.lines .ink.bad{stroke:var(--bad);stroke-dasharray:.04 .03;animation:none;stroke-dashoffset:0;opacity:.9}
+@keyframes draw{to{stroke-dashoffset:0}}
+.spark{position:absolute;z-index:6;pointer-events:none;font-size:22px;animation:spark .9s ease-out forwards}
+@keyframes spark{from{transform:translate(0,0) scale(.4);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(1.1);opacity:0}}
+.flyer{position:fixed;z-index:70;pointer-events:none;font-family:var(--hand);color:var(--pen);font-size:34px;transition:left .8s cubic-bezier(.5,0,.3,1),top .8s cubic-bezier(.5,-.6,.4,1),transform .8s;text-shadow:0 0 12px #fff}
+
+/* feedback */
+.fb{margin-top:12px;border-radius:18px;padding:12px 16px;font-size:18px;font-weight:700;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;animation:fbin .3s}
+@keyframes fbin{from{transform:translateY(8px);opacity:0}}
+.fb.good{background:var(--good-soft);border:3px solid var(--good)}.fb.bad{background:var(--bad-soft);border:3px solid var(--bad)}.fb.info{background:var(--b10-soft);border:3px solid var(--b10)}
+.fb .msg{flex:1;min-width:200px}.fb .face{font-size:30px;line-height:1}.fb .viz{width:100%}
+.frame{background:#FFF8E1;border:3px solid #F2C94C;border-radius:18px;padding:12px 16px;font-size:clamp(19px,2.4vw,24px);font-weight:800;text-align:center;margin:10px 0}
+.panel{background:#F4F8FE;border:2px solid var(--line);border-radius:20px;padding:12px;margin:10px 0;min-width:0;overflow:hidden}
+.panel .ttl{text-align:center;font-weight:800;font-size:17px;margin-bottom:4px}
+.eqline{font-family:var(--display);font-size:clamp(24px,3.4vw,32px);font-weight:800;text-align:center;line-height:1.2}
+.bigstate{font-family:var(--display);font-size:clamp(30px,5vw,50px);font-weight:800;text-align:center;margin:8px 0}
+
+/* hundred square */
+.hs{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;max-width:600px;margin:10px auto}
+.hc{position:relative;aspect-ratio:1;border-radius:10px;background:#fff;border:2px solid var(--line);font-family:var(--display);font-weight:800;font-size:clamp(12px,2.6vw,21px);line-height:1;padding:0;transition:background .25s,color .25s,transform .2s}
+.hc.m2{background:var(--b2);border-color:var(--b2-ink);color:#fff}
+.hc.m5{background:var(--b5);border-color:var(--b5-ink);color:#fff}
+.hc.m10{background:var(--b10);border-color:var(--b10-ink);color:#fff}
+.hc.pop{animation:pop .45s}
+.hc.shake{animation:shake .4s}
+.hc.l2{background:var(--b2-soft)}
+.hc.l5{box-shadow:inset 0 0 0 4px var(--b5)}
+.hc.l10::after{content:"★";position:absolute;right:1px;top:-3px;font-size:clamp(10px,1.8vw,15px);color:var(--b10)}
+.hc .od{color:inherit}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.wands{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-weight:800;font-size:15px;margin:6px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:20px;height:20px;border-radius:6px}
+
+/* dots and groups */
+.sdots{display:inline-grid;grid-auto-flow:column;grid-template-rows:repeat(2,var(--s,18px));gap:3px;vertical-align:middle}
+.sdots b{width:var(--s,18px);height:var(--s,18px);border-radius:50%;border:1.5px solid rgba(29,43,79,.45);display:block}
+.sdots b.lone{box-shadow:0 0 0 3px var(--star);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,194,26,.9)}50%{box-shadow:0 0 0 9px rgba(255,194,26,0)}}
+.gtray{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;min-height:70px;margin:10px 0;align-items:center}
+.grp1{display:flex;gap:4px;padding:6px;border-radius:14px;border:3px solid var(--gc);background:color-mix(in srgb,var(--gc) 10%,#fff);animation:capin .45s backwards;position:relative;flex-wrap:wrap;max-width:146px;justify-content:center}
+.grp1 i{width:22px;height:22px;border-radius:50%;background:var(--gc);display:block;border:2px solid rgba(29,43,79,.35)}
+.grp1 em{position:absolute;top:-12px;right:-8px;background:var(--gc);color:#fff;font-style:normal;font-family:var(--display);font-weight:800;font-size:14px;border-radius:999px;padding:0 7px}
+@keyframes capin{from{transform:translateY(-30px) scale(.5);opacity:0}}
+.verdict{text-align:center;font-family:var(--display);font-size:clamp(20px,3vw,28px);font-weight:800}
+.tabs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+
+/* flip cards */
+.flips{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.flip{perspective:900px;min-height:230px}
+.flip .in{position:relative;width:100%;height:100%;min-height:230px;transition:transform .7s;transform-style:preserve-3d}
+.flip.on .in{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;border:3px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;background:var(--paper);text-align:center;gap:8px}
+.flip .f{color:#fff;font-family:var(--display);font-size:30px;font-weight:800;cursor:pointer;border:0}
+.flip .f small{font-family:var(--body);font-size:15px;opacity:.9}
+.flip .b{transform:rotateY(180deg);font-weight:800;font-size:19px}
+.strip{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;font-family:var(--display);font-weight:800;font-size:22px}
+.strip span{background:#F4F8FE;border-radius:10px;padding:0 8px}
+.strip u{text-decoration:none;color:#fff;background:var(--uc);border-radius:6px;padding:0 3px}
+
+/* arrays */
+.arr{position:relative;margin:6px auto;transition:height .4s}
+.arr .it{position:absolute;transition:left .7s cubic-bezier(.4,1.3,.5,1),top .7s cubic-bezier(.4,1.3,.5,1),transform .4s,opacity .4s}
+.arr .it svg{display:block;width:100%;height:100%}
+.arr .it.lit{transform:scale(1.18)}
+.arr .grp{position:absolute;border:4px solid var(--gc,var(--b10));border-radius:14px;background:color-mix(in srgb,var(--gc,var(--b10)) 9%,transparent);transition:left .7s cubic-bezier(.4,1.3,.5,1),top .7s cubic-bezier(.4,1.3,.5,1),width .7s,height .7s,opacity .3s;animation:grpin .35s backwards;pointer-events:none}
+.arr .grp b{position:absolute;right:-12px;top:-14px;background:var(--gc,var(--b10));color:#fff;border-radius:999px;font-family:var(--display);font-size:16px;padding:0 8px;line-height:24px;white-space:nowrap}
+.arr .grp.cols b{right:auto;left:50%;top:auto;bottom:-14px;transform:translateX(-50%)}
+@keyframes grpin{from{transform:scale(1.2);opacity:0}}
+.arrcap{text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,28px);min-height:1.4em}
+.factbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.factbtns .big{font-size:26px;min-width:120px}
+.factbtns .big.tried{background:var(--good-soft);border-color:var(--good)}
+
+/* fact family triangle */
+.tri{display:block;margin:0 auto;max-width:300px;width:100%;height:auto}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:520px;margin:10px auto}
+.facts div{background:#fff;border:3px solid var(--line);border-radius:14px;padding:6px;text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,26px);animation:capin .4s backwards}
+.facts div.m{border-color:var(--b2)}.facts div.d{border-color:var(--b5)}
+.seesaw{display:flex;flex-direction:column;align-items:center;margin:10px 0}
+.seesaw .beam{display:flex;align-items:center;gap:10px;background:#fff;border:4px solid var(--ink);border-radius:16px;padding:8px 14px;font-family:var(--display);font-weight:800;font-size:clamp(24px,4vw,34px);transition:transform .6s}
+.seesaw .pivot{width:0;height:0;border-left:26px solid transparent;border-right:26px solid transparent;border-bottom:34px solid var(--ink)}
+.seesaw .side{padding:2px 12px;border-radius:12px;transition:transform .7s}
+.seesaw .side.a{background:var(--b2-soft)}.seesaw .side.b{background:var(--b5-soft)}
+
+/* tiles */
+.tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.tile{min-width:72px;height:64px;border-radius:16px;font-family:var(--display);font-size:32px;font-weight:800;color:#fff;background:var(--b10);box-shadow:0 5px 0 var(--b10-ink);padding:0 12px}
+.tile.used{opacity:.25;pointer-events:none}
+.tile.alt{background:var(--teal);box-shadow:0 5px 0 #0E7A7A}
+.pad{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;max-width:460px;margin:10px auto}
+.pad button{height:58px;border-radius:14px;background:var(--paper);border:3px solid var(--line);font-family:var(--display);font-size:28px;font-weight:800}
+.pad button.used{background:var(--good-soft);border-color:var(--good);pointer-events:none}
+
+/* base ten */
+.b10stage{display:flex;gap:18px;justify-content:center;align-items:flex-end;flex-wrap:wrap;min-height:120px;margin:10px 0}
+.b10grp{display:flex;flex-direction:column;align-items:center;gap:6px}
+.b10blocks{display:flex;gap:4px;align-items:flex-end;flex-wrap:wrap;justify-content:center;max-width:330px}
+.blk{--u:8px;width:var(--u);height:var(--u);background:var(--b2);border:1px solid var(--b2-ink);transition:width .9s cubic-bezier(.4,1.4,.5,1),height .9s cubic-bezier(.4,1.4,.5,1),background .6s;
+  background-image:linear-gradient(rgba(255,255,255,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.35) 1px,transparent 1px);background-size:var(--u) var(--u)}
+.blk.rod{height:calc(var(--u)*10);background-color:var(--b5);border-color:var(--b5-ink)}
+.blk.flat{width:calc(var(--u)*10);height:calc(var(--u)*10);background-color:var(--b10);border-color:var(--b10-ink)}
+.b10lbl{font-weight:800;font-size:16px;background:#fff;border:2px solid var(--line);border-radius:999px;padding:2px 12px;white-space:nowrap}
+
+/* place value slide */
+.pv{max-width:520px;margin:10px auto;border:3px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff}
+.pv .hd,.pv .rw{display:grid;grid-template-columns:repeat(3,1fr)}
+.pv .hd div{background:#8DC2CC;text-align:center;font-weight:800;font-size:20px;padding:4px;border-right:2px solid var(--ink)}
+.pv .rw>div{position:relative;height:66px;border-right:2px solid var(--ink);border-top:2px solid var(--ink)}
+.pv .hd div:last-child,.pv .rw>div:last-child{border-right:0}
+.pv .dg{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--hand);font-size:46px;color:var(--pen);transition:transform 1s cubic-bezier(.5,0,.3,1.3)}
+.pv .dg.slide{transform:translateX(-100%)}
+.pv .dg.zero{color:var(--b10);animation:zeroin .8s backwards}
+@keyframes zeroin{from{transform:scale(3) rotate(-30deg);opacity:0}}
+.pv .dg.trail::after{content:"";position:absolute;left:60%;top:50%;width:80%;height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(255,194,26,.9),transparent);opacity:0;animation:trail 1s}
+@keyframes trail{30%{opacity:1}100%{opacity:0}}
+
+/* pencil boxes */
+.pboxes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:flex-end;margin:10px 0;min-height:60px}
+.pbox{width:34px;height:46px;border-radius:5px;background:linear-gradient(#2A4D8F 0 18%,#3A7BD5 18%);position:relative;animation:capin .35s backwards;flex:none}
+.pbox::before{content:"";position:absolute;left:3px;right:3px;top:-8px;height:10px;background:repeating-linear-gradient(90deg,#E5484D 0 3px,#FFC21A 3px 6px,#1FA563 6px 9px,#7A4CE0 9px 12px)}
+.pbox::after{content:"10";position:absolute;left:0;right:0;bottom:3px;text-align:center;color:#fff;font-weight:800;font-size:13px}
+.crate{display:flex;flex-wrap:wrap;gap:3px;width:118px;padding:16px 5px 5px;border:4px solid var(--b10);border-radius:12px;background:var(--b10-soft);position:relative;animation:capin .5s backwards}
+.crate .pbox{width:20px;height:28px;animation:none}.crate .pbox::after{font-size:9px}.crate .pbox::before{top:-5px;height:6px}
+.crate b{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--b10);color:#fff;border-radius:999px;padding:0 10px;font-family:var(--display);font-size:16px}
+.count{font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,40px);text-align:center}
+
+/* number line */
+.nl{position:relative;height:150px;margin:6px 4px 0}
+.nl svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.nl .tk{position:absolute;top:96px;transform:translateX(-50%);min-width:30px;height:40px;border-radius:10px;font-family:var(--display);font-weight:800;font-size:clamp(13px,2.2vw,19px);padding:0 2px;background:#fff;border:2px solid var(--line)}
+.nl .tk.on{background:var(--b5);border-color:var(--b5-ink);color:#fff}
+.nl .tk.start{background:var(--b2);border-color:var(--b2-ink);color:#fff}
+.nl .tk.shake{animation:shake .4s}
+.nl .frog{position:absolute;top:44px;font-size:38px;transform:translate(-50%,0);line-height:1;transition:none;z-index:3}
+.nl .jl{position:absolute;top:2px;transform:translateX(-50%);font-weight:800;color:var(--b5-ink);font-size:15px}
+
+/* x10 machine */
+.mach{display:flex;align-items:center;justify-content:center;gap:10px;margin:14px 0;flex-wrap:nowrap}
+.mach .chipn{min-width:74px;height:62px;border-radius:16px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:30px;background:#fff;border:3px solid var(--line);transition:transform .7s,opacity .5s;padding:0 10px}
+.mach .box{width:130px;height:110px;border-radius:22px;background:linear-gradient(160deg,#9AA8C4,#5B6B8F);border:4px solid var(--ink);display:grid;place-items:center;position:relative;flex:none}
+.mach .box span{background:#fff;border-radius:10px;padding:4px 10px;font-family:var(--display);font-weight:800;font-size:28px}
+.mach .box::before,.mach .box::after{content:"";position:absolute;top:-16px;width:18px;height:18px;border-radius:50%;background:var(--star);border:3px solid var(--ink)}
+.mach .box::before{left:24px}.mach .box::after{right:24px}
+.mach .box.work{animation:shake .25s 3}
+.mach .out{color:var(--b10-ink);border-color:var(--b10)}
+.mach .chipn.in-go{transform:translateX(60px) scale(.3);opacity:0}
+
+/* riddle */
+.rid{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.rid span{width:52px;height:56px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:24px;background:#fff;border:3px solid var(--line);transition:opacity .5s,transform .5s}
+.rid span.out{opacity:.15;transform:scale(.7) rotate(-12deg)}
+.rid span.win{background:var(--star);border-color:var(--gold);transform:scale(1.3);animation:pop .6s}
+.clues{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+/* certificate */
+.cert{text-align:center;padding:10px 0}
+.lwicd{max-width:720px;margin:14px auto;border-radius:12px;overflow:hidden;text-align:left}
+.lwicd .t{background:#3F8F9C;color:#fff;font-weight:800;padding:10px 16px;font-size:20px}
+.lwicd .bdy{background:#A0C9CF;padding:14px 16px;display:flex;gap:14px;align-items:center;font-weight:700;font-size:19px}
+.lwicd .box{flex:none;width:40px;height:40px;background:#fff;border-radius:6px;display:grid;place-items:center;font-family:var(--hand);font-size:40px;color:var(--pen)}
+.lwicd .box span{clip-path:inset(0 100% 0 0);animation:write .8s .6s steps(8,end) forwards}
+.bigstars{font-size:60px;letter-spacing:8px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.confetti i{position:absolute;top:-20px;width:12px;height:16px;border-radius:3px;animation:fall 1.9s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* copy to my book */
+.booktabs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.booktabs button{font-family:var(--display);font-weight:800;font-size:22px;padding:10px 22px;border-radius:16px;border:3px solid var(--line);background:var(--paper)}
+.booktabs button.on.lb{background:var(--b5-soft);border-color:var(--b5)}.booktabs button.on.wb{background:#E7EBF1;border-color:#5B6B8F}
+.pagehead{font-family:var(--display);font-weight:800;font-size:24px;margin-top:16px}
+.modal{position:fixed;inset:0;background:rgba(29,43,79,.6);z-index:50;overflow:auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 30px max(16px,env(safe-area-inset-left,0px))}
+.modal .inner{max-width:1100px;margin:0 auto}
+.modal .closeb{position:sticky;top:0;z-index:10;display:flex;justify-content:flex-end;margin-bottom:8px}
+
+@media (max-width:600px){
+  body{font-size:17px}
+  .hero{grid-template-columns:1fr;padding:18px;text-align:center}.hero .mascot{margin:0 auto}
+  .card{padding:14px;border-radius:22px}
+  .big{min-width:90px;font-size:21px;padding:8px 16px}
+  .mascot{width:58px;height:58px}
+  .step .t{display:none}
+  .hs{gap:2px}.hc{border-radius:6px;border-width:1px}
+  .mach .box{width:100px;height:90px}.mach .box span{font-size:22px}.mach .chipn{min-width:60px;font-size:24px}
+  .rid span{width:44px;height:50px;font-size:20px}
+  .tile{min-width:62px;height:58px;font-size:28px}
+  .pv .dg{font-size:38px}.pv .rw>div{height:56px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.hw.go{clip-path:inset(0 0 0 0)}}
+@media print{.bar,.booktabs,.noprint{display:none!important}body{background:#fff}.book{break-inside:avoid;box-shadow:none}}
+</style>
+<style>
+/* Watermark (website copy only) */
+.book::after{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;opacity:.18;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200'%3E%3Ctext x='20' y='120' transform='rotate(-24 180 100)' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%231D2B4F'%3E%C2%A9 Teacher Dima Abuhaifa%3C/text%3E%3C/svg%3E");background-size:360px 200px}
+body::after{content:"";position:fixed;inset:0;z-index:40;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200'%3E%3Ctext x='20' y='120' transform='rotate(-24 180 100)' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%231D2B4F'%3E%C2%A9 Teacher Dima Abuhaifa%3C/text%3E%3C/svg%3E");background-size:360px 200px}
+@media print{body::after{display:none}}
+.wmark{display:table;margin:-40px auto 24px;background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:800;font-size:13px;color:var(--soft)}
+@media print{.wmark{margin:10px auto}}
+</style>
+</head><body>
+<div class="wrap" id="app"></div>
+<div class="wmark">© Teacher Dima Abuhaifa</div>
+<script>
+(function(){
+"use strict";
+var app=document.getElementById('app');
+var IMG=window.MM_IMG_BASE||'img/';
+var isOdd=function(n){return n%2===1};
+
+/* ---------- saved progress (optional, this device only) ---------- */
+var STORE='multiplicationMagicians.v1';
+var SAVE={};try{SAVE=JSON.parse(localStorage.getItem(STORE)||'{}')||{}}catch(e){SAVE={}}
+SAVE.done=SAVE.done||{};SAVE.stars=SAVE.stars||{};SAVE.dyn=SAVE.dyn||{};
+function persist(){try{localStorage.setItem(STORE,JSON.stringify(SAVE))}catch(e){}}
+
+/* ---------- sound + voice ---------- */
+var muted=!!SAVE.muted,ac=null;
+function tone(freqs,dur,type){
+  if(muted)return;
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    freqs.forEach(function(f,i){var o=ac.createOscillator(),g=ac.createGain();o.type=type||'triangle';o.frequency.value=f;var t=ac.currentTime+i*dur;
+      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.16,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+dur+.02)});
+  }catch(e){}
+}
+var sGood=function(){tone([523,659,784],.1)},sBad=function(){tone([300,220],.15,'sine')},sWin=function(){tone([523,659,784,1047,784,1047,1319],.11)},sPop=function(){tone([660,880],.06)},sWrite=function(){tone([1200,1500,1800],.05,'sine')},sMagic=function(){tone([784,988,1175,1568],.07,'sine')};
+var canSpeak='speechSynthesis' in window;
+function speak(t){if(!canSpeak)return;try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t.replace(/<[^>]+>/g,'').replace(/×/g,' times ').replace(/÷/g,' divided by '));u.rate=.85;u.lang='en-GB';speechSynthesis.speak(u)}catch(e){}}
+
+/* ---------- helpers ---------- */
+function h(tag,attrs,kids){
+  var el=document.createElement(tag);
+  if(attrs)for(var k in attrs){var v=attrs[k];if(v==null)continue;
+    if(k==='class')el.className=v;else if(k==='html')el.innerHTML=v;else if(k.slice(0,2)==='on')el.addEventListener(k.slice(2),v);else if(k==='style')el.style.cssText=v;else el.setAttribute(k,v)}
+  (kids||[]).forEach(function(c){if(c==null)return;el.appendChild(typeof c==='string'?document.createTextNode(c):c)});
+  return el;
+}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function starStr(n){var s='';for(var i=0;i<3;i++)s+='<span class="'+(i<n?'star-on':'star-off')+'">★</span>';return s}
+function later(fn,ms){return setTimeout(fn,ms)}
+function each(list,fn){Array.prototype.forEach.call(list,fn)}
+var KC={2:'var(--b2)',5:'var(--b5)',10:'var(--b10)'},KCI={2:'c2',5:'c5',10:'c10'};
+function kw(k){return '<span class="'+KCI[k]+'">'+k+'</span>'}
+function onesU(n,k){var s=String(n);return s.slice(0,-1)+'<u style="--uc:'+(KC[k]||'var(--b10)')+'">'+s.slice(-1)+'</u>'}
+function confetti(n){
+  var c=h('div',{class:'confetti'});var cols=['#FF7A3D','#2F7BF5','#FFC21A','#1FA563','#7A4CE0','#E0559B'];
+  for(var i=0;i<(n||70);i++){var p=h('i');p.style.left=Math.random()*100+'%';p.style.background=cols[i%6];p.style.animationDelay=Math.random()*.7+'s';p.style.animationDuration=(1.4+Math.random())+'s';if(i%3===0)p.style.borderRadius='50%';c.appendChild(p)}
+  document.body.appendChild(c);later(function(){c.remove()},3200);
+}
+function sparkleAt(el,n){
+  var r=el.getBoundingClientRect();
+  for(var i=0;i<(n||7);i++){var s=h('span',{class:'spark'},['✨']);s.style.position='fixed';s.style.left=(r.left+r.width/2-10)+'px';s.style.top=(r.top+r.height/2-12)+'px';
+    var ang=Math.random()*Math.PI*2,rr=30+Math.random()*40;s.style.setProperty('--dx',Math.cos(ang)*rr+'px');s.style.setProperty('--dy',Math.sin(ang)*rr+'px');document.body.appendChild(s);(function(s){later(function(){s.remove()},1000)})(s)}
+}
+
+/* ---------- the guide: Dotty the magician ---------- */
+function mascot(cls,mood){
+  var mouth=mood==='wow'?'<ellipse cx="50" cy="74" rx="7" ry="8" fill="#1D2B4F"/>':'<path d="M36 70 Q50 83 64 70" stroke="#1D2B4F" stroke-width="5" fill="none" stroke-linecap="round"/>';
+  return h('div',{class:'mascot '+(cls||''),'aria-hidden':'true',html:'<svg viewBox="0 0 100 100" width="100%" height="100%">'+
+    '<circle cx="50" cy="62" r="34" fill="#FF7A3D" stroke="#1D2B4F" stroke-width="4"/>'+
+    '<path d="M22 36 L50 -2 L78 36 Z" fill="#7A4CE0" stroke="#1D2B4F" stroke-width="4" stroke-linejoin="round"/>'+
+    '<rect x="16" y="32" width="68" height="9" rx="4.5" fill="#5A33B5" stroke="#1D2B4F" stroke-width="3"/>'+
+    '<text x="42" y="25" font-size="13" fill="#FFC21A">★</text><text x="55" y="16" font-size="9" fill="#FFC21A">★</text>'+
+    '<circle cx="38" cy="58" r="8" fill="#fff"/><circle cx="62" cy="58" r="8" fill="#fff"/><circle cx="40" cy="59" r="4" fill="#1D2B4F"/><circle cx="64" cy="59" r="4" fill="#1D2B4F"/>'+
+    '<circle cx="28" cy="70" r="5" fill="#FF9E9E" opacity=".7"/><circle cx="72" cy="70" r="5" fill="#FF9E9E" opacity=".7"/>'+mouth+
+    '<line x1="84" y1="78" x2="99" y2="56" stroke="#1D2B4F" stroke-width="4" stroke-linecap="round"/><text x="88" y="56" font-size="14" fill="#FFC21A">✦</text></svg>'});
+}
+function guide(text,mood){
+  var g=h('div',{class:'guide'});g.appendChild(mascot('',mood));
+  var s=h('div',{class:'say'});
+  if(canSpeak){s.appendChild(h('button',{class:'spk','aria-label':'Read to me',onclick:function(){speak(text)}},['🔊']))}
+  s.appendChild(h('span',{class:'nm'},['Dotty says']));
+  s.appendChild(h('span',{html:text}));
+  g.appendChild(s);return g;
+}
+
+/* ---------- feedback + choices ---------- */
+function feedback(host,kind,html,viz){
+  var old=host.querySelector(':scope > .fb');if(old)old.remove();
+  var f=h('div',{class:'fb '+kind,role:'status'});
+  f.innerHTML='<span class="face" aria-hidden="true">'+(kind==='good'?'⭐':kind==='bad'?'🤔':'💡')+'</span><div class="msg">'+html+'</div>';
+  if(viz){var v=h('div',{class:'viz'});v.appendChild(viz);f.appendChild(v)}
+  host.appendChild(f);later(function(){f.scrollIntoView({behavior:'smooth',block:'nearest'})},80);
+  return f;
+}
+function choiceQ(box,api,opts,onRight,cfg){
+  cfg=cfg||{};var wrap=h('div',{class:'choices'+(cfg.col?' col':'')}),solved=false;
+  opts.forEach(function(o){
+    var b=h('button',{class:(cfg.cls?cfg.cls(o):'opt'),html:o.html||o.label});
+    b.addEventListener('click',function(){
+      if(solved)return;
+      if(o.ok){solved=true;b.classList.add('right','sel');sGood();each(wrap.children,function(x){if(x!==b)x.disabled=true});onRight(o,b)}
+      else{api.miss();sBad();b.classList.add('wrongpick');b.disabled=true;feedback(box,'bad',o.why||cfg.wrongMsg||'Not quite. Look at the picture again!',o.viz?o.viz():null)}
+    });
+    wrap.appendChild(b);
+  });
+  box.appendChild(wrap);return wrap;
+}
+function pickMany(area,api,opts,need,onDone){
+  var wrap=h('div',{class:'choices'}),got=0;
+  opts.forEach(function(o){var b=h('button',{class:'opt',html:o.label});b.onclick=function(){
+    if(b.disabled)return;b.disabled=true;
+    if(o.ok){b.classList.add('right');sGood();got++;if(o.onPick)o.onPick();if(got===need){each(wrap.children,function(x){x.disabled=true});onDone()}}
+    else{b.classList.add('wrongpick');sBad();api.miss();feedback(area,'bad',o.why)}};wrap.appendChild(b)});
+  area.appendChild(wrap);return wrap;
+}
+function nextBtn(host,label,fn){var r=h('div',{class:'next-row'},[h('button',{class:'big go',onclick:function(){r.remove();fn()}},[label||'Next →'])]);host.appendChild(r);later(function(){r.scrollIntoView({behavior:'smooth',block:'nearest'})},200);return r}
+
+/* =====================================================================
+   THE BOOK PAGES (high-resolution scans) and their answer key
+   ===================================================================== */
+var PAGES={
+  lb73:{w:1484,h:1983,book:'lb',n:73},lb74:{w:1487,h:1300,book:'lb',n:74},lb75:{w:1503,h:2043,book:'lb',n:75},
+  lb76:{w:1600,h:1475,book:'lb',n:76},lb77:{w:1600,h:855,book:'lb',n:77},
+  wb60:{w:1488,h:2032,book:'wb',n:60},wb61:{w:1495,h:2072,book:'wb',n:61},wb62:{w:1473,h:2093,book:'wb',n:62},wb63:{w:1494,h:1253,book:'wb',n:63}
+};
+var BOOKNAME={lb:"Learner's Book",wb:'Workbook'};
+/* text answers: [page, x, y, w, h, text, align, fontPx] in page pixels */
+var ANS={
+  lb2a:['lb73',141,1683,1234,48,'A multiple of 2 is made of groups of 2 (pairs).','l',40],
+  lb2b:['lb73',141,1759,1234,48,'Nothing is left over, so it is always even!','l',40],
+  lb3t1:['lb74',170,1072,1232,46,'Only in the 5 circle: they end in 5, so they are odd.','l',36],
+  lb3t2:['lb74',170,1147,1232,46,'In the overlap: they end in 0, so they are even.','l',36],
+  lb3t3:['lb74',170,1224,1232,46,'The 10-only part is empty. Outside: not multiples of 5.','l',36],
+  lb5a:['lb75',163,1656,1234,46,'No! 30 = 10 ÷ 3 should be 3 = 30 ÷ 10,','l',38],
+  lb5b:['lb75',163,1731,1234,46,'and 30 = 3 ÷ 10 should be 10 = 30 ÷ 3.','l',38],
+  lb7r1t:['lb76',532,782,298,70,'2','c',54],lb7r1o:['lb76',830,782,308,70,'8','c',54],
+  lb7r2h:['lb76',235,855,297,70,'2','c',54],lb7r2t:['lb76',532,855,298,70,'8','c',54],lb7r2o:['lb76',830,855,308,70,'0','c',54],
+  lb7a:['lb76',235,951,1233,46,'Each digit moves one place to the left. 0 fills the ones.','l',38],
+  lb7b:['lb76',235,1033,1233,46,'Yes, always even, because the ones digit is always 0.','l',38],
+  lb8:['lb76',235,1222,1040,56,'23 × 10 = 230. The school has 230 pencils.','l',44],
+  wb4a:['wb62',174,458,507,52,'7 × 10 = 70','c',44],wb4b:['wb62',753,458,507,52,'19 × 10 = 190','c',44],
+  wb5a:['wb62',175,748,1218,46,'Multiples of 2 are always even.','l',38],
+  wb5b:['wb62',175,836,1218,46,'Multiples of 5 end in 5 or 0: odd, even, odd, even ...','l',38],
+  wb5c:['wb62',175,924,1218,46,'Multiples of 10 end in 0, so they are always even.','l',38],
+  wb5d:['wb62',175,1111,1218,46,'Multiples of 2 and 10 are the same: both are always even.','l',38],
+  wb5e:['wb62',175,1199,1218,46,'Multiples of 5 are different: every other one is odd.','l',38],
+  wb5f:['wb62',175,1286,1218,46,'All multiples of 10 are multiples of 2 and 5 too.','l',38],
+  wb6:['wb62',175,1568,500,52,'75','l',48],
+  wb7a:['wb63',172,420,1250,50,'1 × 1 = 1,   2 × 2 = 4,   5 × 5 = 25,   10 × 10 = 100','l',40],
+  wb7b:['wb63',172,500,1250,50,'5 × 5 = 25,   25 = 5 × 5,','l',40],
+  wb7c:['wb63',172,580,1250,50,'25 ÷ 5 = 5,   5 = 25 ÷ 5','l',40]
+};
+/* fact-family boxes: Learner's Book Q4 (array of 30 stars) and Workbook Q3 (8 wheels) */
+var FORMS=['m','m','mr','mr','d','d','dr','dr'];
+var FF={
+  lb4:{page:'lb75',xs:[[163,296,430],[956,1089,1223]],ys:[859,993,1127,1261],s:93,font:52,nums:[5,6,30],
+       def:[[5,6,30],[6,5,30],[30,5,6],[30,6,5],[30,5,6],[30,6,5],[6,30,5],[5,30,6]]},
+  wb3:{page:'wb61',xs:[[170,304,437],[753,887,1021]],ys:[1425,1545,1664,1784],s:94,font:54,nums:[2,4,8],
+       def:[[2,4,8],[4,2,8],[8,2,4],[8,4,2],[8,2,4],[8,4,2],[4,8,2],[2,8,4]]}
+};
+function ffBox(f,row,k){var F=FF[f],side=row<4?0:1,r=row%4;return [F.xs[side][k],F.ys[r],F.s,F.s]}
+(function(){Object.keys(FF).forEach(function(f){var F=FF[f];for(var row=0;row<8;row++)for(var k=0;k<3;k++){var b=ffBox(f,row,k);ANS[f+'_'+row+'_'+k]=[F.page,b[0],b[1],b[2],b[3],String(F.def[row][k]),'c',F.font]}})})();
+/* LB Q6 (child's own numbers), LB Q9, WB Q8 machine grid */
+var Q6={xs:[[234,586],[894,1246]],ys:[149,268,387],w:227,h:93,def:[1,5,8,22,67,93]};
+(function(){for(var i=0;i<6;i++){var side=i<3?0:1,r=i%3,n=Q6.def[i];
+  ANS['lb6_'+i+'_in']=['lb76',Q6.xs[side][0],Q6.ys[r],Q6.w,Q6.h,String(n),'c',54];
+  ANS['lb6_'+i+'_out']=['lb76',Q6.xs[side][1],Q6.ys[r],Q6.w,Q6.h,String(n*10),'c',54]}})();
+[16,21,26,31].forEach(function(n,i){ANS['lb9_'+i]=['lb77',[321,439,557,676][i],348,93,93,String(n),'c',50]});
+var WB8={nums:[[74,9,56],[6,82,29],[17,38,5],[3,94,61]],inx:[180,291,402],outx:[1057,1168,1279],ys:[855,943,1030,1118],w:111,h:88};
+WB8.nums.forEach(function(r,ri){r.forEach(function(n,ci){ANS['wb8_'+ri+'_'+ci]=['wb63',WB8.outx[ci],WB8.ys[ri],WB8.w,WB8.h,String(n*10),'c',46]})});
+/* Venn diagrams: circles and where each number is written */
+var VENN={
+  lb74:{L:[641,678,242],R:[937,678,247],area:[250,360,1100,600],rule:function(n){return n%10===0?'B':n%5===0?'L':'O'},
+    names:{L:'multiple of 5',R:'multiple of 10'},
+    spot:{45:[500,600],675:[560,690],805:[480,780],215:[590,800],120:[789,590],350:[789,660],490:[789,730],740:[789,800],132:[310,460],401:[1270,460],96:[310,880],387:[1270,880]},
+    list:{45:[168,298,40],120:[233,298,58],132:[316,298,58],401:[396,298,60],740:[480,298,60],215:[564,298,58],805:[646,298,60],490:[730,298,60],96:[813,298,40],387:[875,298,60],350:[958,298,60],675:[1041,298,62]},font:42},
+  wb61:{L:[877,521,228],R:[1103,521,226],area:[560,230,820,610],rule:function(n){return n%10===0?'B':n%2===0?'L':n%5===0?'R':'O'},
+    names:{L:'multiple of 2',R:'multiple of 5'},
+    spot:{35:[1140,620],36:[790,712],37:[1215,800],38:[700,630],39:[1060,805],40:[970,660]},font:40}
+};
+Object.keys(VENN).forEach(function(p){var V=VENN[p];Object.keys(V.spot).forEach(function(n){var s=V.spot[n];ANS['v'+p+'_'+n]=[p,s[0]-70,s[1]-24,140,48,String(n),'c',V.font]})});
+/* rings drawn round numbers: [cx, cy, rx, ry] */
+function ringOf(b){return [b[0]+b[2]/2,b[1]+b[3]/2,b[2]/2+12,b[3]/2+11]}
+var CLOUD={yes:{76:[621,1270,48,30],532:[573,1346,65,30],210:[672,1356,64,30],1000:[757,1366,82,30],784:[611,1435,66,30],38:[817,1464,47,30],670:[890,1464,58,30]},
+           no:{641:[710,1285,66,30],239:[831,1294,63,30],433:[875,1378,67,30],95:[537,1410,47,30],127:[711,1465,59,28]}};
+var WB1={yes:{15:[180,1832,38,37],125:[304,1832,58,37],230:[385,1832,60,37],390:[613,1832,60,37],95:[779,1832,38,37]},
+         no:{72:[240,1832,38,37],86:[468,1832,38,37],157:[532,1832,58,37],269:[697,1832,60,37],414:[841,1832,60,37]}};
+var RINGS={lb73:Object.keys(CLOUD.yes).map(function(k){return ringOf(CLOUD.yes[k])}),wb60:Object.keys(WB1.yes).map(function(k){return ringOf(WB1.yes[k])})};
+/* pen lines: [x1,y1,x2,y2,arrow] */
+var PENLINES={lb75:[[466,1550,676,1550],[1078,1550,1290,1550]],lb76:[[655,815,415,885,1],[955,815,715,885,1]]};
+
+/* BookView: a (cropped) real book page. Answers are written into it in handwriting. */
+var svgId=0;
+function BookView(key,opts){
+  opts=opts||{};var P=PAGES[key];var y0=opts.crop?opts.crop[0]:0,y1=opts.crop?Math.min(opts.crop[1],P.h):P.h;
+  var x0=opts.cx?opts.cx[0]:0,x1=opts.cx?opts.cx[1]:P.w,VW=x1-x0;
+  var wrap=h('div',{class:'bookwrap '+P.book});var el=h('div',{class:'book '+P.book});el.style.aspectRatio=VW+' / '+(y1-y0);
+  var sheet=h('div',{class:'sheet'});sheet.style.top=(-y0/(y1-y0)*100)+'%';sheet.style.height=(P.h/(y1-y0)*100)+'%';sheet.style.left=(-x0/VW*100)+'%';sheet.style.width=(P.w/VW*100)+'%';
+  sheet.appendChild(h('img',{src:IMG+key+'.jpg',alt:BOOKNAME[P.book]+' page '+P.n,draggable:'false'}));
+  var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','lines');svg.setAttribute('viewBox','0 0 '+P.w+' '+P.h);svg.setAttribute('preserveAspectRatio','none');
+  var mid='ah'+(++svgId);svg.innerHTML='<defs><marker id="'+mid+'" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#D81B60"/></marker></defs>';
+  sheet.appendChild(svg);el.appendChild(sheet);
+  wrap.appendChild(h('div',{class:'label'},[BOOKNAME[P.book]+' · page '+P.n]));wrap.appendChild(el);
+  function pos(node,x,y,w,hh){node.style.left=(x/P.w*100)+'%';node.style.top=(y/P.h*100)+'%';node.style.width=(w/P.w*100)+'%';node.style.height=(hh/P.h*100)+'%';return node}
+  var api={el:wrap,book:el,sheet:sheet,P:P,written:{}};
+  api.toPage=function(cx,cy){var r=sheet.getBoundingClientRect();return [(cx-r.left)/r.width*P.w,(cy-r.top)/r.height*P.h]};
+  api.put=function(x,y,w,hh,text,align,fontPx,shown){
+    var n=pos(h('div',{class:'hw '+(align==='c'?'c':'')+(shown?' shown':'')},[text]),x,y,w,hh);
+    n.style.setProperty('--fs',(fontPx/VW*100).toFixed(3));sheet.appendChild(n);return n};
+  api.write=function(id,delay,text){
+    var a=ANS[id];if(!a||a[0]!==key||api.written[id])return;api.written[id]=true;
+    if(text!=null){SAVE.dyn[id]=String(text);persist()}
+    var t=text!=null?String(text):(SAVE.dyn[id]||a[5]);
+    var n=api.put(a[1],a[2],a[3],a[4],t,a[6],a[7],false);
+    later(function(){n.classList.add('go');sWrite();later(function(){api.sparkle(a[1]+(a[6]==='c'?a[3]/2:Math.min(a[3],a[7]*t.length*.42)),a[2]+a[4]/2)},700)},delay||0);
+    return n;
+  };
+  api.show=function(id){var a=ANS[id];if(!a||a[0]!==key||api.written[id])return;api.written[id]=true;api.put(a[1],a[2],a[3],a[4],SAVE.dyn[id]||a[5],a[6],a[7],true)};
+  api.sparkle=function(x,y){for(var i=0;i<7;i++){var s=h('span',{class:'spark'},['✨']);s.style.left=(x/P.w*100)+'%';s.style.top=(y/P.h*100)+'%';var ang=Math.random()*Math.PI*2,r=30+Math.random()*40;s.style.setProperty('--dx',Math.cos(ang)*r+'px');s.style.setProperty('--dy',Math.sin(ang)*r+'px');sheet.appendChild(s);(function(s){later(function(){s.remove()},1000)})(s)}};
+  api.hot=function(x,y,w,hh,label,fn,hint){var b=pos(h('button',{class:'hot'+(hint===false?'':' hint'),'aria-label':label}),x,y,w,hh);b.onclick=fn;sheet.appendChild(b);return b};
+  api.glow=function(x,y,w,hh){var g=pos(h('div',{class:'rowglow'}),x,y,w,hh);sheet.appendChild(g);return g};
+  api.marker=function(x,y,w,hh,delay){var m=pos(h('div',{class:'marker'}),x,y,w,hh);sheet.insertBefore(m,svg);later(function(){m.classList.add('on')},delay||200);return m};
+  function ns(t){return document.createElementNS('http://www.w3.org/2000/svg',t)}
+  api.line=function(x1,y1,x2,y2,arrow,now,bad){var l=ns('path');l.setAttribute('d','M'+x1+' '+y1+' L'+x2+' '+y2);l.setAttribute('pathLength','1');l.setAttribute('class','ink'+(now?' now':'')+(bad?' bad':''));if(arrow)l.setAttribute('marker-end','url(#'+mid+')');svg.appendChild(l);return l};
+  api.ring=function(r,now){var e=ns('ellipse');e.setAttribute('cx',r[0]);e.setAttribute('cy',r[1]);e.setAttribute('rx',r[2]);e.setAttribute('ry',r[3]);e.setAttribute('pathLength','1');e.setAttribute('class','ink'+(now?' now':''));svg.appendChild(e);if(!now){sWrite();later(function(){api.sparkle(r[0]+r[2],r[1]-r[3])},500)}return e};
+  api.flyTo=function(fromEl,id,text,cb){/* a number flies from a button into its place on the page */
+    var a=ANS[id];var r=fromEl.getBoundingClientRect(),sr=sheet.getBoundingClientRect();
+    var f=h('div',{class:'flyer'},[String(text)]);f.style.left=(r.left+r.width/2-16)+'px';f.style.top=(r.top+r.height/2-20)+'px';document.body.appendChild(f);
+    var tx=sr.left+(a[1]+a[3]/2)/P.w*sr.width-16,ty=sr.top+(a[2]+a[4]/2)/P.h*sr.height-20;
+    requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.left=tx+'px';f.style.top=ty+'px';f.style.transform='scale(.8)'})});
+    later(function(){f.remove();api.write(id,0,text);if(cb)cb()},820);
+  };
+  (opts.show||[]).forEach(api.show);
+  return api;
+}
+/* fill a page with its full answer key (for "Copy to my book") */
+function fillPage(v,key){
+  Object.keys(ANS).forEach(function(id){if(ANS[id][0]===key)v.show(id)});
+  (RINGS[key]||[]).forEach(function(r){v.ring(r,true)});
+  (PENLINES[key]||[]).forEach(function(l){v.line(l[0],l[1],l[2],l[3],l[4],true)});
+}
+function zoomPage(key){
+  var m=h('div',{class:'modal',role:'dialog','aria-modal':'true'});var inner=h('div',{class:'inner'});
+  inner.appendChild(h('div',{class:'closeb'},[h('button',{class:'big plain small',onclick:function(){m.remove()}},['✕ Close'])]));
+  var v=BookView(key);fillPage(v,key);inner.appendChild(v.el);m.appendChild(inner);document.body.appendChild(m);
+}
+
+/* =====================================================================
+   MAGIC MODELS: the pictures that make the maths visible
+   ===================================================================== */
+
+/* Hundred square: count in 2s, 5s and 10s and watch the pattern appear */
+function HundredSquare(){
+  var g=h('div',{class:'hs'}),cells=[];
+  for(var n=1;n<=100;n++){var b=h('button',{class:'hc','aria-label':String(n)},[String(n)]);cells[n]=b;g.appendChild(b)}
+  return {el:g,cells:cells,clear:function(){for(var n=1;n<=100;n++)cells[n].className='hc'}};
+}
+/* little dot picture: 2 rows, so pairs are easy to see; a lonely dot glows */
+function sdots(n,s,color){
+  var g=h('span',{class:'sdots',style:'--s:'+(s||16)+'px','aria-hidden':'true'});
+  for(var i=0;i<n;i++){var b=h('b');b.style.background=color||'var(--b2)';if(isOdd(n)&&i===n-1)b.className='lone';g.appendChild(b)}
+  return g;
+}
+
+/* Array of stars (or wheels). It can turn, make groups and split apart. */
+var STAR='<svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.1.8-5.3 4.9 1.5 7.1L12 17.6 5.6 21.2l1.5-7.1L1.8 9.2l7.1-.8z" fill="#F5B731" stroke="#3B3B3B" stroke-width="1.3" stroke-linejoin="round"/></svg>';
+var COUNTER='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.6" fill="#D9A05B" stroke="#8A5A2B" stroke-width="1.2"/><path d="M12 3.2c3.6 0 7.4 2.2 8.2 6.2.5 2.6-1 3.4-1.9 5.1-.8 1.6-1.4 4.2-6.3 4.2s-5.7-2.4-6.6-4.1C4.5 13 3 12.2 3.7 9.6 4.6 5.6 8.4 3.2 12 3.2z" fill="#FF8FC1"/><circle cx="12" cy="12" r="3.3" fill="#fff" stroke="#8A5A2B" stroke-width="1.1"/><g stroke-width="1.4" stroke-linecap="round"><path d="M7 8.5l1.2-.7" stroke="#2F7BF5"/><path d="M15.5 6.6l1.2.6" stroke="#FFC21A"/><path d="M17.4 11.5l.3 1.3" stroke="#1FA563"/><path d="M8.4 15.6l1.1.8" stroke="#7A4CE0"/><path d="M11.6 6.2l.2 1.2" stroke="#fff"/><path d="M14.2 16.2l1.2-.5" stroke="#2F7BF5"/><path d="M6.2 11.8l.4 1.2" stroke="#FFC21A"/></g></svg>';
+var WHEEL='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="#222"/><circle cx="12" cy="12" r="7" fill="#C9CED6"/><g stroke="#666" stroke-width="1.6"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></g><circle cx="12" cy="12" r="2.2" fill="#333"/></svg>';
+function ArrayView(R,C,opts){
+  opts=opts||{};
+  var el=h('div',{class:'arr'}),items=[],grps=[];
+  var st={turn:false,split:null,gk:.7};
+  for(var i=0;i<R*C;i++){var it=h('div',{class:'it',html:opts.item==='wheel'?WHEEL:opts.item==='donut'?COUNTER:STAR});items.push(it);el.appendChild(it)}
+  var cap=h('div',{class:'arrcap'});
+  function dims(){return st.turn?[C,R]:[R,C]}
+  function rc(i){var r=Math.floor(i/C),c=i%C;return st.turn?[c,r]:[r,c]}
+  var geo={};
+  function layout(){
+    var d=dims(),rows=d[0],cols=d[1],w=el.clientWidth||300;
+    var gx=st.split==='cols'?1:0,gy=st.split==='rows'?1:0;
+    var s=Math.max(16,Math.min(opts.max||52,Math.floor((w-24)/(cols+gx*(cols-1)*.6)/1.18)));
+    var step=s*1.18,gap=s*st.gk;
+    var totW=cols*step+gx*(cols-1)*gap,totH=rows*step+gy*(rows-1)*gap;
+    var x0=Math.max(8,(w-totW)/2),y0=18;
+    geo={s:s,step:step,gap:gap,x0:x0,y0:y0,rows:rows,cols:cols,gx:gx,gy:gy};
+    el.style.height=(y0+totH+26)+'px';
+    items.forEach(function(it,i){var p=rc(i);it.style.width=it.style.height=s+'px';it.style.left=(x0+p[1]*step+gx*p[1]*gap)+'px';it.style.top=(y0+p[0]*step+gy*p[0]*gap)+'px'});
+    grps.forEach(function(g){placeG(g)});
+  }
+  function placeG(g){
+    var G=geo,pad=6;
+    if(g.mode==='rows'){var y=G.y0+g.k*G.step+G.gy*g.k*G.gap;g.el.style.left=(G.x0-pad)+'px';g.el.style.top=(y-pad)+'px';g.el.style.width=(G.cols*G.step-(G.step-G.s)+2*pad)+'px';g.el.style.height=(G.s+2*pad)+'px'}
+    else{var x=G.x0+g.k*G.step+G.gx*g.k*G.gap;g.el.style.left=(x-pad)+'px';g.el.style.top=(G.y0-pad)+'px';g.el.style.width=(G.s+2*pad)+'px';g.el.style.height=(G.rows*G.step-(G.step-G.s)+2*pad)+'px'}
+  }
+  function clearG(){grps.forEach(function(g){g.el.remove()});grps=[];items.forEach(function(it){it.classList.remove('lit')})}
+  var timers=[];function T(fn,ms){timers.push(later(fn,ms))}
+  function stop(){timers.forEach(clearTimeout);timers=[]}
+  requestAnimationFrame(layout);
+  if(window.ResizeObserver)new ResizeObserver(function(){layout()}).observe(el);
+  var api={el:el,cap:cap,R:R,C:C};
+  api.reset=function(){stop();clearG();st.split=null;layout();cap.innerHTML=''};
+  /* show groups of `size`, counting in steps: 5, 10, 15 ... ; split=true pulls the groups apart (sharing) */
+  api.groups=function(size,split,label,cb){
+    stop();clearG();var d=dims();
+    var mode=size===d[1]?'rows':'cols',count=mode==='rows'?d[0]:d[1];
+    st.split=mode;st.gk=split?.7:.32;layout();
+    cap.innerHTML='';
+    for(var k=0;k<count;k++)(function(k){T(function(){
+      var g={mode:mode,k:k,el:h('div',{class:'grp '+mode,style:'--gc:'+(split?'var(--b5)':'var(--b2)')})};
+      g.el.appendChild(h('b',null,[split?String(k+1):String((k+1)*size)]));
+      el.appendChild(g.el);grps.push(g);placeG(g);sPop();
+      items.forEach(function(it,i){var p=rc(i);if((mode==='rows'?p[0]:p[1])===k){it.classList.add('lit');later(function(){it.classList.remove('lit')},350)}});
+      if(k===count-1)T(function(){cap.innerHTML=label||'';sGood();if(cb)cb()},500);
+    },350+k*420)})(k);
+  };
+  api.turn=function(cb){stop();clearG();st.turn=!st.turn;st.split=null;sMagic();layout();cap.innerHTML='';T(function(){var d=dims();cap.innerHTML=d[0]+' rows of '+d[1]+' &nbsp;·&nbsp; still '+(R*C)+'!';if(cb)cb()},800)};
+  api.dims=dims;
+  return api;
+}
+/* show a fact on an array: a × b = p (groups of a), p ÷ a = b (share into groups of a) */
+function factOnArray(arr,f,cb){
+  var d=arr.dims();
+  if(f.op==='×'){var size=(f.a===d[1]||f.a===d[0])?f.a:f.b,n=arr.R*arr.C/size;arr.groups(size,false,'<span class="c2">'+n+' groups of '+size+'</span> = '+(n*size)+' &nbsp;→&nbsp; '+f.txt,cb)}
+  else{var sz=f.b;var cnt=f.a/f.b;arr.groups(sz,true,'<span class="c5">'+f.a+' shared into groups of '+sz+' → '+cnt+' groups</span> &nbsp;→&nbsp; '+f.txt,cb)}
+}
+
+/* fact family triangle */
+function triangle(a,b,c){
+  return h('div',{html:'<svg class="tri" viewBox="0 0 300 250"><path d="M150 18 L282 228 L18 228 Z" fill="#FFF8E1" stroke="#1D2B4F" stroke-width="6" stroke-linejoin="round"/>'+
+    '<line x1="70" y1="170" x2="230" y2="170" stroke="#1D2B4F" stroke-width="3" stroke-dasharray="6 6"/><text x="150" y="205" text-anchor="middle" font-size="28" font-weight="800" fill="#1D2B4F" font-family="Baloo 2,system-ui">× ÷</text>'+
+    '<circle cx="150" cy="70" r="42" fill="#7A4CE0"/><text x="150" y="83" text-anchor="middle" font-size="38" font-weight="800" fill="#fff" font-family="Baloo 2,system-ui">'+c+'</text>'+
+    '<circle cx="62" cy="200" r="36" fill="#2F7BF5"/><text x="62" y="212" text-anchor="middle" font-size="34" font-weight="800" fill="#fff" font-family="Baloo 2,system-ui">'+a+'</text>'+
+    '<circle cx="238" cy="200" r="36" fill="#FF7A3D"/><text x="238" y="212" text-anchor="middle" font-size="34" font-weight="800" fill="#fff" font-family="Baloo 2,system-ui">'+b+'</text></svg>'});
+}
+function familyOf(a,b){var c=a*b,L=[[a+' × '+b+' = '+c,'m'],[c+' = '+a+' × '+b,'m'],[c+' ÷ '+a+' = '+b,'d'],[b+' = '+c+' ÷ '+a,'d']];
+  if(a!==b)L=[[a+' × '+b+' = '+c,'m'],[b+' × '+a+' = '+c,'m'],[c+' = '+a+' × '+b,'m'],[c+' = '+b+' × '+a,'m'],[c+' ÷ '+a+' = '+b,'d'],[c+' ÷ '+b+' = '+a,'d'],[b+' = '+c+' ÷ '+a,'d'],[a+' = '+c+' ÷ '+b,'d']];
+  return L}
+function factsGrid(a,b,stagger){var g=h('div',{class:'facts'});familyOf(a,b).forEach(function(f,i){var d=h('div',{class:f[1]},[f[0]]);if(stagger)d.style.animationDelay=(i*.35)+'s';g.appendChild(d)});return g}
+
+/* base ten blocks: x10 makes every cube a rod and every rod a flat */
+function BaseTen(n){
+  var w=h('div'),stage=h('div',{class:'b10stage'});w.appendChild(stage);
+  var t=Math.floor(n/10),o=n%10,done=false;
+  var g1=h('div',{class:'b10grp'}),b1=h('div',{class:'b10blocks'}),l1=h('div',{class:'b10lbl'});g1.appendChild(b1);g1.appendChild(l1);
+  var g2=h('div',{class:'b10grp'}),b2=h('div',{class:'b10blocks'}),l2=h('div',{class:'b10lbl'});g2.appendChild(b2);g2.appendChild(l2);
+  var rods=[],cubes=[];
+  for(var i=0;i<t;i++){var r=h('div',{class:'blk rod'});rods.push(r);b1.appendChild(r)}
+  for(var j=0;j<o;j++){var c=h('div',{class:'blk'});cubes.push(c);b2.appendChild(c)}
+  l1.textContent=t+' ten'+(t===1?'':'s');l2.textContent=o+' one'+(o===1?'':'s');
+  if(t)stage.appendChild(g1);if(o||!t)stage.appendChild(g2);
+  var cap=h('div',{class:'eqline'},[String(n)]);w.appendChild(cap);
+  return {el:w,go:function(cb){
+    if(done){if(cb)cb();return}done=true;sMagic();
+    rods.forEach(function(r,i){later(function(){r.classList.add('flat')},i*120)});
+    cubes.forEach(function(c,i){later(function(){c.classList.add('rod')},300+i*120)});
+    later(function(){l1.textContent=t+' hundred'+(t===1?'':'s');l2.textContent=o+' ten'+(o===1?'':'s');cap.innerHTML=n+' × 10 = <span class="c10">'+(n*10)+'</span>';sGood();if(cb)cb()},1300+Math.max(t,o)*120);
+  }};
+}
+/* place value chart: every digit slides one place to the left, 0 fills the ones */
+function PVSlide(n){
+  var w=h('div',{class:'pv'});w.innerHTML='<div class="hd"><div>100s</div><div>10s</div><div>1s</div></div>';
+  var rw=h('div',{class:'rw'});var cells=[h('div'),h('div'),h('div')];cells.forEach(function(c){rw.appendChild(c)});w.appendChild(rw);
+  var s=String(n),digs=[];
+  for(var i=0;i<s.length;i++){var col=3-s.length+i;var d=h('div',{class:'dg'},[s[i]]);cells[col].appendChild(d);digs.push(d)}
+  var cap=h('div',{class:'eqline',style:'margin-top:6px'},[n+' × 10 = ?']);
+  var box=h('div');box.appendChild(w);box.appendChild(cap);
+  var done=false;
+  return {el:box,go:function(cb){
+    if(done){if(cb)cb();return}done=true;sMagic();
+    digs.forEach(function(d){d.classList.add('slide','trail')});
+    later(function(){var z=h('div',{class:'dg zero'},['0']);cells[2].appendChild(z);sPop();cap.innerHTML=n+' × 10 = <span class="c10">'+(n*10)+'</span>';sparkleAt(cells[2]);if(cb)cb()},1050);
+  }};
+}
+/* pencil boxes of 10 that bundle into crates of 100 */
+function PencilBoxes(){
+  var w=h('div'),area=h('div',{class:'pboxes'}),count=h('div',{class:'count'});w.appendChild(area);w.appendChild(count);var n=0;
+  function draw(bundled){area.innerHTML='';var crates=bundled?Math.floor(n/10):0,left=n-crates*10;
+    for(var c=0;c<crates;c++){var cr=h('div',{class:'crate'});cr.style.animationDelay=(c*.2)+'s';for(var k=0;k<10;k++)cr.appendChild(h('span',{class:'pbox'}));cr.appendChild(h('b',null,['100']));area.appendChild(cr)}
+    for(var i=0;i<left;i++){var b=h('span',{class:'pbox'});if(!bundled&&i===left-1)b.style.animationDelay='0s';else b.style.animation='none';area.appendChild(b)}
+    count.innerHTML=bundled&&crates?crates+' hundred'+(crates>1?'s':'')+' + '+(left*10)+' = <span class="c10">'+(n*10)+'</span> pencils':n+' box'+(n===1?'':'es')+' = <span class="c10">'+(n*10)+'</span> pencils'}
+  return {el:w,add:function(){n++;sPop();draw(false);return n},set:function(k,b){n=k;draw(!!b)},bundle:function(){sMagic();draw(true)},get n(){return n}};
+}
+/* number line with a hopping frog */
+function NumberLine(min,max,opts){
+  opts=opts||{};var w=h('div',{class:'nl'});var span=max-min;
+  var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 1000 150');svg.setAttribute('preserveAspectRatio','none');
+  svg.innerHTML='<line x1="0" y1="92" x2="1000" y2="92" stroke="#1D2B4F" stroke-width="4" vector-effect="non-scaling-stroke"/>';w.appendChild(svg);
+  function X(v){return 2+(v-min)/span*96}
+  var tks={};
+  for(var v=min;v<=max;v++){if(opts.only&&opts.only.indexOf(v)<0)continue;
+    var t=document.createElementNS('http://www.w3.org/2000/svg','line');t.setAttribute('x1',X(v)*10);t.setAttribute('x2',X(v)*10);t.setAttribute('y1',82);t.setAttribute('y2',102);t.setAttribute('stroke','#1D2B4F');t.setAttribute('stroke-width','3');t.setAttribute('vector-effect','non-scaling-stroke');svg.appendChild(t);
+    if(opts.labels&&opts.labels.indexOf(v)<0)continue;
+    var b=h('button',{class:'tk'},[String(v)]);b.style.left=X(v)+'%';w.appendChild(b);tks[v]=b}
+  var frog=h('div',{class:'frog'},['🐸']);w.appendChild(frog);var at=opts.start!=null?opts.start:min;frog.style.left=X(at)+'%';
+  return {el:w,tks:tks,X:X,hop:function(to,label,cb){
+    var from=at;at=to;var p=document.createElementNS('http://www.w3.org/2000/svg','path');var x1=X(from)*10,x2=X(to)*10,mx=(x1+x2)/2;
+    p.setAttribute('d','M'+x1+' 84 Q'+mx+' 10 '+x2+' 84');p.setAttribute('fill','none');p.setAttribute('stroke','#FF7A3D');p.setAttribute('stroke-width','4');p.setAttribute('vector-effect','non-scaling-stroke');p.setAttribute('pathLength','1');p.style.strokeDasharray='1';p.style.strokeDashoffset='1';p.style.transition='stroke-dashoffset .6s';svg.appendChild(p);
+    requestAnimationFrame(function(){p.style.strokeDashoffset='0'});
+    if(label){var jl=h('div',{class:'jl'},[label]);jl.style.left=((X(from)+X(to))/2)+'%';w.appendChild(jl)}
+    var t0=null;function step(ts){if(!t0)t0=ts;var k=Math.min(1,(ts-t0)/600);var x=X(from)+(X(to)-X(from))*k;frog.style.left=x+'%';frog.style.top=(44-Math.sin(k*Math.PI)*40)+'px';if(k<1)requestAnimationFrame(step);else{sPop();if(cb)cb()}}
+    requestAnimationFrame(step);
+  }};
+}
+/* the x10 machine */
+function Machine(){
+  var w=h('div',{class:'mach'}),inn=h('div',{class:'chipn'},['?']),box=h('div',{class:'box',html:'<span>× 10</span>'}),out=h('div',{class:'chipn out'},['?']);
+  w.appendChild(inn);w.appendChild(h('span',{style:'font-size:28px'},['➜']));w.appendChild(box);w.appendChild(h('span',{style:'font-size:28px'},['➜']));w.appendChild(out);
+  return {el:w,load:function(n){inn.classList.remove('in-go');inn.textContent=String(n);out.textContent='?'},
+    run:function(n,cb){inn.classList.add('in-go');box.classList.add('work');sMagic();later(function(){box.classList.remove('work');out.textContent=String(n*10);out.animate&&out.animate([{transform:'scale(.3)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:450});sparkleAt(out);if(cb)cb()},800)}};
+}
+
+/* =====================================================================
+   LESSON ENGINE
+   ===================================================================== */
+var E5=[{k:'Warm up',c:'var(--e1)'},{k:'Discover',c:'var(--e2)'},{k:'Learn the rule',c:'var(--e3)'},{k:'Practise',c:'var(--e4)'},{k:'Check',c:'var(--e5)'}];
+function topBar(back){
+  var b=h('div',{class:'bar noprint'});
+  if(back)b.appendChild(h('button',{class:'pill',onclick:home},['← Lesson map']));
+  else if(window.MM_STANDALONE)b.appendChild(h('a',{class:'pill',href:'../',style:'text-decoration:none'},['← Grade 2 games']));
+  b.appendChild(h('div',{class:'grow'}));
+  b.appendChild(h('button',{class:'pill',onclick:function(){answerBook()}},['📖 Copy to my book']));
+  b.appendChild(h('button',{class:'pill',onclick:wordBank},['Word bank']));
+  var m=h('button',{class:'pill'},[muted?'🔇 Sound':'🔊 Sound']);
+  m.onclick=function(){muted=!muted;SAVE.muted=muted;persist();m.textContent=muted?'🔇 Sound':'🔊 Sound'};
+  b.appendChild(m);return b;
+}
+function runLesson(id,start){
+  var L=LESSONS[id],i=start||0,mistakes=0;
+  app.innerHTML='';app.appendChild(topBar(true));
+  var head=h('div',{class:'lesson-head'});
+  head.appendChild(mascot());
+  head.appendChild(h('div',{style:'flex:1;min-width:200px'},[h('div',{class:'today',html:L.when}),h('h2',null,[L.title]),h('div',{class:'today',html:'Today I can: <b>'+L.goal+'</b>'})]));
+  app.appendChild(head);
+  var stepper=h('div',{class:'stepper'});app.appendChild(stepper);
+  var card=h('section',{class:'card'});app.appendChild(card);
+  function drawStepper(){
+    stepper.innerHTML='';
+    L.stations.forEach(function(s,k){
+      var ec=s.c||E5[k%5].c;
+      var b=h('button',{class:'step'+(k===i?' now':'')+(SAVE.done[id+k]?' done':''),style:'--ec:'+ec,onclick:function(){i=k;show()}});
+      b.innerHTML='<span class="n"><span>'+(s.short||k+1)+'</span></span><span class="t">'+s.name+'</span>';
+      stepper.appendChild(b);
+    });
+  }
+  function show(){
+    drawStepper();card.innerHTML='';window.scrollTo({top:0,behavior:'smooth'});
+    var s=L.stations[i],ec=s.c||E5[i%5].c;card.style.borderColor=ec;
+    var t=h('div',{class:'estage-title'});t.innerHTML='<span class="badge" style="--ec:'+ec+'">'+s.name+'</span>'+(s.src?'<span class="today">'+s.src+'</span>':'');
+    card.appendChild(t);
+    var stage=h('div');card.appendChild(stage);
+    var finished=false;
+    var api={
+      miss:function(){mistakes++},
+      done:function(msg){
+        if(finished)return;finished=true;SAVE.done[id+i]=true;persist();drawStepper();sGood();
+        var r=h('div',{class:'next-row'});
+        if(msg)feedback(stage,'good',msg);
+        var last=i===L.stations.length-1;
+        r.appendChild(h('button',{class:'big go',onclick:function(){if(last)certificate(id,mistakes);else{i++;show()}}},[last?'Finish 🏆':'Next: '+L.stations[i+1].name+' →']));
+        stage.appendChild(r);later(function(){r.scrollIntoView({behavior:'smooth',block:'nearest'})},300);
+      }
+    };
+    s.render(stage,api);
+  }
+  show();
+}
+function certificate(id,mistakes){
+  var L=LESSONS[id];var s=mistakes===0?3:mistakes<=3?2:1;
+  if(!SAVE.stars[id]||SAVE.stars[id]<s){SAVE.stars[id]=s;persist()}
+  app.innerHTML='';app.appendChild(topBar(true));
+  var c=h('section',{class:'card cert'});
+  c.appendChild(h('div',{class:'row center'},[mascot('huge','wow')]));
+  c.appendChild(h('h2',{style:'font-size:clamp(32px,5vw,48px)'},['Magic work, magician!']));
+  c.appendChild(h('div',{class:'bigstars',html:starStr(s)}));
+  var lw=h('div',{class:'lwicd'});lw.innerHTML='<div class="t">Look what I can do!</div><div class="bdy"><div class="box"><span>✓</span></div><div>'+L.lookWhat+'</div></div>';c.appendChild(lw);
+  c.appendChild(h('p',{class:'task'},['Now copy the answers into your book.']));
+  var r=h('div',{class:'row center',style:'margin-top:10px'});
+  r.appendChild(h('button',{class:'big magic',onclick:function(){answerBook(L.copy)}},['📖 Copy to my book']));
+  r.appendChild(h('button',{class:'big go',onclick:home},['Lesson map']));
+  c.appendChild(r);app.appendChild(c);sWin();confetti(120);later(function(){confetti(60)},900);
+}
+/* one book question after another, with Q chips */
+function questionRun(st,api,Q,names,doneMsg){
+  var k=0,bar=h('div',{class:'qbar'}),area=h('div');st.appendChild(bar);st.appendChild(area);
+  function drawBar(){bar.innerHTML='';Q.forEach(function(_,j){bar.appendChild(h('span',{class:'qchip',style:'background:'+(j<k?'var(--good)':j===k?'var(--e4)':'#C9D8EE')},[names[j]]))})}
+  function next(){k++;if(k<Q.length)go();else api.done(doneMsg)}
+  function go(){drawBar();area.innerHTML='';Q[k](area,api,function(){nextBtn(area,k<Q.length-1?'Next question →':'Finish ✓',function(){next();window.scrollTo({top:0,behavior:'smooth'})})})}
+  go();
+}
+function whoSays(host,who,col,say){var w=h('div',{class:'guide'});w.innerHTML='<div class="mascot" style="animation:none;display:grid;place-items:center;border-radius:50%;background:'+col+';color:#fff;font-family:var(--display);font-weight:800;font-size:34px;border:4px solid #fff;box-shadow:0 0 0 3px var(--line)">'+who[0]+'</div><div class="say"><span class="nm">'+who+' says</span>'+say+'</div>';host.appendChild(w);return w}
+
+/* ---------- shared book tasks ---------- */
+/* ring the multiples of k on the page */
+function ringTask(a,api,bk,M,k,done){
+  var lens=h('div',{class:'panel',style:'text-align:center'});lens.innerHTML='<div class="ttl">👆 Tap a number in the book</div>';a.appendChild(lens);
+  var need=Object.keys(M.yes).length,got=0,tiles={},tr=h('div',{class:'tiles'});
+  var order=Object.keys(M.yes).map(function(n){return [n,M.yes[n]]}).concat(Object.keys(M.no).map(function(n){return [n,M.no[n]]})).sort(function(p,q){return Math.abs(p[1][1]-q[1][1])>20?p[1][1]-q[1][1]:p[1][0]-q[1][0]});
+  order.forEach(function(o){var t=h('button',{class:'big plain small',style:'min-width:64px'},[o[0]]);tiles[o[0]]=t;tr.appendChild(t)});
+  a.insertBefore(h('p',{class:'sub',style:'text-align:center;font-weight:800'},['Tap the number in the book, or here:']),lens);a.insertBefore(tr,lens);
+  function why(n,ok){var d=n%10;lens.innerHTML='';
+    lens.appendChild(h('div',{class:'eqline',html:'<span class="strip"><span>'+onesU(n,k)+'</span></span>'}));
+    var msg=k===2?(ok?'The ones digit is <b>'+d+'</b>. '+d+' makes pairs, so '+n+' is a multiple of 2.':'The ones digit is <b>'+d+'</b>. 1 is left over, so '+n+' is not a multiple of 2.')
+      :(ok?n+' ends in <b>'+d+'</b>. Multiples of 5 end in 0 or 5.':n+' ends in <b>'+d+'</b>, not 0 or 5. Not a multiple of 5.');
+    lens.appendChild(h('div',{style:'font-weight:800',html:msg}));
+    if(k===2&&d)lens.appendChild(h('div',{style:'margin-top:6px'},[sdots(d,18,ok?'var(--b2)':'var(--b5)')]));
+  }
+  Object.keys(M.yes).forEach(function(n){var b=M.yes[n],done1=false;var fn=function(){if(done1)return;done1=true;tiles[n].classList.add('right');tiles[n].style.background='var(--good-soft)';tiles[n].disabled=true;bk.ring(ringOf(b));sPop();why(+n,true);got++;if(got===need){feedback(a,'good','<b>You found them all!</b>');done()}};
+    bk.hot(b[0]-10,b[1]-8,b[2]+20,b[3]+16,n,fn,false);tiles[n].onclick=fn});
+  Object.keys(M.no).forEach(function(n){var b=M.no[n];var fn=function(){api.miss();sBad();hb.classList.remove('badtap');void hb.offsetWidth;hb.classList.add('badtap');why(+n,false)};var hb=bk.hot(b[0]-10,b[1]-8,b[2]+20,b[3]+16,n,fn,false);tiles[n].onclick=fn});
+}
+/* sort numbers into a Venn diagram on the page */
+function vennTask(a,api,bk,key,nums,fromList,done){
+  var V=VENN[key],picked=null,left=nums.length,chips={};
+  var info=h('div',{class:'panel',style:'text-align:center'});
+  function explain(n){var d=n%10;
+    if(key==='lb74')return d===0?n+' ends in 0: a multiple of 5 <b>and</b> 10. It goes in the <b>overlap</b>.':d===5?n+' ends in 5: a multiple of 5 but not 10. Only the <b>5 circle</b>.':n+' ends in '+d+': not a multiple of 5 or 10. It goes <b>outside</b>.';
+    var two=n%2===0,five=n%5===0;return n+' ends in '+d+'. '+(two?'Even, so a multiple of 2. ':'Odd, so not a multiple of 2. ')+(five?'It ends in '+d+', so a multiple of 5.':'It does not end in 0 or 5, so not a multiple of 5.')+' → '+(two&&five?'<b>overlap</b>':two?'<b>2 circle only</b>':five?'<b>5 circle only</b>':'<b>outside</b>');}
+  function setPick(n){picked=n;sPop();info.innerHTML='<div class="eqline">'+n+'</div><div style="font-weight:800">Now tap where '+n+' goes in the Venn diagram.</div>';
+    Object.keys(chips).forEach(function(k){chips[k].style.outline=+k===n?'5px solid var(--star)':'';if(pg[k])pg[k].classList.toggle('picked',+k===n)})}
+  var tr=h('div',{class:'tiles'}),pg={};
+  nums.forEach(function(n){chips[n]=h('button',{class:'tile'},[String(n)]);chips[n].onclick=function(){setPick(n)};tr.appendChild(chips[n]);
+    if(fromList){var L=V.list[n];pg[n]=bk.hot(L[0]-6,L[1]-4,L[2]+12,L[3]+8,String(n),function(){if(!chips[n].disabled)setPick(n)},false)}});
+  a.appendChild(tr);
+  info.innerHTML='<div class="ttl">👆 Tap a number first'+(fromList?' (in the list or below)':'')+'</div>';a.appendChild(info);
+  var A=V.area;
+  var area=bk.hot(A[0],A[1],A[2],A[3],'Venn diagram',function(e){
+    if(picked==null){feedback(a,'info','First tap a number.');return}
+    var p=bk.toPage(e.clientX,e.clientY),dl=Math.hypot(p[0]-V.L[0],p[1]-V.L[1])<V.L[2],dr=Math.hypot(p[0]-V.R[0],p[1]-V.R[1])<V.R[2];
+    var reg=dl&&dr?'B':dl?'L':dr?'R':'O',n=picked;
+    if(reg===V.rule(n)){picked=null;sGood();var c=chips[n];c.style.outline='';c.classList.add('used');c.disabled=true;if(pg[n]){pg[n].classList.remove('picked');pg[n].classList.add('used')}bk.write('v'+key+'_'+n);left--;
+      feedback(a,'good','<b>Yes!</b> '+explain(n));info.innerHTML='<div class="ttl">'+(left?'👆 Tap the next number':'All sorted! ✨')+'</div>';if(!left)done()}
+    else{api.miss();sBad();feedback(a,'bad','Not there. '+explain(n))}
+  },false);
+  area.classList.add('area');
+}
+/* fact family boxes on the page, built with number tiles; the array shows each fact */
+function factBoxes(a,api,bk,f,arr,done){
+  var F=FF[f],row=0,fill=[],nodes=[],usedKeys={},glow=null,busy=false;
+  var tray=h('div',{class:'tiles'}),status=h('div',{class:'task',style:'text-align:center'});
+  a.appendChild(status);a.appendChild(tray);
+  var big=Math.max.apply(null,F.nums),sm=F.nums.filter(function(x){return x!==big});
+  var tiles=F.nums.concat([sm[0]+sm[1]]);
+  var tileEls={};
+  tiles.forEach(function(n,ti){var t=h('button',{class:'tile'+(ti===3?' alt':'')},[String(n)]);tileEls[n]=t;t.onclick=function(){
+    if(busy||fill.length>=3)return;
+    if(ti===3){api.miss();sBad();feedback(a,'bad',n+' is '+sm[0]+' + '+sm[1]+'. That is adding! Count the array: it has <b>'+big+'</b>.');return}
+    var b=ffBox(f,row,fill.length);fill.push(n);nodes.push(bk.put(b[0],b[1],b[2],b[3],String(n),'c',F.font,true));sPop();t.classList.add('used');
+    if(fill.length===3)later(check,250)};tray.appendChild(t)});
+  var clr=h('button',{class:'big plain small'},['Clear the boxes']);clr.onclick=function(){if(!busy)resetRow()};a.appendChild(h('div',{class:'row center'},[clr]));
+  function resetRow(){nodes.forEach(function(n){n.remove()});nodes=[];fill=[];each(tray.children,function(t){t.classList.remove('used')})}
+  function signs(){var fm=FORMS[row];return fm==='m'?['×','=']:fm==='mr'?['=','×']:fm==='d'?['÷','=']:['=','÷']}
+  function startRow(){
+    if(glow)glow.remove();
+    if(row>=8){status.innerHTML='All 8 facts! ✨';tray.remove();clr.remove();done();return}
+    var b0=ffBox(f,row,0),b2=ffBox(f,row,2);glow=bk.glow(b0[0]-4,b0[1]-4,b2[0]+b2[2]-b0[0]+8,b0[3]+8);
+    var s=signs();status.innerHTML='Fact '+(row+1)+' of 8: &nbsp;<span style="font-family:var(--display);font-size:28px">□ '+s[0]+' □ '+s[1]+' □</span>';
+  }
+  function check(){
+    var p=fill[0],q=fill[1],r=fill[2],fm=FORMS[row],ok=fm==='m'?p*q===r:fm==='mr'?p===q*r:fm==='d'?p/q===r:p===q/r;
+    var key=fm+fill.join(',');
+    if(!ok){api.miss();sBad();
+      var msg=fm==='d'||fm==='dr'?'When we divide, we start with the biggest number, <b>'+big+'</b>: '+big+' ÷ '+sm[0]+' = '+sm[1]+'.':'Look at the array: '+sm[0]+' × '+sm[1]+' makes <b>'+big+'</b> altogether.';
+      if(fm==='mr'||fm==='dr')msg+=' The = sign is like a balance: both sides must be the same.';
+      feedback(a,'bad',msg);later(resetRow,900);return}
+    if(usedKeys[key]){api.miss();sBad();feedback(a,'bad','You already wrote that one! Swap the two numbers around.');later(resetRow,900);return}
+    usedKeys[key]=1;busy=true;nodes.forEach(function(n){n.remove()});nodes=[];
+    fill.forEach(function(v,k){bk.write(f+'_'+row+'_'+k,k*180,v)});
+    var txt=fm==='m'?p+' × '+q+' = '+r:fm==='mr'?p+' = '+q+' × '+r:fm==='d'?p+' ÷ '+q+' = '+r:p+' = '+q+' ÷ '+r;
+    var fact=fm==='m'?{op:'×',a:p,b:q}:fm==='mr'?{op:'×',a:q,b:r}:fm==='d'?{op:'÷',a:p,b:q}:{op:'÷',a:q,b:r};fact.txt=txt;
+    var fb=a.querySelector(':scope > .fb');if(fb)fb.remove();
+    if(arr){arr.el.scrollIntoView({behavior:'smooth',block:'nearest'});factOnArray(arr,fact,function(){fill=[];each(tray.children,function(t){t.classList.remove('used')});busy=false;row++;startRow()})}
+    else later(function(){fill=[];each(tray.children,function(t){t.classList.remove('used')});busy=false;row++;startRow()},700);
+  }
+  startRow();
+}
+
+/* =====================================================================
+   Learner's Book pp. 73–74 — questions 1 to 3
+   ===================================================================== */
+function d1Rule(st,api){
+  st.appendChild(guide('Here is the secret: look at the <b>ones digit</b>! Tap each card.'));
+  var cards=[{k:2,t:'Multiples of 2',r:'end in 0, 2, 4, 6 or 8',ex:[12,14,16,18,20,36]},{k:5,t:'Multiples of 5',r:'end in 5 or 0',ex:[15,20,25,30,45,90]},{k:10,t:'Multiples of 10',r:'end in 0',ex:[10,20,30,60,90,100]}];
+  var fl=h('div',{class:'flips'}),opened=0;
+  cards.forEach(function(c){
+    var f=h('div',{class:'flip'}),inn=h('div',{class:'in'});
+    var front=h('button',{class:'f',style:'background:'+KC[c.k],html:c.t+'<small>Tap to see the secret</small>'});
+    var back=h('div',{class:'b'});back.innerHTML='<div style="font-family:var(--display);font-size:24px;color:'+KC[c.k]+'">'+c.t+'</div><div>'+c.r+'</div><div class="strip">'+c.ex.map(function(n){return '<span>'+onesU(n,c.k)+'</span>'}).join('')+'</div>';
+    front.onclick=function(){if(f.classList.contains('on'))return;f.classList.add('on');sMagic();speak(c.t+' '+c.r);opened++;if(opened===3)later(arun,1200)};
+    inn.appendChild(front);inn.appendChild(back);f.appendChild(inn);fl.appendChild(f)});
+  st.appendChild(fl);
+  function arun(){
+    whoSays(st,'Arun','#1FA563','‘Multiples of 10 are special numbers.’ <br><small>Why do you think Arun says that?</small>');
+    var s=h('div',{class:'strip',style:'margin:8px 0'});[10,20,30,40,50].forEach(function(n){s.appendChild(h('span',{html:n+' <span class="c2">÷2 ✓</span> <span class="c5">÷5 ✓</span>'}))});
+    st.appendChild(h('p',{class:'task'},['Why are multiples of 10 special?']));
+    choiceQ(st,api,shuffle([{label:'They are multiples of 2, 5 and 10, all at the same time!',ok:true},{label:'They are odd numbers.',why:'They end in 0, and 0 is even. So they are even!'},{label:'They are the biggest numbers.',why:'Size is not the secret. Look at the ones digit: 0.'}]),function(){st.appendChild(s);api.done('<b>Yes!</b> A number that ends in 0 is a multiple of 2, 5 and 10.')},{col:true});
+  }
+}
+function lbQ1(a,api,done){
+  a.appendChild(guide('Draw a ring round every multiple of <span class="c2">2</span>. Tap the numbers in the cloud!'));
+  var bk=BookView('lb73',{crop:[1110,1570],cx:[440,1110]});a.appendChild(bk.el);
+  ringTask(a,api,bk,CLOUD,2,done);
+}
+function lbQ2(a,api,done){
+  a.appendChild(guide('Why are multiples of 2 also even numbers? Look at the groups of 2.'));
+  var bk=BookView('lb73',{crop:[1600,1850]});a.appendChild(bk.el);
+  var p=h('div',{class:'panel',style:'text-align:center'});[2,4,6,8,10].forEach(function(n){var s=h('span',{style:'display:inline-flex;flex-direction:column;align-items:center;margin:4px 10px;font-weight:800'});s.appendChild(sdots(n,16,'var(--b2)'));s.appendChild(h('span',null,[n+' = '+(n/2)+' pairs']));p.appendChild(s)});a.appendChild(p);
+  choiceQ(a,api,shuffle([{label:'A multiple of 2 is made of groups of 2 (pairs). Nothing is left over, so it is even.',ok:true},{label:'Because they are big numbers.',why:'2 is a small number and it is even. Look at the pairs!'},{label:'Because they end in 5.',why:'Multiples of 2 end in 0, 2, 4, 6 or 8. Look at the pairs!'}]),function(){bk.write('lb2a');bk.write('lb2b',1000);done()},{col:true});
+}
+function lbQ3(a,api,done){
+  a.appendChild(guide('Tap a number in the list. Then tap where it goes in the Venn diagram. Look at the ones digit!'));
+  var bk=BookView('lb74',{crop:[215,1300]});a.appendChild(bk.el);
+  var nums=[45,120,132,401,740,215,805,490,96,387,350,675];
+  vennTask(a,api,bk,'lb74',nums,true,function(){
+    a.appendChild(h('p',{class:'task'},['What do you notice? Choose the best description.']));
+    choiceQ(a,api,shuffle([{label:'Only in the 5 circle: they end in 5, so they are odd. In the overlap: they end in 0, so they are even. Nothing is in the 10-only part!',ok:true},
+      {label:'All the numbers in the circles are even.',why:'45 and 675 end in 5. Are they even?'},{label:'Multiples of 10 go in the 10-only part.',why:'Look: the 10-only part is empty! Every multiple of 10 is also a multiple of 5.'}]),
+      function(){bk.write('lb3t1');bk.write('lb3t2',900);bk.write('lb3t3',1800);done()},{col:true});
+  });
+}
+function d1Practise(st,api){questionRun(st,api,[lbQ1,lbQ2,lbQ3],['Q1','Q2','Q3'],'<b>Pages 73 and 74 are finished!</b>')}
+/* =====================================================================
+   Learner's Book p. 75 — questions 4 and 5
+   ===================================================================== */
+function lbQ4(a,api,done){
+  a.appendChild(guide('Write the fact family for the star array. Tap the number tiles to fill the glowing boxes.'));
+  var bk=BookView('lb75',{crop:[215,1372]});a.appendChild(bk.el);
+  var arr=ArrayView(6,5,{max:34});var p=h('div',{class:'panel'});
+  factBoxes(a,api,bk,'lb4',arr,function(){done()});
+  p.appendChild(arr.el);p.appendChild(arr.cap);a.appendChild(p);
+}
+function lbQ5(a,api,done){
+  var bk=BookView('lb75',{crop:[1350,1800]});a.appendChild(bk.el);
+  whoSays(a,'Monifa','#E0559B','I wrote the fact family for 3 × 10.');
+  a.appendChild(h('p',{class:'task'},['Is Monifa correct?']));
+  var arr=null,p=h('div',{class:'panel'});
+  choiceQ(a,api,[{label:'Yes',why:'Check every fact. Look closely at the ÷ facts!'},{label:'No',ok:true}],function(){
+    a.appendChild(h('p',{class:'task'},['Find her 2 mistakes. Tap them in the book!']));
+    arr=ArrayView(3,10,{max:30});p.appendChild(arr.el);p.appendChild(arr.cap);a.appendChild(p);
+    var cols=[[155,195],[460,220],[768,220],[1075,220]],ys=[1455,1523],found=0;
+    var facts=['3 × 10 = 30','10 × 3 = 30','30 = 3 × 10','30 = 10 × 3','30 ÷ 10 = 3','30 = 10 ÷ 3','30 ÷ 3 = 10','30 = 3 ÷ 10'];
+    var fix={5:{op:'÷',a:30,b:10,txt:'3 = 30 ÷ 10',line:0},7:{op:'÷',a:30,b:3,txt:'10 = 30 ÷ 3',line:1}};
+    facts.forEach(function(f,i){var r=Math.floor(i/4),c=i%4,done1=false;var hb=bk.hot(cols[c][0],ys[r],cols[c][1],56,f,function(){
+      if(done1)return;
+      if(fix[i]){done1=true;hb.classList.add('used');var L=PENLINES.lb75[fix[i].line];bk.line(L[0],L[1],L[2],L[3]);sWrite();found++;
+        feedback(a,'good','<b>'+f.replace(/ /g,'&nbsp;')+'</b> is wrong: '+f.split('= ')[1]+' is not 30! Start with the biggest number: <span class="c10">'+fix[i].txt+'</span>');
+        factOnArray(arr,fix[i],function(){if(found===2){bk.write('lb5a');bk.write('lb5b',1100);done()}})}
+      else{api.miss();sBad();hb.classList.remove('badtap');void hb.offsetWidth;hb.classList.add('badtap');feedback(a,'bad',f+' is true. Both sides are 30. Look again!')}
+    },false)});
+  },{cls:function(){return 'big plain'}});
+}
+/* =====================================================================
+   Learner's Book pp. 76–77 — questions 6 to 9
+   ===================================================================== */
+function lbQ6(a,api,done){
+  a.appendChild(guide('Choose your own numbers! Tap a number, then do the × 10 magic.'));
+  var bk=BookView('lb76',{crop:[0,500]});a.appendChild(bk.el);
+  var i=0,pad=h('div'),panel=h('div');a.appendChild(pad);a.appendChild(panel);
+  function choose(){panel.innerHTML='';pad.innerHTML='';
+    if(i>=6){done();return}
+    var one=i<3;pad.appendChild(h('p',{class:'task',style:'text-align:center'},[one?'Choose a single-digit number ('+(i+1)+' of 3)':'Choose a 2-digit number ('+(i-2)+' of 3)']));
+    var g=h('div',{class:'pad'});var list=one?[1,2,3,4,5,6,7,8,9]:SAVE._q6two||(SAVE._q6two=shuffle([12,19,25,37,40,46,58,63,74,81,92,99]).slice(0,10));
+    list.forEach(function(n){var used=Object.keys(SAVE.dyn).some(function(k){return /^lb6_\d_in$/.test(k)&&+k[4]<i&&SAVE.dyn[k]===String(n)});
+      var b=h('button',{class:used?'used':''},[String(n)]);b.onclick=function(){g.remove();bk.flyTo(b,'lb6_'+i+'_in',n,function(){magic(n)})};g.appendChild(b)});pad.appendChild(g)}
+  function magic(n){var pv=PVSlide(n);panel.appendChild(pv.el);var m=h('button',{class:'big magic'},['✨ × 10']);panel.appendChild(h('div',{class:'row center'},[m]));
+    m.onclick=function(){m.remove();pv.go(function(){bk.write('lb6_'+i+'_out',200,n*10);later(function(){i++;choose()},1400)})}}
+  Object.keys(ANS).forEach(function(k){if(/^lb6_/.test(k))delete SAVE.dyn[k]});persist();
+  choose();
+}
+function lbQ7(a,api,done){
+  a.appendChild(guide('Use the place value chart. Tap the magic button and watch 28 × 10!'));
+  var bk=BookView('lb76',{crop:[490,1130]});a.appendChild(bk.el);
+  bk.write('lb7r1t',200);bk.write('lb7r1o',500);
+  var pv=PVSlide(28);a.appendChild(pv.el);
+  var g=h('button',{class:'big magic'},['✨ × 10']);a.appendChild(h('div',{class:'row center'},[g]));
+  g.onclick=function(){g.remove();pv.go(function(){
+    PENLINES.lb76.forEach(function(l,k){later(function(){bk.line(l[0],l[1],l[2],l[3],1);sWrite()},k*300)});
+    bk.write('lb7r2h',600);bk.write('lb7r2t',900);bk.write('lb7r2o',1300);
+    later(function(){a.appendChild(h('p',{class:'task'},['What happens when we multiply by 10?']));
+      choiceQ(a,api,shuffle([{label:'Each digit moves one place to the left. A 0 fills the ones.',ok:true},{label:'We add 10: 28 + 10 = 38.',why:'28 + 10 = 38, but 28 × 10 = 280. Watch the digits move!'},{label:'The digits swap places: 82.',why:'The digits keep their order. They both move one place left.'}]),function(){
+        bk.write('lb7a');a.appendChild(h('p',{class:'task'},['Is the answer always an even number?']));
+        choiceQ(a,api,[{label:'Yes, because the ones digit is always 0.',ok:true},{label:'No, it can be odd.',why:'Look at the ones place after × 10. It is always 0, and 0 is even.'}],function(){bk.write('lb7b');done()},{col:true});
+      },{col:true})},1800);
+  })};
+}
+function lbQ8(a,api,done){
+  a.appendChild(guide('23 boxes of 10 pencils. Pack them into crates of 100!'));
+  var bk=BookView('lb76',{crop:[1100,1400]});a.appendChild(bk.el);
+  var pb=PencilBoxes();a.appendChild(pb.el);pb.set(23);
+  var b=h('button',{class:'big magic'},['📦 Pack into crates of 100']);a.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.remove();pb.bundle();a.appendChild(h('p',{class:'task',style:'text-align:center'},['23 × 10 = ?']));
+    choiceQ(a,api,shuffle([{label:'230',ok:true},{label:'33',why:'That is 23 + 10. Count the crates: 100, 200 and then 3 boxes: 210, 220, 230.'},{label:'2300',why:'Count the crates: 100, 200, then 3 boxes of 10.'}]),function(){bk.write('lb8');done()},{cls:function(){return 'big plain'}})};
+}
+function lbQ9(a,api,done){
+  a.appendChild(guide('The rule is: <b>add 5</b> each time. Help the frog hop!'));
+  var bk=BookView('lb77',{crop:[200,470],cx:[150,1350]});a.appendChild(bk.el);
+  var nl=NumberLine(0,35,{labels:[6],start:6});a.appendChild(h('div',{class:'panel'},[nl.el]));
+  [0,5,10,15,20,25,30,35].forEach(function(v){var t=h('span',{class:'jl',style:'top:126px;color:var(--soft)'},[String(v)]);t.style.left=nl.X(v)+'%';nl.el.appendChild(t)});
+  nl.tks[6].classList.add('start');
+  function chipAt(v){var t=h('button',{class:'tk on'},[String(v)]);t.style.left=nl.X(v)+'%';nl.el.appendChild(t)}
+  var seq=[11,16,21,26,31],k=0,ctl=h('div');a.appendChild(ctl);
+  later(function(){nl.hop(11,'+5',function(){chipAt(11);hopBtn()})},600);
+  function hopBtn(){ctl.innerHTML='';k++;if(k>=seq.length){a.appendChild(h('div',{class:'frame',html:'6, 11, 16, 21, 26, 31<br><small>Look at the ones digit: 6, 1, 6, 1 ... a pattern!</small>'}));done();return}
+    var b=h('button',{class:'big b5'},['🐸 Hop + 5']);ctl.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.remove();var to=seq[k];nl.hop(to,'+5',function(){ctl.appendChild(h('p',{class:'task',style:'text-align:center'},['Where did the frog land?']));
+      choiceQ(ctl,api,shuffle([{label:String(to),ok:true},{label:String(to-1),why:'Count on 5 from '+seq[k-1]+'.'},{label:String(to+1),why:'Count on 5 from '+seq[k-1]+'.'}]),function(){chipAt(to);bk.write('lb9_'+(k-1));later(hopBtn,700)},{cls:function(){return 'big plain'}})})}}
+}
+/* =====================================================================
+   LESSON 1 (Monday) — Multiples and fact families (Learner's Book pp. 73–74)
+   ===================================================================== */
+function m1Warm(st,api){
+  st.appendChild(guide('Dotty has <b>20</b> donuts. Let’s put them in <b>equal rows</b> and find the facts that make 20!'));
+  var stage=h('div',{class:'panel'}),area=h('div'),board=h('div',{class:'facts'});
+  st.appendChild(stage);st.appendChild(area);
+  st.appendChild(h('p',{class:'task',style:'text-align:center;margin-top:12px'},['⭐ Facts that make 20:']));st.appendChild(board);
+  function pile(){stage.innerHTML='';var w=h('div',{style:'display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:360px;margin:6px auto'});
+    for(var i=0;i<20;i++)w.appendChild(h('span',{style:'width:34px;height:34px;display:block;transform:translate('+(Math.random()*8-4)+'px,'+(Math.random()*8-4)+'px)',html:COUNTER}));
+    stage.appendChild(w);stage.appendChild(h('div',{class:'eqline'},['20 donuts']))}
+  var plan=[{k:10,rows:2,opts:[2,10,20]},{k:5,rows:4,opts:[4,5,20]},{k:2,rows:10,opts:[10,2,12]}],i=0;
+  function round(){var P=plan[i];area.innerHTML='';pile();
+    area.appendChild(h('p',{class:'task',style:'text-align:center',html:'Step '+(i+1)+' of 3: put the donuts in rows of <b>'+P.k+'</b>.'}));
+    var b=h('button',{class:'big magic'},['🪄 Make rows of '+P.k]);area.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.parentNode.remove();stage.innerHTML='';var arr=ArrayView(P.rows,P.k,{max:38,item:'donut'});stage.appendChild(arr.el);stage.appendChild(arr.cap);
+      arr.groups(P.k,false,'Count in '+P.k+'s: '+Array.apply(null,Array(P.rows)).map(function(_,j){return (j+1)*P.k}).join(', '),function(){
+        area.appendChild(h('p',{class:'task',style:'text-align:center',html:'How many rows of '+P.k+'?'}));
+        choiceQ(area,api,shuffle(P.opts.map(function(v){return v===P.rows?{label:String(v),ok:true}:{label:String(v),why:'Count the rows. Each row has '+P.k+' donuts.'}})),function(){
+          var fact=P.rows+' × '+P.k+' = 20';speak(P.rows+' rows of '+P.k+' make 20');
+          feedback(area,'good','<b>'+P.rows+' rows of '+P.k+' = 20</b><br>So <span class="c10">'+fact+'</span>');
+          board.appendChild(h('div',{class:'m'},[fact]));sparkleAt(board.lastChild);
+          nextBtn(area,i<plan.length-1?'Next: rows of '+plan[i+1].k+' →':'One more magic trick →',function(){i++;if(i<plan.length){round();stage.scrollIntoView({behavior:'smooth',block:'center'})}else turn()});
+        },{cls:function(){return 'big plain'}});
+      })};
+  }
+  function turn(){area.innerHTML='';
+    area.appendChild(h('p',{class:'task',style:'text-align:center',html:'4 rows of 5 make 20. What about 5 rows of 4?'}));
+    var b=h('button',{class:'big magic'},['🔄 Turn the donuts']);area.appendChild(h('div',{class:'row center'},[b]));
+    stage.innerHTML='';var arr=ArrayView(4,5,{max:38,item:'donut'});stage.appendChild(arr.el);stage.appendChild(arr.cap);
+    b.onclick=function(){b.parentNode.remove();arr.turn(function(){board.appendChild(h('div',{class:'m'},['5 × 4 = 20']));sparkleAt(board.lastChild);
+      api.done('<b>Still 20!</b> 2 × 10, 4 × 5, 5 × 4 and 10 × 2 all make 20.<br>The answer to a multiplication is called the <b>product</b>. The product is 20.')})};
+  }
+  round();
+}
+function m1Discover(st,api){
+  st.appendChild(guide('Make an array with donuts! Put <b>5</b> donuts in each row. Make <b>2</b> rows.'));
+  var box=h('div',{style:'display:flex;flex-direction:column;gap:6px;align-items:center;min-height:50px'}),ctl=h('div',{class:'row center',style:'margin-top:8px'}),area=h('div');
+  st.appendChild(box);st.appendChild(ctl);st.appendChild(area);var rows=0;
+  var add=h('button',{class:'big b2'},['+ Add a row of 5 donuts']);ctl.appendChild(add);
+  add.onclick=function(){rows++;sPop();var r=h('div',{style:'display:flex;gap:6px;align-items:center;animation:capin .4s'});for(var i=0;i<5;i++)r.appendChild(h('span',{style:'width:36px;height:36px;display:block',html:COUNTER}));r.appendChild(h('b',{class:'c5',style:'font-family:var(--display);font-size:22px;margin-left:8px;width:40px'},[String(rows*5)]));box.appendChild(r);
+    if(rows===2){add.remove();later(facts,500)}};
+  function facts(){box.remove();
+    st.insertBefore(h('div',{class:'frame',html:'<b>2 rows of 5 = 10.</b> Now say the facts! Tap each fact and watch the donuts.'}),area);
+    var arr=ArrayView(2,5,{max:52,item:'donut'}),p=h('div',{class:'panel'});p.appendChild(arr.el);p.appendChild(arr.cap);
+    var F=[{op:'×',a:2,b:5,txt:'2 × 5 = 10'},{op:'×',a:5,b:2,txt:'5 × 2 = 10'},{op:'÷',a:10,b:2,txt:'10 ÷ 2 = 5'},{op:'÷',a:10,b:5,txt:'10 ÷ 5 = 2'}];
+    var btns=h('div',{class:'factbtns'}),tried=0,busy=false;
+    F.forEach(function(f){var b=h('button',{class:'big plain'},[f.txt.split(' =')[0]]);b.onclick=function(){if(busy)return;busy=true;each(btns.children,function(x){x.disabled=true});speak(f.txt);
+      factOnArray(arr,f,function(){busy=false;each(btns.children,function(x){x.disabled=false});if(!b.classList.contains('tried')){b.classList.add('tried');tried++;if(tried===4)turnIt()}})};btns.appendChild(b)});
+    area.appendChild(btns);area.appendChild(p);
+    function turnIt(){var t=h('button',{class:'big magic'},['🔄 Turn the array!']);t.onclick=function(){t.remove();arr.turn(function(){
+      area.appendChild(h('div',{class:'frame',html:'2 rows of 5 or 5 rows of 2: still <b>10</b>!<br>2 × 5 = 5 × 2. We can swap the numbers. That is <span class="c10">commutative</span>.'}));api.done()})};area.appendChild(h('div',{class:'row center'},[t]))}
+  }
+}
+function m1Rule(st,api){
+  st.appendChild(h('div',{class:'pagehead'},['Secret 1: fact families']));
+  st.appendChild(guide('A <b>fact family</b> uses the <b>same three numbers</b>. The biggest number is the whole. Tap the magic button!'));
+  st.appendChild(triangle(2,5,10));
+  var b=h('button',{class:'big magic'},['✨ Show the family']);st.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.remove();sMagic();st.appendChild(factsGrid(2,5,true));later(function(){seesaw(st,api,2,5,10,secret2)},3200)};
+  function secret2(){var nx=h('button',{class:'big go'},['Secret 2: multiples →']);st.appendChild(h('div',{class:'row center'},[nx]));
+    nx.onclick=function(){nx.parentNode.remove();var sub=h('div');st.appendChild(sub);sub.appendChild(h('div',{class:'pagehead',style:'margin-top:14px'},['Secret 2: multiples of 2, 5 and 10']));d1Rule(sub,api);later(function(){sub.scrollIntoView({behavior:'smooth',block:'start'})},100)}}
+}
+/* the = sign is a balance: both sides can swap */
+function seesaw(st,api,a,b,c,cb){
+  st.appendChild(guide('The = sign is like a balance. Both sides are the same, so we can swap them!'));
+  var ss=h('div',{class:'seesaw'}),beam=h('div',{class:'beam'}),A=h('span',{class:'side a'},[a+' × '+b]),E=h('span',null,['=']),B=h('span',{class:'side b'},[String(c)]);
+  beam.appendChild(A);beam.appendChild(E);beam.appendChild(B);ss.appendChild(beam);ss.appendChild(h('div',{class:'pivot'}));st.appendChild(ss);
+  var sw=h('button',{class:'big magic small'},['🔁 Swap the sides']);st.appendChild(h('div',{class:'row center'},[sw]));
+  sw.onclick=function(){sw.parentNode.remove();var ra=A.getBoundingClientRect(),rb=B.getBoundingClientRect();A.style.transform='translateX('+(rb.right-ra.right)+'px)';B.style.transform='translateX('+(ra.left-rb.left)+'px)';sMagic();
+    later(function(){A.style.transition=B.style.transition='none';A.style.transform=B.style.transform='';beam.insertBefore(B,E);beam.appendChild(A);
+      st.appendChild(h('div',{class:'frame',html:c+' = '+a+' × '+b+' is true too!<br><small>When we divide, we always <b>start with the biggest number</b>: '+c+' ÷ '+a+' = '+b+'.</small>'}));
+      st.appendChild(h('p',{class:'task'},['Which fact is NOT in the family?']));
+      choiceQ(st,api,shuffle([{label:c+' = '+a+' ÷ '+b,ok:true},{label:b+' = '+c+' ÷ '+a,why:b+' = '+c+' ÷ '+a+' is true: '+c+' shared into '+a+' groups gives '+b+'.'},{label:c+' = '+b+' × '+a,why:c+' = '+b+' × '+a+' is true: both sides are '+c+'.'}]),function(){feedback(st,'good','<b>Yes!</b> '+a+' ÷ '+b+' is not '+c+'. Start with the biggest number: '+c+' ÷ '+a+' = '+b+'.');cb()},{cls:function(){return 'big plain'}});
+    },750)};
+}
+/* magic sorting hats, with the sentence frame "__ is a multiple of __ because __" */
+function hats(host,api,count,cb){
+  var pool=shuffle([20,35,46,50,85,12,70,95,64,15,38,60,25]).slice(0,count),k=0,score=0,area=h('div');host.appendChild(area);
+  function round(){area.innerHTML='';if(k>=pool.length){area.appendChild(h('div',{class:'bigstate'},['Score: '+score+' / '+pool.length]));cb();return}
+    var n=pool[k],sel={};
+    area.appendChild(h('div',{class:'today',style:'text-align:center'},['Number '+(k+1)+' of '+pool.length]));
+    area.appendChild(h('div',{class:'bigstate'},[String(n)]));
+    var hs=h('div',{class:'choices'});[2,5,10].forEach(function(m){var b=h('button',{class:'big b'+m},['🎩 multiple of '+m]);b.onclick=function(){sel[m]=!sel[m];b.classList.toggle('on',sel[m]);sPop()};hs.appendChild(b)});area.appendChild(hs);
+    var hp=h('div'),hb=h('button',{class:'big plain small'},['💡 Help: show the 100 square']);hb.onclick=function(){hb.remove();hp.appendChild(helpSquare(n))};
+    area.appendChild(h('div',{class:'row center'},[h('button',{class:'big go',onclick:function(){
+      var ok=[2,5,10].every(function(m){return !!sel[m]===(n%m===0)});each(hs.children,function(b){b.disabled=true});this.remove();
+      if(ok){score++;sGood()}else{sBad();api.miss()}
+      var d=n%10,msg=[2,5,10].map(function(m){return '<div class="c'+m+'">'+n+(n%m===0?' <b>is</b>':' is <b>not</b>')+' a multiple of '+m+' because it ends in '+d+'.</div>'}).join('');
+      feedback(area,ok?'good':'bad',(ok?'<b>Yes!</b>':'<b>Look again.</b>')+msg);
+      nextBtn(area,'Next →',function(){k++;round()});
+    }},['Check ✓'])]));
+    area.appendChild(h('div',{class:'row center',style:'margin-top:8px'},[hb]));area.appendChild(hp);
+  }
+  round();
+}
+/* coloured 100 square for children who need help */
+function helpSquare(n){var w=h('div'),hs=HundredSquare();
+  for(var i=1;i<=100;i++){hs.cells[i].disabled=true;if(i%2===0)hs.cells[i].classList.add('l2');if(i%5===0)hs.cells[i].classList.add('l5');if(i%10===0)hs.cells[i].classList.add('l10')}
+  if(n<=100)hs.cells[n].classList.add('pop'),hs.cells[n].style.outline='4px solid var(--pen)';
+  w.appendChild(h('div',{class:'legend',html:'<span><i style="background:var(--b2-soft);border:2px solid var(--line)"></i>multiple of 2</span><span><i style="box-shadow:inset 0 0 0 4px var(--b5)"></i>multiple of 5</span><span><b class="c10">★</b> multiple of 10</span>'}));w.appendChild(hs.el);return w}
+function m1Check(st,api){
+  var g1=guide('Count in 2s, but start at <b>1</b>! Tap the next number.');st.appendChild(g1);
+  var info=h('div',{class:'frame',html:'Start at <b>1</b>. Count on 2.'}),hs=HundredSquare(),area=h('div');st.appendChild(info);st.appendChild(hs.el);st.appendChild(area);
+  var next=3,seq=[1],phase='tap';hs.cells[1].classList.add('m5','pop');
+  hs.cells.forEach(function(c,n){if(!c)return;c.onclick=function(){if(phase!=='tap')return;
+    if(n===next){c.classList.add('m5','pop');sPop();seq.push(n);next+=2;info.innerHTML='Count in 2s from 1: '+seq.join(', ')+' ...';if(seq.length===6){phase='wait';wand()}}
+    else{api.miss();sBad();c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');info.innerHTML='Not '+n+'. Count on 2 from <b>'+(next-2)+'</b>.'}}});
+  function wand(){var b=h('button',{class:'big magic'},['🪄 Magic wand: finish to 99!']);area.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.parentNode.remove();sMagic();var n=next;(function go(){if(n>100){later(ask,300);return}hs.cells[n].classList.add('m5','pop');n+=2;later(go,60)})()}}
+  function ask(){area.appendChild(h('p',{class:'task'},['1, 3, 5, 7, 9 ... Are these numbers odd or even?']));
+    choiceQ(area,api,[{label:'Odd',ok:true},{label:'Even',why:'Look at the ones digit: 1, 3, 5, 7, 9. One is always left over without a partner.'}],function(){
+      area.appendChild(h('p',{class:'task'},['Are they multiples of 2?']));
+      choiceQ(area,api,[{label:'Yes',why:'Multiples of 2 end in 0, 2, 4, 6 or 8. These end in 1, 3, 5, 7 or 9.'},{label:'No',ok:true}],function(){
+        feedback(area,'good','<b>Yes!</b> Counting in 2s from 1 gives <span class="c5">odd</span> numbers. They are <b>not</b> multiples of 2.');
+        nextBtn(area,'Magic sorting hats →',function(){area.innerHTML='';info.remove();hs.el.remove();g1.remove();
+          st.appendChild(guide('Magic sorting hats! Choose <b>every</b> hat the number fits. Then check.'));
+          hats(st,api,4,function(){feedback(st,'good','<b>Great sorting!</b> Look at the ones digit every time.');bonus(st,'What is the smallest 3-digit number that is a multiple of 2, 5 <b>and</b> 10?',[{label:'100',ok:true},{label:'110',why:'110 works, but is there a smaller one?'},{label:'105',why:'105 ends in 5, so it is not a multiple of 2 or 10.'},{label:'102',why:'102 ends in 2, so it is not a multiple of 5 or 10.'}],'<b>100!</b> It ends in 0, so it is a multiple of 2, 5 and 10.');api.done()});
+        })},{cls:function(){return 'big plain'}})},{cls:function(){return 'big plain'}});
+  }
+}
+/* optional extra question; mistakes here do not count */
+function bonus(host,q,opts,good){
+  var p=h('div',{class:'panel',style:'margin-top:14px;border:3px dashed var(--gold)'});
+  p.appendChild(h('div',{class:'pagehead'},['⭐ Bonus for super magicians']));p.appendChild(h('p',{class:'task',html:q}));
+  choiceQ(p,{miss:function(){}},shuffle(opts),function(){feedback(p,'good',good);confetti(40)},{cls:function(){return 'big plain'}});
+  host.appendChild(p);
+}
+
+/* =====================================================================
+   LESSON 2 (Tuesday) — Fact families and × 10 (Learner's Book pp. 75–77)
+   ===================================================================== */
+function t2Warm(st,api){
+  st.appendChild(guide('Look at the star array in your book. <b>How many stars?</b>'));
+  var bk=BookView('lb75',{crop:[215,820]});st.appendChild(bk.el);
+  var arr=ArrayView(6,5,{max:46}),p=h('div',{class:'panel'});p.appendChild(arr.el);p.appendChild(arr.cap);st.appendChild(p);
+  var area=h('div');st.appendChild(area);
+  choiceQ(area,api,shuffle([{label:'30',ok:true},{label:'11',why:'11 is 6 + 5. Count the rows in 5s: 5, 10, 15 ...'},{label:'25',why:'Count all 6 rows in 5s: 5, 10, 15, 20, 25, 30.'}]),function(){
+    arr.groups(5,false,'<span class="c2">6 rows of 5</span> = 30',function(){feedback(area,'good','<b>30 stars!</b> Now tap each magic fact and watch the stars.');facts()})},{cls:function(){return 'big plain'}});
+  function facts(){
+    var F=[{op:'×',a:5,b:6,txt:'5 × 6 = 30'},{op:'×',a:6,b:5,txt:'6 × 5 = 30'},{op:'÷',a:30,b:5,txt:'30 ÷ 5 = 6'},{op:'÷',a:30,b:6,txt:'30 ÷ 6 = 5'}];
+    var btns=h('div',{class:'factbtns'}),tried=0,busy=false;
+    F.forEach(function(f){var b=h('button',{class:'big plain'},[f.txt.split(' =')[0]]);b.onclick=function(){if(busy)return;busy=true;each(btns.children,function(x){x.disabled=true});speak(f.txt);
+      factOnArray(arr,f,function(){busy=false;each(btns.children,function(x){x.disabled=false});if(!b.classList.contains('tried')){b.classList.add('tried');tried++;if(tried===4)turnIt()}})};btns.appendChild(b)});
+    st.insertBefore(btns,p);
+    function turnIt(){var t=h('button',{class:'big magic'},['🔄 Turn the array!']);t.onclick=function(){t.remove();arr.turn(function(){
+      st.appendChild(h('div',{class:'frame',html:'6 rows of 5 or 5 rows of 6: still <b>30</b>!<br>5, 6 and 30 make a <span class="c10">fact family</span>.'}));api.done()})};st.appendChild(h('div',{class:'row center'},[t]))}
+  }
+}
+function t2Discover(st,api){
+  st.appendChild(guide('Use the place value chart. When we multiply by 10, every <b>one</b> grows into a <b>ten</b>. Start with <b>3</b>!'));
+  var tabs=h('div',{class:'tabs'}),area=h('div');st.appendChild(tabs);st.appendChild(area);var tried={},cnt=0;
+  [3,7,14,28].forEach(function(n,i){var b=h('button',{class:'big plain small'},[String(n)]);if(i)b.disabled=true;b.onclick=function(){each(tabs.children,function(x){x.classList.remove('on')});b.classList.add('on');show(n)};tabs.appendChild(b)});
+  function show(n){area.innerHTML='';var B=BaseTen(n),pv=PVSlide(n);area.appendChild(B.el);area.appendChild(pv.el);var g=h('button',{class:'big magic'},['✨ × 10']);area.appendChild(h('div',{class:'row center'},[g]));
+    g.onclick=function(){g.parentNode.remove();pv.go();B.go(function(){if(!tried[n]){tried[n]=1;cnt++}
+      if(n===3){each(tabs.children,function(x){x.disabled=false});feedback(area,'info','<b>3 ones × 10 → 3 tens.</b> 3 × 10 = 30. Now try another number!')}
+      else if(cnt===3)api.done('<b>Every one became a ten. Every ten became a hundred.</b> The number is 10 times bigger!');else feedback(area,'info','Try another number!')})}}
+  later(function(){tabs.children[0].click()},50);
+}
+function t2Rule(st,api){
+  st.appendChild(guide('Each <b>1</b> becomes <b>10</b>. Each <b>10</b> becomes <b>100</b>. Every digit jumps <b>one place to the left</b>, and a <span class="c10">0</span> fills the ones place.'));
+  var pv=PVSlide(23);st.appendChild(pv.el);
+  var g=h('button',{class:'big magic'},['✨ × 10']);st.appendChild(h('div',{class:'row center'},[g]));
+  g.onclick=function(){g.parentNode.remove();pv.go(function(){
+    st.appendChild(h('div',{class:'frame',html:'The 2 tens became 2 <b>hundreds</b>. The 3 ones became 3 <b>tens</b>.<br><span class="c10">23 × 10 = 230</span>'}));
+    var pv2=PVSlide(6);st.appendChild(pv2.el);later(function(){pv2.go(function(){
+      st.appendChild(h('p',{class:'task'},['After × 10, what is always in the ones place?']));
+      choiceQ(st,api,shuffle([{label:'0, so the answer is always even!',ok:true},{label:'The same digit as before.',why:'Look at the ones column after × 10. Every time it is 0!'},{label:'1',why:'Look at the ones column after × 10.'}]),function(){api.done('<b>Yes!</b> A number × 10 always ends in 0, so it is always even.')},{col:true});
+    })},700)})};
+}
+function t2Practise(st,api){questionRun(st,api,[lbQ4,lbQ5,lbQ6,lbQ7,lbQ8,lbQ9],['Q4','Q5','Q6','Q7','Q8','Q9'],'<b>Pages 75, 76 and 77 are finished!</b>')}
+function t2Check(st,api){
+  st.appendChild(guide('Exit ticket! Answer, then say how you know.'));
+  var area=h('div');st.appendChild(area);
+  area.appendChild(h('div',{class:'bigstate'},['23 × 10 = ?']));
+  choiceQ(area,api,shuffle([{label:'230',ok:true},{label:'33',why:'33 is 23 + 10. Multiplying by 10 makes the number 10 times bigger.'},{label:'2310',why:'Each digit moves one place to the left. Look at the place value chart!'}]),function(){
+    area.appendChild(h('p',{class:'task'},['How do you know?']));
+    choiceQ(area,api,shuffle([{label:'Each digit moves one place to the left, and 0 fills the ones place.',ok:true},{label:'I added 10.',why:'23 + 10 = 33. When we multiply by 10, each digit moves one place.'},{label:'I wrote 23 two times.',why:'Look at the place value chart: the 2 tens become 2 hundreds.'}]),function(){
+      var pv=PVSlide(23);feedback(area,'good','<b>Yes!</b> 2 tens → 2 hundreds, 3 ones → 3 tens. 23 × 10 = 230.',pv.el);later(function(){pv.go()},300);
+      nextBtn(area,'The × 10 machine →',function(){area.innerHTML='';st.appendChild(guide('The × 10 machine! What will come out?'));machineRun(st,api,4,function(){api.done('<b>Super × 10 magic!</b>')})});
+    },{col:true});
+  },{cls:function(){return 'big plain'}});
+}
+function machineRun(host,api,count,cb){
+  var pool=shuffle([4,9,12,25,38,47,60,73,81,56]).slice(0,count),k=0,score=0,area=h('div');host.appendChild(area);
+  function round(){area.innerHTML='';if(k>=pool.length){area.appendChild(h('div',{class:'bigstate'},['Score: '+score+' / '+pool.length]));cb();return}
+    var n=pool[k],M=Machine();M.load(n);area.appendChild(h('div',{class:'today',style:'text-align:center'},['Number '+(k+1)+' of '+pool.length]));area.appendChild(M.el);
+    var ch=h('div',{class:'choices'});shuffle([n*10,n+10,n*100]).forEach(function(v){var b=h('button',{class:'big plain'},[String(v)]);b.onclick=function(){
+      each(ch.children,function(x){x.disabled=true});var ok=v===n*10;if(ok){score++;b.classList.add('sel')}else{api.miss();sBad()}
+      M.run(n,function(){if(ok)sGood();var pv=PVSlide(n);feedback(area,ok?'good':'bad',(ok?'<b>Yes!</b> ':'')+n+' × 10 = '+(n*10),pv.el);later(function(){pv.go()},300);nextBtn(area,'Next →',function(){k++;round()})})};ch.appendChild(b)});
+    area.appendChild(ch);
+  }
+  round();
+}
+
+/* =====================================================================
+   HOMEWORK — Workbook pp. 60–63
+   ===================================================================== */
+function wbLook(st,api){
+  st.appendChild(guide('Read the worked example. How do we find multiples of 10?'));
+  var bk=BookView('wb60',{crop:[810,1440]});st.appendChild(bk.el);
+  var b=h('button',{class:'big magic'},['✨ Show me the secret']);st.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.remove();bk.marker(780,1112,560,95,100);sMagic();later(function(){api.done('<b>Multiples of 10 always have 0 in the ones place.</b>')},1000)};
+}
+function wbQ1(st,api){
+  st.appendChild(guide('Draw a ring round all the multiples of <span class="c5">5</span>. Tap them in the book!'));
+  var bk=BookView('wb60',{crop:[1740,1890],cx:[90,960]});st.appendChild(bk.el);
+  ringTask(st,api,bk,WB1,5,function(){api.done()});
+}
+function wbQ2(st,api){
+  st.appendChild(guide('Finish Mosego’s Venn diagram. Tap a number, then tap where it goes!'));
+  var bk=BookView('wb61',{crop:[210,845],cx:[540,1390]});st.appendChild(bk.el);
+  vennTask(st,api,bk,'wb61',[35,36,37,38,39,40],false,function(){api.done('<b>Venn diagram finished!</b> 40 ends in 0, so it is a multiple of 2 and 5.')});
+}
+function wbQ3(st,api){
+  st.appendChild(guide('Write the fact family for the wheels. Tap the number tiles to fill the glowing boxes.'));
+  var bk=BookView('wb61',{crop:[970,1900]});st.appendChild(bk.el);
+  var arr=ArrayView(2,4,{max:44,item:'wheel'});var p=h('div',{class:'panel'});
+  factBoxes(st,api,bk,'wb3',arr,function(){api.done('<b>All 8 facts!</b>')});
+  p.appendChild(arr.el);p.appendChild(arr.cap);st.appendChild(p);
+}
+function wbQ4(st,api){
+  st.appendChild(guide('Write the × 10 facts. Watch the digits move first!'));
+  var bk=BookView('wb62',{crop:[210,540]});st.appendChild(bk.el);var area=h('div');st.appendChild(area);
+  var items=[{n:7,id:'wb4a'},{n:19,id:'wb4b'}],k=0;
+  function go(){area.innerHTML='';if(k>=items.length){api.done();return}var it=items[k],pv=PVSlide(it.n);area.appendChild(pv.el);later(function(){pv.go(function(){
+    area.appendChild(h('p',{class:'task',style:'text-align:center'},['Which fact does the chart show?']));
+    choiceQ(area,api,shuffle([{label:it.n+' × 10 = '+(it.n*10),ok:true},{label:it.n+' + 10 = '+(it.n+10),why:'The digits moved one place left. That is × 10, not + 10.'},{label:it.n+' × 100 = '+(it.n*100),why:'The digits moved only one place, so it is × 10.'}]),function(){bk.write(it.id);later(function(){k++;go()},1300)},{cls:function(){return 'big plain'}})})},500)}
+  go();
+}
+function wbQ5(st,api){
+  st.appendChild(guide('Describe the multiples of 2, 5 and 10. Use the words odd and even.'));
+  var bk=BookView('wb62',{crop:[560,1360]});st.appendChild(bk.el);
+  var s=h('div',{class:'panel'});s.innerHTML='<div class="strip"><span>'+[2,4,6,8,10].map(function(n){return onesU(n,2)}).join(', ')+'</span><span>'+[5,10,15,20,25].map(function(n){return onesU(n,5)}).join(', ')+'</span><span>'+[10,20,30,40].map(function(n){return onesU(n,10)}).join(', ')+'</span></div>';st.appendChild(s);
+  choiceQ(st,api,shuffle([{label:'Multiples of 2 are always even. Multiples of 5 go odd, even, odd, even. Multiples of 10 are always even.',ok:true},{label:'Multiples of 2, 5 and 10 are always even.',why:'15 and 25 are multiples of 5. Are they even?'},{label:'Multiples of 5 are always odd.',why:'10 and 20 are multiples of 5. They are even!'}]),function(){
+    bk.write('wb5a');bk.write('wb5b',800);bk.write('wb5c',1600);
+    later(function(){st.appendChild(h('p',{class:'task'},['How are multiples of 2 and 10 the same? How are multiples of 5 different?']));
+      choiceQ(st,api,shuffle([{label:'2s and 10s are both always even. Every other multiple of 5 is odd.',ok:true},{label:'2s and 10s are both odd.',why:'They end in 0, 2, 4, 6 or 8. Even!'},{label:'Multiples of 5 are always even.',why:'5, 15 and 25 are odd.'}]),function(){bk.write('wb5d');bk.write('wb5e',800);bk.write('wb5f',1600);api.done()},{col:true})},2200);
+  },{col:true});
+}
+function wbQ6(st,api){
+  st.appendChild(guide('A number riddle! Tap each clue and watch the numbers disappear.'));
+  var bk=BookView('wb62',{crop:[1360,1680]});st.appendChild(bk.el);
+  var row=h('div',{class:'rid'}),cells={};for(var n=68;n<=82;n++){cells[n]=h('span',null,[String(n)]);row.appendChild(cells[n])}st.appendChild(row);
+  var clues=[{t:'I am > 70 but < 80',f:function(n){return n>70&&n<80}},{t:'I am odd',f:function(n){return n%2===1}},{t:'I am a multiple of 5',f:function(n){return n%5===0}}],k=0;
+  var cl=h('div',{class:'clues'});st.appendChild(cl);
+  clues.forEach(function(c,i){var b=h('button',{class:'big '+['b2','b5','b10'][i]+' small'},['🔎 '+c.t]);b.onclick=function(){if(i!==k){feedback(st,'info','Use the clues in order. Start with the first one!');return}b.disabled=true;k++;sMagic();
+    Object.keys(cells).forEach(function(n,j){if(!c.f(+n)&&!cells[n].classList.contains('out'))later(function(){cells[n].classList.add('out')},j*40)});
+    if(k===3)later(function(){cells[75].classList.add('win');sGood();bk.write('wb6');api.done('<b>I am 75!</b>')},900)};cl.appendChild(b)});
+}
+function wbQ7(st,api){
+  st.appendChild(guide('Some facts only have 4 facts in their family. Turn the array and see why!'));
+  var bk=BookView('wb63',{crop:[190,720]});st.appendChild(bk.el);
+  var arr=ArrayView(5,5,{max:36});var p=h('div',{class:'panel'});p.appendChild(arr.el);p.appendChild(arr.cap);st.appendChild(p);
+  var t=h('button',{class:'big magic'},['🔄 Turn the 5 × 5 array']);st.appendChild(h('div',{class:'row center'},[t]));
+  t.onclick=function(){t.remove();arr.turn(function(){arr.cap.innerHTML='5 rows of 5, turned → still 5 rows of 5! <b>5 × 5</b> turned is the same fact.';
+    st.appendChild(h('p',{class:'task'},['Tap the 4 facts that have only 4 facts in their family.']));
+    pickMany(st,api,shuffle([{label:'1 × 1 = 1',ok:true},{label:'2 × 2 = 4',ok:true},{label:'5 × 5 = 25',ok:true},{label:'10 × 10 = 100',ok:true},{label:'2 × 5 = 10',why:'2 × 5 and 5 × 2 are different, so it has 8 facts.'},{label:'5 × 10 = 50',why:'5 × 10 and 10 × 5 are different, so it has 8 facts.'}]),4,function(){
+      bk.write('wb7a');st.appendChild(factsGrid(5,5,true));later(function(){bk.write('wb7b');bk.write('wb7c',900);api.done('<b>Same number twice → only 4 facts!</b>')},1600)});
+  })};
+}
+function wbQ8(st,api){
+  st.appendChild(guide('The robot multiplies by 10. Tap a number in the left grid!'));
+  var bk=BookView('wb63',{crop:[720,1240]});st.appendChild(bk.el);
+  var panel=h('div');st.appendChild(panel);var left=12,solved=0,busy=false;
+  var hots=[];
+  WB8.nums.forEach(function(r,ri){r.forEach(function(n,ci){var id='wb8_'+ri+'_'+ci;var hb=bk.hot(WB8.inx[ci],WB8.ys[ri],WB8.w,WB8.h,String(n),function(){
+    if(busy||hb.classList.contains('used'))return;busy=true;hb.classList.add('picked');panel.innerHTML='';var M=Machine();M.load(n);panel.appendChild(M.el);
+    var ch=h('div',{class:'choices'});shuffle([n*10,n+10,n*100]).forEach(function(v){var b=h('button',{class:'big plain'},[String(v)]);b.onclick=function(){
+      if(v!==n*10){api.miss();sBad();b.disabled=true;feedback(panel,'bad','The machine multiplies by 10. Every digit moves one place left and 0 fills the ones.');return}
+      each(ch.children,function(x){x.disabled=true});sGood();M.run(n,function(){hb.classList.remove('picked');hb.classList.add('used');bk.write(id);left--;solved++;busy=false;
+        if(!left){api.done('<b>The grid is full!</b>');return}
+        if(solved===4){var fast=h('button',{class:'big magic'},['🤖 Robot, do the rest!']);panel.appendChild(h('div',{class:'row center'},[fast]));fast.onclick=function(){fast.remove();var j=0;hots.forEach(function(x){if(!x.hb.classList.contains('used')){x.hb.classList.add('used');later(function(){bk.write(x.id)},j++*250)}});later(function(){api.done('<b>The grid is full!</b>')},j*250+800)}}
+      })};ch.appendChild(b)});panel.appendChild(ch);
+  },true);hots.push({hb:hb,id:id})})});
+}
+
+/* =====================================================================
+   LESSONS
+   ===================================================================== */
+var LESSONS={
+  m1:{title:'Multiples and fact families',when:'Lesson 1 · Learner’s Book pages 73–74',color:'var(--e3)',
+    goal:'I can recognise multiples of 2, 5 and 10, and write fact families.',lookWhat:'I can recognise multiples of 2, 5 and 10. I can write a fact family like 2 × 5 = 10, 5 × 2 = 10, 10 ÷ 2 = 5, 10 ÷ 5 = 2.',copy:'lb',
+    stations:[
+      {name:'Warm up',render:m1Warm,src:'Which facts make 20?'},
+      {name:'Discover',render:m1Discover,src:'Donut arrays'},
+      {name:'Learn the rule',render:m1Rule,src:'Two magic secrets'},
+      {name:'Practise',render:d1Practise,src:"Learner's Book questions 1–3"},
+      {name:'Check',render:m1Check,src:'Count in 2s from 1, then sorting hats'}
+    ]},
+  t2:{title:'Fact families and × 10',when:'Lesson 2 · Learner’s Book pages 75–77',color:'var(--e5)',
+    goal:'I can multiply 1-digit and 2-digit numbers by 10.',lookWhat:'I can write fact families, and I can multiply 1-digit and 2-digit numbers by 10.',copy:'lb',
+    stations:[
+      {name:'Warm up',render:t2Warm,src:'The star array'},
+      {name:'Discover',render:t2Discover,src:'The place value chart'},
+      {name:'Learn the rule',render:t2Rule,src:'Each 1 becomes 10'},
+      {name:'Practise',render:t2Practise,src:"Learner's Book questions 4–9"},
+      {name:'Check',render:t2Check,src:'Exit ticket and the × 10 machine'}
+    ]},
+  hw:{title:'Homework: Workbook pages 60–63',when:'Homework · Workbook pages 60–63',color:'#5B6B8F',
+    goal:'I can use multiples, fact families and × 10.',lookWhat:'I finished Workbook Exercise 5.1.',copy:'wb',
+    stations:[
+      {name:'p. 60',short:'👀',c:'#5B6B8F',render:wbLook,src:'Worked example 1'},
+      {name:'Q1',short:'1',c:'#FF7A3D',render:wbQ1,src:'Workbook p. 60'},
+      {name:'Q2',short:'2',c:'#2F7BF5',render:wbQ2,src:'Workbook p. 61'},
+      {name:'Q3',short:'3',c:'#1FA563',render:wbQ3,src:'Workbook p. 61'},
+      {name:'Q4',short:'4',c:'#7A4CE0',render:wbQ4,src:'Workbook p. 62'},
+      {name:'Q5',short:'5',c:'#E0559B',render:wbQ5,src:'Workbook p. 62'},
+      {name:'Q6',short:'6',c:'#FF7A3D',render:wbQ6,src:'Workbook p. 62'},
+      {name:'Q7',short:'7',c:'#2F7BF5',render:wbQ7,src:'Workbook p. 63'},
+      {name:'Q8',short:'8',c:'#1FA563',render:wbQ8,src:'Workbook p. 63'}
+    ]}
+};
+
+/* =====================================================================
+   SCREENS
+   ===================================================================== */
+function home(){
+  app.innerHTML='';app.appendChild(topBar(false));
+  var hero=h('section',{class:'hero'});
+  var sp=h('div',{class:'sparkles','aria-hidden':'true'});[[8,12],[22,78],[55,8],[70,85],[88,30],[94,70],[40,90]].forEach(function(p,i){var s=h('i',null,[i%2?'✦':'★']);s.style.left=p[0]+'%';s.style.top=p[1]+'%';s.style.color=['#FFC21A','#7A4CE0','#E0559B','#2F7BF5'][i%4];s.style.animationDelay=(i*.3)+'s';sp.appendChild(s)});hero.appendChild(sp);
+  hero.appendChild(mascot('huge'));
+  hero.appendChild(h('div',null,[
+    h('div',{class:'tag'},['Grade 2 · Multiplication and division · by Teacher Dima Abuhaifa']),
+    h('h1',{html:'Multiplication <span style="color:var(--b10)">Magicians</span>'}),
+    h('p',{class:'sub',style:'font-size:18px;margin-top:6px'},['Real book pages. Magic arrays, jumps and blocks. Answers written right into the book.'])]));
+  app.appendChild(hero);
+  var days=h('div',{class:'days'});
+  ['m1','t2'].forEach(function(id){
+    var L=LESSONS[id];var b=h('button',{class:'day',style:'--c:'+L.color,onclick:function(){runLesson(id)}});
+    var path=h('div',{class:'epath'});L.stations.forEach(function(s,k){path.appendChild(h('span',{class:'echip'+(SAVE.done[id+k]?' done':''),style:'--ec:'+E5[k].c,html:'<b>'+(k+1)+'</b>'+s.name}))});
+    b.appendChild(h('div',{class:'when'},[L.when.split(' · ')[0]+' · '+L.when.split(' · ')[1].replace("Learner’s Book ",'LB ')]));
+    b.appendChild(h('h2',null,[L.title]));
+    b.appendChild(h('div',{class:'goal',html:'Today I can: '+L.goal}));
+    b.appendChild(path);
+    b.appendChild(h('div',{class:'daystars',html:starStr(SAVE.stars[id]||0)}));
+    days.appendChild(b);
+  });
+  app.appendChild(days);
+  var more=h('div',{class:'mini-cards'});
+  var hb=h('button',{class:'day',style:'--c:'+LESSONS.hw.color,onclick:function(){runLesson('hw')}});
+  hb.innerHTML='<div class="when">📓 Homework</div><h2 style="font-size:22px">Workbook pages 60–63</h2><div class="daystars">'+starStr(SAVE.stars.hw||0)+'</div>';more.appendChild(hb);
+  var cb=h('button',{class:'day',style:'--c:var(--pen)',onclick:function(){answerBook()}});
+  cb.innerHTML='<div class="when">📖 Copy to my book</div><h2 style="font-size:22px">See every page with the answers written in</h2><div class="sub">One book at a time</div>';more.appendChild(cb);
+  app.appendChild(more);
+}
+function answerBook(which){
+  app.innerHTML='';app.appendChild(topBar(true));
+  var c=h('section',{class:'card'});
+  c.appendChild(h('h2',{style:'font-size:clamp(26px,4vw,36px)'},['📖 Copy to my book']));
+  c.appendChild(guide('Here are your book pages with the answers written in. Copy one book first. Then do the other book.'));
+  var tabs=h('div',{class:'booktabs noprint'}),list=h('div');var cur=which||'lb';
+  var pages={lb:['lb73','lb74','lb75','lb76','lb77'],wb:['wb60','wb61','wb62','wb63']};
+  function draw(){
+    tabs.innerHTML='';['lb','wb'].forEach(function(bk){tabs.appendChild(h('button',{class:bk+(cur===bk?' on':''),onclick:function(){cur=bk;draw()}},[(bk==='lb'?'1. ':'2. ')+BOOKNAME[bk]]))});
+    list.innerHTML='';
+    pages[cur].forEach(function(k){
+      list.appendChild(h('div',{class:'row'},[h('div',{class:'pagehead',style:'flex:1'},[BOOKNAME[cur]+' · page '+PAGES[k].n]),h('button',{class:'big plain small noprint',onclick:function(){zoomPage(k)}},['🔍 Bigger'])]));
+      var v=BookView(k);fillPage(v,k);list.appendChild(v.el);
+    });
+    var other=cur==='lb'?'wb':'lb';
+    list.appendChild(h('div',{class:'row center noprint',style:'margin-top:16px'},[h('button',{class:'big go',onclick:function(){cur=other;draw();window.scrollTo(0,0)}},['Now the '+BOOKNAME[other]+' →'])]));
+    if(window.MM_STANDALONE)list.appendChild(h('div',{class:'row center noprint',style:'margin-top:10px'},[h('button',{class:'big plain',onclick:function(){window.print()}},['🖨 Print these pages'])]));
+  }
+  c.appendChild(tabs);c.appendChild(list);app.appendChild(c);draw();window.scrollTo(0,0);
+}
+function wordBank(){
+  var m=h('div',{class:'modal',role:'dialog','aria-modal':'true'}),inner=h('div',{class:'inner card',style:'max-width:720px'});
+  inner.appendChild(h('div',{class:'closeb'},[h('button',{class:'big plain small',onclick:function(){m.remove()}},['✕ Close'])]));
+  inner.appendChild(h('h2',null,['Word bank']));
+  [['multiple','A number you land on when you count in equal jumps. 10, 20, 30 are multiples of 10.'],
+   ['array','Things in rows and columns. Every row is the same.'],
+   ['commutative','You can swap the numbers and get the same answer: 5 × 6 = 6 × 5.'],
+   ['fact family','Facts that use the same three numbers: 5 × 6 = 30, 30 ÷ 5 = 6 ...'],
+   ['pattern','Something that repeats: 2, 4, 6, 8, 10 ...'],
+   ['sequence','Numbers in order that follow a rule: 6, 11, 16, 21 ...'],
+   ['term','One number in a sequence. 11 is a term.'],
+   ['term-to-term rule','How to get from one term to the next: add 5.']].forEach(function(w){
+    var d=h('div',{class:'panel',style:'margin:8px 0'});d.appendChild(h('div',{class:'row'},[h('b',{style:'font-family:var(--display);font-size:26px'},[w[0]]),canSpeak?h('button',{class:'big plain small',onclick:function(){speak(w[0]+'. '+w[1])}},['🔊']):null]));
+    d.appendChild(h('div',{style:'font-weight:700'},[w[1]]));inner.appendChild(d)});
+  m.appendChild(inner);m.addEventListener('click',function(e){if(e.target===m)m.remove()});document.body.appendChild(m);
+}
+home();
+window.__MM={runLesson:runLesson,answerBook:answerBook,LESSONS:LESSONS};
+})();
+</script>
+</body></html>
