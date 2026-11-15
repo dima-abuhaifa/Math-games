@@ -288,8 +288,10 @@ h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
 <div class="wrap" id="app"></div>
 <style>
 /* Watermark (website copy only) */
-.book::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:.10;
+.book::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:.18;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200'%3E%3Ctext x='20' y='120' transform='rotate(-24 180 100)' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%231D2B4F'%3E%C2%A9 Teacher Dima Abuhaifa%3C/text%3E%3C/svg%3E");background-size:360px 200px}
+body::after{content:"";position:fixed;inset:0;z-index:40;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200'%3E%3Ctext x='20' y='120' transform='rotate(-24 180 100)' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%231D2B4F'%3E%C2%A9 Teacher Dima Abuhaifa%3C/text%3E%3C/svg%3E");background-size:360px 200px}
+@media print{body::after{display:none}}
 .wmark{position:fixed;right:10px;bottom:10px;z-index:50;background:rgba(255,255,255,.88);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:800;font-size:13px;color:var(--soft);pointer-events:none}
 @media print{.wmark{position:static;display:block;text-align:center;margin-top:10px}}
 </style>
@@ -1120,7 +1122,7 @@ function home(){
   var hero=h('section',{class:'hero'});
   hero.appendChild(mascot('huge'));
   hero.appendChild(h('div',null,[
-    h('div',{class:'tag'},['Grade 3 · Odd and even numbers']),
+    h('div',{class:'tag'},['Grade 3 · Odd and even numbers · by Teacher Dima Abuhaifa']),
     h('h1',{html:'<span class="o">Odd</span> and <span class="e">Even</span> Detectives'}),
     h('p',{class:'sub',style:'font-size:18px;margin-top:6px'},['Real book pages. Magic dots. Answers written right into the book.'])]));
   app.appendChild(hero);
