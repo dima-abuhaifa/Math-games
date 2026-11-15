@@ -590,13 +590,13 @@ function sdots(n,s,color){
 
 /* Array of stars (or wheels). It can turn, make groups and split apart. */
 var STAR='<svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.1.8-5.3 4.9 1.5 7.1L12 17.6 5.6 21.2l1.5-7.1L1.8 9.2l7.1-.8z" fill="#F5B731" stroke="#3B3B3B" stroke-width="1.3" stroke-linejoin="round"/></svg>';
-var COUNTER='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.2" fill="#E5484D" stroke="#9E1F25" stroke-width="1.6"/><circle cx="12" cy="12" r="6" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.4"/></svg>';
+var COUNTER='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.6" fill="#D9A05B" stroke="#8A5A2B" stroke-width="1.2"/><path d="M12 3.2c3.6 0 7.4 2.2 8.2 6.2.5 2.6-1 3.4-1.9 5.1-.8 1.6-1.4 4.2-6.3 4.2s-5.7-2.4-6.6-4.1C4.5 13 3 12.2 3.7 9.6 4.6 5.6 8.4 3.2 12 3.2z" fill="#FF8FC1"/><circle cx="12" cy="12" r="3.3" fill="#fff" stroke="#8A5A2B" stroke-width="1.1"/><g stroke-width="1.4" stroke-linecap="round"><path d="M7 8.5l1.2-.7" stroke="#2F7BF5"/><path d="M15.5 6.6l1.2.6" stroke="#FFC21A"/><path d="M17.4 11.5l.3 1.3" stroke="#1FA563"/><path d="M8.4 15.6l1.1.8" stroke="#7A4CE0"/><path d="M11.6 6.2l.2 1.2" stroke="#fff"/><path d="M14.2 16.2l1.2-.5" stroke="#2F7BF5"/><path d="M6.2 11.8l.4 1.2" stroke="#FFC21A"/></g></svg>';
 var WHEEL='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="#222"/><circle cx="12" cy="12" r="7" fill="#C9CED6"/><g stroke="#666" stroke-width="1.6"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></g><circle cx="12" cy="12" r="2.2" fill="#333"/></svg>';
 function ArrayView(R,C,opts){
   opts=opts||{};
   var el=h('div',{class:'arr'}),items=[],grps=[];
   var st={turn:false,split:null,gk:.7};
-  for(var i=0;i<R*C;i++){var it=h('div',{class:'it',html:opts.item==='wheel'?WHEEL:opts.item==='counter'?COUNTER:STAR});items.push(it);el.appendChild(it)}
+  for(var i=0;i<R*C;i++){var it=h('div',{class:'it',html:opts.item==='wheel'?WHEEL:opts.item==='donut'?COUNTER:STAR});items.push(it);el.appendChild(it)}
   var cap=h('div',{class:'arrcap'});
   function dims(){return st.turn?[C,R]:[R,C]}
   function rc(i){var r=Math.floor(i/C),c=i%C;return st.turn?[c,r]:[r,c]}
@@ -1034,21 +1034,21 @@ function lbQ9(a,api,done){
    LESSON 1 (Monday) — Multiples and fact families (Learner's Book pp. 73–74)
    ===================================================================== */
 function m1Warm(st,api){
-  st.appendChild(guide('Dotty has <b>20</b> counters. Let’s put them in <b>equal rows</b> and find the facts that make 20!'));
+  st.appendChild(guide('Dotty has <b>20</b> donuts. Let’s put them in <b>equal rows</b> and find the facts that make 20!'));
   var stage=h('div',{class:'panel'}),area=h('div'),board=h('div',{class:'facts'});
   st.appendChild(stage);st.appendChild(area);
   st.appendChild(h('p',{class:'task',style:'text-align:center;margin-top:12px'},['⭐ Facts that make 20:']));st.appendChild(board);
   function pile(){stage.innerHTML='';var w=h('div',{style:'display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:360px;margin:6px auto'});
     for(var i=0;i<20;i++)w.appendChild(h('span',{style:'width:34px;height:34px;display:block;transform:translate('+(Math.random()*8-4)+'px,'+(Math.random()*8-4)+'px)',html:COUNTER}));
-    stage.appendChild(w);stage.appendChild(h('div',{class:'eqline'},['20 counters']))}
+    stage.appendChild(w);stage.appendChild(h('div',{class:'eqline'},['20 donuts']))}
   var plan=[{k:10,rows:2,opts:[2,10,20]},{k:5,rows:4,opts:[4,5,20]},{k:2,rows:10,opts:[10,2,12]}],i=0;
   function round(){var P=plan[i];area.innerHTML='';pile();
-    area.appendChild(h('p',{class:'task',style:'text-align:center',html:'Step '+(i+1)+' of 3: put the counters in rows of <b>'+P.k+'</b>.'}));
+    area.appendChild(h('p',{class:'task',style:'text-align:center',html:'Step '+(i+1)+' of 3: put the donuts in rows of <b>'+P.k+'</b>.'}));
     var b=h('button',{class:'big magic'},['🪄 Make rows of '+P.k]);area.appendChild(h('div',{class:'row center'},[b]));
-    b.onclick=function(){b.parentNode.remove();stage.innerHTML='';var arr=ArrayView(P.rows,P.k,{max:38,item:'counter'});stage.appendChild(arr.el);stage.appendChild(arr.cap);
+    b.onclick=function(){b.parentNode.remove();stage.innerHTML='';var arr=ArrayView(P.rows,P.k,{max:38,item:'donut'});stage.appendChild(arr.el);stage.appendChild(arr.cap);
       arr.groups(P.k,false,'Count in '+P.k+'s: '+Array.apply(null,Array(P.rows)).map(function(_,j){return (j+1)*P.k}).join(', '),function(){
         area.appendChild(h('p',{class:'task',style:'text-align:center',html:'How many rows of '+P.k+'?'}));
-        choiceQ(area,api,shuffle(P.opts.map(function(v){return v===P.rows?{label:String(v),ok:true}:{label:String(v),why:'Count the rows. Each row has '+P.k+' counters.'}})),function(){
+        choiceQ(area,api,shuffle(P.opts.map(function(v){return v===P.rows?{label:String(v),ok:true}:{label:String(v),why:'Count the rows. Each row has '+P.k+' donuts.'}})),function(){
           var fact=P.rows+' × '+P.k+' = 20';speak(P.rows+' rows of '+P.k+' make 20');
           feedback(area,'good','<b>'+P.rows+' rows of '+P.k+' = 20</b><br>So <span class="c10">'+fact+'</span>');
           board.appendChild(h('div',{class:'m'},[fact]));sparkleAt(board.lastChild);
@@ -1058,23 +1058,23 @@ function m1Warm(st,api){
   }
   function turn(){area.innerHTML='';
     area.appendChild(h('p',{class:'task',style:'text-align:center',html:'4 rows of 5 make 20. What about 5 rows of 4?'}));
-    var b=h('button',{class:'big magic'},['🔄 Turn the counters']);area.appendChild(h('div',{class:'row center'},[b]));
-    stage.innerHTML='';var arr=ArrayView(4,5,{max:38,item:'counter'});stage.appendChild(arr.el);stage.appendChild(arr.cap);
+    var b=h('button',{class:'big magic'},['🔄 Turn the donuts']);area.appendChild(h('div',{class:'row center'},[b]));
+    stage.innerHTML='';var arr=ArrayView(4,5,{max:38,item:'donut'});stage.appendChild(arr.el);stage.appendChild(arr.cap);
     b.onclick=function(){b.parentNode.remove();arr.turn(function(){board.appendChild(h('div',{class:'m'},['5 × 4 = 20']));sparkleAt(board.lastChild);
       api.done('<b>Still 20!</b> 2 × 10, 4 × 5, 5 × 4 and 10 × 2 all make 20.<br>The answer to a multiplication is called the <b>product</b>. The product is 20.')})};
   }
   round();
 }
 function m1Discover(st,api){
-  st.appendChild(guide('Make an array with counters! Put <b>5</b> counters in each row. Make <b>2</b> rows.'));
+  st.appendChild(guide('Make an array with donuts! Put <b>5</b> donuts in each row. Make <b>2</b> rows.'));
   var box=h('div',{style:'display:flex;flex-direction:column;gap:6px;align-items:center;min-height:50px'}),ctl=h('div',{class:'row center',style:'margin-top:8px'}),area=h('div');
   st.appendChild(box);st.appendChild(ctl);st.appendChild(area);var rows=0;
-  var add=h('button',{class:'big b2'},['+ Add a row of 5 counters']);ctl.appendChild(add);
+  var add=h('button',{class:'big b2'},['+ Add a row of 5 donuts']);ctl.appendChild(add);
   add.onclick=function(){rows++;sPop();var r=h('div',{style:'display:flex;gap:6px;align-items:center;animation:capin .4s'});for(var i=0;i<5;i++)r.appendChild(h('span',{style:'width:36px;height:36px;display:block',html:COUNTER}));r.appendChild(h('b',{class:'c5',style:'font-family:var(--display);font-size:22px;margin-left:8px;width:40px'},[String(rows*5)]));box.appendChild(r);
     if(rows===2){add.remove();later(facts,500)}};
   function facts(){box.remove();
-    st.insertBefore(h('div',{class:'frame',html:'<b>2 rows of 5 = 10.</b> Now say the facts! Tap each fact and watch the counters.'}),area);
-    var arr=ArrayView(2,5,{max:52,item:'counter'}),p=h('div',{class:'panel'});p.appendChild(arr.el);p.appendChild(arr.cap);
+    st.insertBefore(h('div',{class:'frame',html:'<b>2 rows of 5 = 10.</b> Now say the facts! Tap each fact and watch the donuts.'}),area);
+    var arr=ArrayView(2,5,{max:52,item:'donut'}),p=h('div',{class:'panel'});p.appendChild(arr.el);p.appendChild(arr.cap);
     var F=[{op:'×',a:2,b:5,txt:'2 × 5 = 10'},{op:'×',a:5,b:2,txt:'5 × 2 = 10'},{op:'÷',a:10,b:2,txt:'10 ÷ 2 = 5'},{op:'÷',a:10,b:5,txt:'10 ÷ 5 = 2'}];
     var btns=h('div',{class:'factbtns'}),tried=0,busy=false;
     F.forEach(function(f){var b=h('button',{class:'big plain'},[f.txt.split(' =')[0]]);b.onclick=function(){if(busy)return;busy=true;each(btns.children,function(x){x.disabled=true});speak(f.txt);
@@ -1315,7 +1315,7 @@ var LESSONS={
     goal:'I can recognise multiples of 2, 5 and 10, and write fact families.',lookWhat:'I can recognise multiples of 2, 5 and 10. I can write a fact family like 2 × 5 = 10, 5 × 2 = 10, 10 ÷ 2 = 5, 10 ÷ 5 = 2.',copy:'lb',
     stations:[
       {name:'Warm up',render:m1Warm,src:'Which facts make 20?'},
-      {name:'Discover',render:m1Discover,src:'Counter arrays'},
+      {name:'Discover',render:m1Discover,src:'Donut arrays'},
       {name:'Learn the rule',render:m1Rule,src:'Two magic secrets'},
       {name:'Practise',render:d1Practise,src:"Learner's Book questions 1–3"},
       {name:'Check',render:m1Check,src:'Count in 2s from 1, then sorting hats'}
