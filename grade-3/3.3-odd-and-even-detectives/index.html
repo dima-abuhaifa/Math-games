@@ -1,0 +1,1181 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script>window.ODD_EVEN_STANDALONE=true;</script>
+<title>Odd and Even Detectives</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&family=Gochi+Hand&display=swap">
+<style>
+/* Layout: lesson map -> one lesson at a time, five steps per day.
+   The real book page is always on screen; answers are hand-written into its blanks.
+   Colour code everywhere: ODD = orange, EVEN = blue. One bright look, chosen on purpose for projectors. */
+:root{
+  --bg:#EAF4FF; --paper:#FFFFFF; --ink:#1D2B4F; --soft:#5B6B8F; --line:#C9D8EE;
+  --odd:#FF7A3D; --odd-soft:#FFE6D9; --odd-ink:#B8410C;
+  --even:#2F7BF5; --even-soft:#DCE9FF; --even-ink:#1450B8;
+  --good:#1FA563; --good-soft:#DDF6E8; --bad:#E5484D; --bad-soft:#FFE3E3;
+  --star:#FFC21A; --purple:#7A4CE0; --purple-soft:#EEE7FF; --pen:#D81B60;
+  --e1:#E0559B; --e2:#FF7A3D; --e3:#2F7BF5; --e4:#1FA563; --e5:#7A4CE0;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Trebuchet MS",system-ui,sans-serif;
+  --hand:"Gochi Hand","Comic Sans MS","Segoe Print",cursive;
+  color-scheme:light;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  -webkit-tap-highlight-color:transparent;
+  background-image:radial-gradient(circle at 12px 12px,rgba(47,123,245,.07) 3px,transparent 4px);background-size:28px 28px}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;touch-action:manipulation}
+button:focus-visible{outline:4px solid var(--purple);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding-block:16px 60px}
+.o{color:var(--odd-ink);font-weight:800}.e{color:var(--even-ink);font-weight:800}
+.sub{color:var(--soft);font-size:16px;margin:0}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.center{justify-content:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+
+/* top bar */
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.bar .grow{flex:1}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:800;font-size:16px}
+.pill:hover{border-color:var(--purple)} .pill.on{background:var(--purple-soft);border-color:var(--purple)}
+
+/* buttons */
+.big{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:60px;min-width:110px;padding:10px 24px;border-radius:18px;font-family:var(--display);font-weight:800;font-size:24px;border:3px solid transparent;box-shadow:0 5px 0 rgba(29,43,79,.2);transition:transform .08s}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(29,43,79,.2)}
+.big.odd{background:var(--odd);color:#fff}.big.even{background:var(--even);color:#fff}.big.both{background:var(--purple);color:#fff}
+.big.plain{background:var(--paper);border-color:var(--line)}.big.go{background:var(--good);color:#fff}.big.no{background:var(--bad);color:#fff}
+.big.sel{outline:5px solid var(--star);outline-offset:2px}
+.big.small{min-height:48px;font-size:19px;padding:6px 16px;min-width:0}
+.big[disabled]{opacity:.4;pointer-events:none}
+.opt{background:var(--paper);border:3px solid var(--line);border-radius:18px;padding:12px 18px;font-size:20px;font-weight:800;min-height:58px;text-align:left;box-shadow:0 4px 0 var(--line)}
+.opt:hover{border-color:var(--purple)}.opt.right{background:var(--good-soft);border-color:var(--good)}.opt.wrongpick{background:var(--bad-soft);border-color:var(--bad)}
+.choices{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.choices.col{flex-direction:column;align-items:stretch;max-width:640px;margin-inline:auto}
+
+/* home */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;background:var(--paper);border-radius:30px;padding:22px 26px;border:3px solid var(--line);position:relative;overflow:hidden}
+.hero h1{font-size:clamp(34px,5.6vw,58px);font-weight:800}
+.tag{font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--purple)}
+.days{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:18px}
+.day{text-align:left;background:var(--paper);border:3px solid var(--line);border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:10px;transition:transform .15s,border-color .15s;position:relative}
+.day:hover{transform:translateY(-3px);border-color:var(--c,var(--purple))}
+.day .when{font-weight:800;color:var(--c);text-transform:uppercase;letter-spacing:.06em;font-size:14px}
+.day h2{font-size:28px}
+.day .goal{background:#F4F8FE;border-radius:14px;padding:8px 12px;font-weight:700;font-size:16px}
+.epath{display:flex;gap:6px;flex-wrap:wrap}
+.echip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px 3px 4px;font-size:13px;font-weight:800;color:#fff;background:var(--ec)}
+.echip b{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.3);display:grid;place-items:center;font-size:12px}
+.echip.done::after{content:"\2713";margin-left:2px}
+.daystars{font-size:22px;letter-spacing:2px}
+.star-on{color:var(--star)}.star-off{color:#D5DEEC}
+.mini-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+
+/* mascot + speech */
+.guide{display:flex;gap:12px;align-items:flex-start;margin:6px 0 10px}
+.mascot{flex:none;width:76px;height:76px;animation:bob 2.4s ease-in-out infinite}
+.mascot.huge{width:120px;height:120px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.say{position:relative;background:var(--paper);border:3px solid var(--ink);border-radius:22px;padding:12px 16px;font-size:clamp(19px,2.4vw,23px);font-weight:800;min-width:0;flex:1;max-width:760px}
+.say::before{content:"";position:absolute;left:-14px;top:22px;border:12px solid transparent;border-right-color:var(--ink);border-left:0}
+.say .spk{float:right;margin:-4px -6px 4px 8px;width:42px;height:42px;border-radius:50%;background:var(--purple-soft);font-size:20px}
+.say .nm{display:block;font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em}
+
+/* lesson shell */
+.lesson-head{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--paper);border:3px solid var(--line);border-radius:24px;padding:12px 16px;margin-bottom:12px}
+.lesson-head h2{font-size:clamp(22px,3vw,30px)}
+.today{font-weight:800;color:var(--soft);font-size:15px}
+.today b{color:var(--ink)}
+.stepper{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.step{display:flex;align-items:center;gap:8px;border-radius:16px;padding:6px 12px 6px 6px;background:var(--paper);border:3px solid var(--line);font-weight:800;font-size:15px;opacity:.75}
+.step .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--ec);font-family:var(--display);font-size:16px}
+.step .mins{font-size:12px;color:var(--soft);display:block;font-weight:700}
+.step.now{border-color:var(--ec);opacity:1;box-shadow:0 0 0 4px color-mix(in srgb,var(--ec) 20%,transparent)}
+.step.done{opacity:1}.step.done .n::after{content:"\2713"}.step.done .n span{display:none}
+.card{background:var(--paper);border-radius:28px;border:3px solid var(--line);padding:20px;min-width:0;position:relative}
+.estage-title{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.estage-title .badge{border-radius:999px;padding:4px 14px;color:#fff;font-family:var(--display);font-weight:800;font-size:20px;background:var(--ec)}
+.task{font-size:20px;font-weight:800;margin:8px 0}
+.next-row{display:flex;justify-content:flex-end;margin-top:14px}
+.split{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:start}
+.split > *{min-width:0}
+
+/* book page */
+.bookwrap{margin:8px 0}.bookwrap>.label{display:table;margin:0 6px 8px auto;background:var(--bk,#5B6B8F);color:#fff;border-radius:999px;padding:3px 12px;font-weight:800;font-size:13px}
+.bookwrap.lb{--bk:var(--e2)} .bookwrap.wb{--bk:#5B6B8F}
+.book{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(29,43,79,.18),0 0 0 3px #fff,0 0 0 6px var(--bk,#5B6B8F);background:#fff;container-type:inline-size}
+.book .sheet{position:absolute;left:0;width:100%}
+.book img{display:block;width:100%;height:100%;user-select:none;-webkit-user-drag:none}
+.book.lb{--bk:var(--e2)} .book.wb{--bk:#5B6B8F}
+.hw{position:absolute;display:flex;align-items:center;font-family:var(--hand);color:var(--pen);line-height:1;white-space:nowrap;pointer-events:none;clip-path:inset(0 100% 0 0);font-size:calc(var(--fs) * 1cqw)}
+.hw.c{justify-content:center}
+.hw.shown{clip-path:inset(0 0 0 0)}
+.hw.go{animation:write 1.1s steps(16,end) forwards}
+@keyframes write{to{clip-path:inset(0 0 0 0)}}
+.shade{position:absolute;background:rgba(255,122,61,.62);mix-blend-mode:multiply;border-radius:2px;transform:scale(0);transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+.shade.on{transform:scale(1)}
+.hot{position:absolute;border-radius:10px;z-index:4}
+.hot.hint{animation:hint 1.6s ease-in-out infinite}
+@keyframes hint{0%,100%{box-shadow:0 0 0 0 rgba(122,76,224,0)}50%{box-shadow:0 0 0 4px rgba(122,76,224,.55)}}
+.hot.picked{box-shadow:0 0 0 5px var(--star)!important;animation:none}
+.hot.badtap{animation:badtap .5s}
+@keyframes badtap{0%,100%{background:transparent}40%{background:rgba(229,72,77,.35)}}
+.hot.used{background:rgba(255,255,255,.75);pointer-events:none;animation:none}
+.marker{position:absolute;background:rgba(255,213,0,.45);mix-blend-mode:multiply;border-radius:6px;transform-origin:left;transform:scaleX(0);transition:transform .8s ease}
+.marker.on{transform:scaleX(1)}
+.book svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.book svg.lines line{stroke:var(--pen);stroke-width:7;stroke-linecap:round;stroke-dasharray:600;stroke-dashoffset:600;animation:draw .8s ease forwards}
+.book svg.lines line.bad{stroke:var(--bad);stroke-dasharray:14 12;animation:none;opacity:.9}
+@keyframes draw{to{stroke-dashoffset:0}}
+.spark{position:absolute;z-index:6;pointer-events:none;font-size:22px;animation:spark .9s ease-out forwards}
+@keyframes spark{from{transform:translate(0,0) scale(.4);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(1.1);opacity:0}}
+.pagebtn{display:block;width:100%;padding:0;text-align:left}
+
+/* dots */
+.dotstage{position:relative;margin:6px auto;transition:height .3s;touch-action:pan-y}
+.dotstage.drag{touch-action:none;cursor:grab}
+.dot{position:absolute;border-radius:50%;border:2px solid rgba(29,43,79,.55);transition:left .7s cubic-bezier(.4,1.4,.5,1),top .7s,opacity .5s,transform .5s}
+.dot.B{cursor:grab}
+.dotstage.dragging .dot.B{transition:none}
+.dot.gone{opacity:0;transform:translateY(-40px) scale(.4)!important}
+.dot.marked::after{content:"";position:absolute;inset:-6px;border:3px dashed var(--bad);border-radius:50%}
+.dot.lonely{animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,194,26,.9)}50%{box-shadow:0 0 0 10px rgba(255,194,26,0)}}
+.dlabel{position:absolute;font-family:var(--display);font-weight:800;text-align:center;transition:opacity .4s,left .7s}
+.glowbox{position:absolute;border:4px solid var(--even);border-radius:16px;box-shadow:0 0 0 6px rgba(47,123,245,.15),0 0 24px rgba(47,123,245,.45);opacity:0;transform:scale(1.15);transition:opacity .4s,transform .4s;pointer-events:none}
+.glowbox.on{opacity:1;transform:scale(1)}
+.draghint{position:absolute;font-weight:800;font-size:14px;color:var(--purple);white-space:nowrap;animation:nudge 1.2s ease-in-out infinite;pointer-events:none}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(-10px)}}
+.sdots{display:inline-grid;grid-auto-flow:column;grid-template-rows:repeat(2,var(--s,18px));gap:3px;vertical-align:middle}
+.sdots b{width:var(--s,18px);height:var(--s,18px);border-radius:50%;border:1.5px solid rgba(29,43,79,.45);display:block}
+.sdots b.lone{box-shadow:0 0 0 3px var(--star);animation:pulse 1s infinite}
+.numdots{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
+.pairsblock{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:62px;min-height:40px;padding:4px 10px;border-radius:12px;border:2px dashed var(--even);color:var(--even-ink);font-family:var(--display);font-weight:800;font-size:20px;line-height:1;background:radial-gradient(circle,rgba(47,123,245,.28) 3px,transparent 4px) 0 0/12px 12px,#EEF4FF}
+.pairsblock small{font-family:var(--body);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.plus{font-family:var(--display);font-weight:800;font-size:26px}
+.test{background:#F4F8FE;border:2px solid var(--line);border-radius:18px;padding:10px 12px;margin:8px 0;min-width:0}
+.tests{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.tests .test{margin:0}
+.rl{text-align:center;font-weight:800;font-size:17px;margin-top:2px}
+.eqline{font-family:var(--display);font-size:26px;font-weight:800;text-align:center}
+.chip{display:inline-block;border-radius:999px;padding:1px 12px;font-size:16px;font-weight:800;color:#fff;vertical-align:middle}
+.chip.odd{background:var(--odd)}.chip.even{background:var(--even)}
+.claim{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;font-weight:800;margin:6px 0}
+
+/* pairing towers (engage) */
+.numpad{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;max-width:520px;margin:10px auto}
+.numpad button{height:62px;border-radius:16px;background:var(--paper);border:3px solid var(--line);font-family:var(--display);font-size:30px;font-weight:800}
+.numpad button.odd{background:var(--odd);border-color:var(--odd-ink);color:#fff}
+.numpad button.even{background:var(--even);border-color:var(--even-ink);color:#fff}
+.pairs{display:flex;gap:10px;justify-content:center;align-items:flex-start;min-height:120px;flex-wrap:wrap;margin:10px 0}
+.cap{display:flex;flex-direction:column;gap:6px;padding:6px;border-radius:999px;border:3px solid transparent;animation:capin .4s backwards}
+.cap.full{border-color:rgba(47,123,245,.5);background:rgba(47,123,245,.08)}
+.cap.alone{border-color:transparent}
+.cap i{width:40px;height:40px;border-radius:50%;display:block;border:2px solid rgba(29,43,79,.5)}
+.cap.alone i{animation:pulse 1s infinite}
+@keyframes capin{from{transform:translateY(-30px) scale(.5);opacity:0}}
+.verdict{text-align:center;font-family:var(--display);font-size:clamp(22px,3.2vw,30px);font-weight:800}
+
+/* rule cards */
+.flips{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.flip{perspective:900px;min-height:260px}
+.flip .in{position:relative;width:100%;height:100%;min-height:260px;transition:transform .7s;transform-style:preserve-3d}
+.flip.on .in{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;border:3px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;background:var(--paper)}
+.flip .f{background:linear-gradient(135deg,#7A4CE0,#2F7BF5);color:#fff;font-family:var(--display);font-size:32px;font-weight:800;cursor:pointer;border:0}
+.flip .f small{font-family:var(--body);font-size:15px;opacity:.9}
+.flip .b{transform:rotateY(180deg)}
+.frame{background:#FFF8E1;border:3px solid #F2C94C;border-radius:18px;padding:12px 16px;font-size:clamp(19px,2.4vw,24px);font-weight:800;text-align:center}
+
+/* thumbs */
+.thumbs{display:flex;gap:16px;justify-content:center;margin:12px 0}
+.thumb{width:130px;height:110px;border-radius:24px;font-size:56px;box-shadow:0 6px 0 rgba(29,43,79,.2);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.thumb small{font-family:var(--display);font-weight:800;font-size:18px;color:#fff;margin-top:4px}
+.thumb.up{background:var(--good)}.thumb.down{background:var(--bad)}
+.bigstate{font-family:var(--display);font-size:clamp(28px,5vw,48px);font-weight:800;text-align:center;margin:10px 0}
+
+/* who / stamps */
+.who{display:flex;gap:14px;align-items:flex-start;margin:10px 0;position:relative}
+.avatar{flex:none;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:32px;color:#fff;border:4px solid #fff;box-shadow:0 0 0 3px var(--line)}
+.bubble{position:relative;background:var(--paper);border:3px solid var(--ink);border-radius:22px;padding:12px 16px;font-size:clamp(19px,2.6vw,24px);font-weight:800;min-width:0}
+.bubble::before{content:"";position:absolute;left:-14px;top:22px;border:12px solid transparent;border-right-color:var(--ink);border-left:0}
+.bubble .name{display:block;font-size:14px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em}
+.stamp{position:absolute;right:4%;top:50%;font-family:var(--display);font-weight:800;font-size:clamp(20px,3.4vw,34px);color:var(--bad);border:5px solid var(--bad);border-radius:12px;padding:2px 14px;transform:translateY(-50%) rotate(-10deg) scale(3);opacity:0;transition:transform .35s cubic-bezier(.3,1.5,.5,1),opacity .2s;background:rgba(255,255,255,.85);pointer-events:none}
+.stamp.on{transform:translateY(-50%) rotate(-10deg) scale(1);opacity:1}
+
+/* pascal */
+.pascal{display:flex;flex-direction:column;align-items:center;gap:6px;margin:10px 0}
+.prow{display:flex;gap:6px}
+.pc{width:clamp(36px,6.4vw,54px);height:clamp(36px,6.4vw,54px);border-radius:50%;background:var(--paper);border:3px solid var(--line);font-family:var(--display);font-weight:800;font-size:clamp(15px,2.6vw,22px);transition:background .3s,transform .2s,border-color .3s}
+.pc.ev{background:var(--even);border-color:var(--even-ink);color:#fff;transform:scale(1.05)}
+.pc.od{background:var(--odd-soft);border-color:var(--odd)}
+.pc.shake{animation:shake .4s}
+.pc.parent{box-shadow:0 0 0 5px var(--star)}
+.pc.kid{box-shadow:0 0 0 5px var(--purple)}
+.pascal.reveal .pc.ev{animation:glow 1.2s ease-in-out 2}
+@keyframes glow{50%{box-shadow:0 0 0 8px rgba(47,123,245,.35);transform:scale(1.15)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.found{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.found > span{border-radius:999px;padding:6px 14px;font-weight:800;border:3px dashed var(--line);color:var(--soft)}
+.found > span.got{border-style:solid;border-color:var(--good);background:var(--good-soft);color:var(--ink)}
+
+/* cards game */
+.pcards{display:flex;gap:18px;justify-content:center;align-items:center;margin:10px 0}
+.pcard{width:118px;height:160px;perspective:800px}
+.pcard .in{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+.pcard.on .in{transform:rotateY(180deg)}
+.pcard .f,.pcard .b{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:4px solid #fff;box-shadow:0 6px 16px rgba(29,43,79,.2)}
+.pcard .f{background:repeating-linear-gradient(45deg,#7A4CE0 0 12px,#8E66E8 12px 24px)}
+.pcard .b{transform:rotateY(180deg);background:var(--paper);font-family:var(--display);font-size:54px;font-weight:800;line-height:1}
+
+/* feedback */
+.fb{margin-top:12px;border-radius:18px;padding:12px 16px;font-size:18px;font-weight:700;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;animation:fbin .3s}
+@keyframes fbin{from{transform:translateY(8px);opacity:0}}
+.fb.good{background:var(--good-soft);border:3px solid var(--good)}.fb.bad{background:var(--bad-soft);border:3px solid var(--bad)}.fb.info{background:var(--purple-soft);border:3px solid var(--purple)}
+.fb .msg{flex:1;min-width:200px}.fb .face{font-size:30px;line-height:1}.fb .viz{width:100%}
+
+/* odd lines board */
+.olines{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.olines button{border-radius:12px;padding:6px 10px;font-weight:800;font-size:15px;background:#F1F5FB;color:var(--soft);border:2px solid var(--line)}
+.olines button.ok{background:var(--good-soft);color:var(--good);border-color:var(--good)}
+.olines button.no{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,64px));gap:5px;justify-content:center;margin:10px auto}
+.g4 button{aspect-ratio:1;border:3px solid var(--ink);border-radius:10px;background:#fff;font-family:var(--hand);font-size:34px;color:var(--pen)}
+.tray{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.tray button{min-width:48px;height:52px;border-radius:14px;font-family:var(--display);font-size:24px;font-weight:800;color:#fff}
+.tray .odd{background:var(--odd)}.tray .even{background:var(--even)}
+.tray button.pick{outline:5px solid var(--star);outline-offset:2px}.tray button.used{opacity:.2;pointer-events:none}
+
+/* win / certificate */
+.cert{text-align:center;padding:10px 0}
+.lwicd{max-width:720px;margin:14px auto;border-radius:12px;overflow:hidden;text-align:left}
+.lwicd .t{background:#3F8F9C;color:#fff;font-weight:800;padding:10px 16px;font-size:20px}
+.lwicd .bdy{background:#A0C9CF;padding:14px 16px;display:flex;gap:14px;align-items:center;font-weight:700;font-size:19px}
+.lwicd .box{flex:none;width:40px;height:40px;background:#fff;border-radius:6px;display:grid;place-items:center;font-family:var(--hand);font-size:40px;color:var(--pen)}
+.lwicd .box span{clip-path:inset(0 100% 0 0);animation:write .8s .6s steps(8,end) forwards}
+.bigstars{font-size:60px;letter-spacing:8px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.confetti i{position:absolute;top:-20px;width:12px;height:16px;border-radius:3px;animation:fall 1.9s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* answer book */
+.booktabs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.booktabs button{font-family:var(--display);font-weight:800;font-size:22px;padding:10px 22px;border-radius:16px;border:3px solid var(--line);background:var(--paper)}
+.booktabs button.on.lb{background:var(--odd-soft);border-color:var(--odd)}.booktabs button.on.wb{background:#E7EBF1;border-color:#5B6B8F}
+.pagehead{font-family:var(--display);font-weight:800;font-size:24px;margin-top:16px}
+.modal{position:fixed;inset:0;background:rgba(29,43,79,.6);z-index:50;overflow:auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 30px max(16px,env(safe-area-inset-left,0px))}
+.modal .inner{max-width:1100px;margin:0 auto}
+.modal .closeb{position:sticky;top:0;z-index:10;display:flex;justify-content:flex-end;margin-bottom:8px}
+
+@media (max-width:820px){
+  .split{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  body{font-size:17px}
+  .hero{grid-template-columns:1fr;padding:18px}
+  .card{padding:14px;border-radius:22px}
+  .big{min-width:90px;font-size:21px;padding:8px 16px}
+  .mascot{width:56px;height:56px}
+  .step .t{display:none}
+  .thumb{width:110px;height:96px;font-size:46px}
+  .pcard{width:96px;height:132px}
+  .cap i{width:30px;height:30px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.hw.go{clip-path:inset(0 0 0 0)}}
+@media print{.bar,.booktabs,.noprint{display:none!important}body{background:#fff}.book{break-inside:avoid;box-shadow:none}}
+</style>
+<div class="wrap" id="app"></div>
+<style>
+/* Watermark (website copy only) */
+.book::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:.10;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200'%3E%3Ctext x='20' y='120' transform='rotate(-24 180 100)' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%231D2B4F'%3E%C2%A9 Teacher Dima Abuhaifa%3C/text%3E%3C/svg%3E");background-size:360px 200px}
+.wmark{position:fixed;right:10px;bottom:10px;z-index:50;background:rgba(255,255,255,.88);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:800;font-size:13px;color:var(--soft);pointer-events:none}
+@media print{.wmark{position:static;display:block;text-align:center;margin-top:10px}}
+</style>
+
+</head><body>
+<div class="wmark">© Teacher Dima Abuhaifa</div>
+<script>
+(function(){
+"use strict";
+var app=document.getElementById('app');
+var isOdd=function(n){return n%2===1};
+var par=function(n){return isOdd(n)?'odd':'even'};
+var MINUS='−';
+var sum=function(a){return a.reduce(function(x,y){return x+y},0)};
+var IMG=window.ODD_EVEN_IMG_BASE||'img/';
+
+/* ---------- saved progress (optional, this device only) ---------- */
+var STORE='oddEvenDetectives.v3';
+var SAVE={};try{SAVE=JSON.parse(localStorage.getItem(STORE)||'{}')||{}}catch(e){SAVE={}}
+SAVE.done=SAVE.done||{};SAVE.stars=SAVE.stars||{};
+function persist(){try{localStorage.setItem(STORE,JSON.stringify(SAVE))}catch(e){}}
+
+/* ---------- sound + voice ---------- */
+var muted=!!SAVE.muted,ac=null;
+function tone(freqs,dur,type){
+  if(muted)return;
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    freqs.forEach(function(f,i){var o=ac.createOscillator(),g=ac.createGain();o.type=type||'triangle';o.frequency.value=f;var t=ac.currentTime+i*dur;
+      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.16,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+dur+.02)});
+  }catch(e){}
+}
+var sGood=function(){tone([523,659,784],.1)},sBad=function(){tone([300,220],.15,'sine')},sWin=function(){tone([523,659,784,1047,784,1047,1319],.11)},sPop=function(){tone([660,880],.06)},sWrite=function(){tone([1200,1500,1800],.05,'sine')},sSnap=function(){tone([392,523,784],.07)};
+var canSpeak='speechSynthesis' in window;
+function speak(t){if(!canSpeak)return;try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t.replace(/<[^>]+>/g,'').replace(/−/g,' minus '));u.rate=.85;u.lang='en-GB';speechSynthesis.speak(u)}catch(e){}}
+
+/* ---------- helpers ---------- */
+function h(tag,attrs,kids){
+  var el=document.createElement(tag);
+  if(attrs)for(var k in attrs){var v=attrs[k];if(v==null)continue;
+    if(k==='class')el.className=v;else if(k==='html')el.innerHTML=v;else if(k.slice(0,2)==='on')el.addEventListener(k.slice(2),v);else if(k==='style')el.style.cssText=v;else el.setAttribute(k,v)}
+  (kids||[]).forEach(function(c){if(c==null)return;el.appendChild(typeof c==='string'?document.createTextNode(c):c)});
+  return el;
+}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function starStr(n){var s='';for(var i=0;i<3;i++)s+='<span class="'+(i<n?'star-on':'star-off')+'">★</span>';return s}
+function chip(n){return '<span class="chip '+par(n)+'">'+par(n)+'</span>'}
+function word(w){return '<span class="'+(w==='odd'?'o':'e')+'">'+w+'</span>'}
+function cw(s){return s.replace(/\bodd\b/g,'<span class="o">odd</span>').replace(/\beven\b/g,'<span class="e">even</span>')}
+function later(fn,ms){return setTimeout(fn,ms)}
+var ODDC=['#FF7A3D','#FFB07F','#FFD2B3'],EVENC=['#2F7BF5','#86B3FF','#BCD4FF'];
+function pcol(n,k){return (isOdd(n)?ODDC:EVENC)[(k||0)%3]}
+function confetti(n){
+  var c=h('div',{class:'confetti'});var cols=['#FF7A3D','#2F7BF5','#FFC21A','#1FA563','#7A4CE0','#E0559B'];
+  for(var i=0;i<(n||70);i++){var p=h('i');p.style.left=Math.random()*100+'%';p.style.background=cols[i%6];p.style.animationDelay=Math.random()*.7+'s';p.style.animationDuration=(1.4+Math.random())+'s';if(i%3===0)p.style.borderRadius='50%';c.appendChild(p)}
+  document.body.appendChild(c);later(function(){c.remove()},3200);
+}
+
+/* ---------- Dotty the mascot ---------- */
+function mascot(cls,mood){
+  var mouth=mood==='wow'?'<ellipse cx="50" cy="70" rx="7" ry="8" fill="#1D2B4F"/>':'<path d="M35 66 Q50 80 65 66" stroke="#1D2B4F" stroke-width="5" fill="none" stroke-linecap="round"/>';
+  return h('div',{class:'mascot '+(cls||''),'aria-hidden':'true',html:'<svg viewBox="0 0 100 100" width="100%" height="100%"><circle cx="78" cy="22" r="13" fill="#2F7BF5" stroke="#1D2B4F" stroke-width="3"/><circle cx="48" cy="56" r="38" fill="#FF7A3D" stroke="#1D2B4F" stroke-width="4"/><circle cx="35" cy="50" r="8" fill="#fff"/><circle cx="61" cy="50" r="8" fill="#fff"/><circle cx="37" cy="51" r="4" fill="#1D2B4F"/><circle cx="63" cy="51" r="4" fill="#1D2B4F"/><circle cx="26" cy="64" r="5" fill="#FF9E9E" opacity=".7"/><circle cx="70" cy="64" r="5" fill="#FF9E9E" opacity=".7"/>'+mouth+'</svg>'});
+}
+function guide(text,mood){
+  var g=h('div',{class:'guide'});g.appendChild(mascot('',mood));
+  var s=h('div',{class:'say'});
+  if(canSpeak){s.appendChild(h('button',{class:'spk','aria-label':'Read to me',onclick:function(){speak(text)}},['🔊']))}
+  s.appendChild(h('span',{class:'nm'},['Dotty says']));
+  s.appendChild(h('span',{html:cw(text)}));
+  g.appendChild(s);return g;
+}
+
+/* ---------- static dot pictures ---------- */
+function sdots(n,s,color,noLone){
+  var g=h('span',{class:'sdots',style:'--s:'+(s||18)+'px','aria-hidden':'true'});
+  for(var i=0;i<n;i++){var b=h('b');b.style.background=color||pcol(n);if(!noLone&&isOdd(n)&&i===n-1)b.className='lone';g.appendChild(b)}
+  return g;
+}
+function numDots(n,s,lim){
+  var w=h('span',{class:'numdots','aria-label':n+' as pairs'});
+  if(n<=(lim||20)){w.appendChild(sdots(n,s));return w}
+  var big=n-n%10;var blk=h('span',{class:'pairsblock'});blk.innerHTML=big+'<small>all pairs</small>';w.appendChild(blk);
+  if(n%10){w.appendChild(h('span',{class:'plus'},['+']));w.appendChild(sdots(n%10,s,isOdd(n)?ODDC[0]:EVENC[0]))}
+  return w;
+}
+function numWhy(n){
+  var o=n%10;
+  if(n<=20)return n+' = '+Math.floor(n/2)+' pairs'+(isOdd(n)?' + <b class="o">1 left over</b> → '+word('odd'):'. Nothing left over → '+word('even'));
+  return (n-o)+' is all pairs. Ones: '+o+(isOdd(o)?' → <b class="o">1 left over</b> → '+word('odd'):' → nothing left over → '+word('even'));
+}
+
+/* ---------- animated, draggable dot stage ----------
+   Dots fill 2 rows column by column (top, bottom, top...). Each shape starts where the
+   last one ended, so the second shape's first dot slots into an odd shape's gap (the book's L-shapes). */
+function DotStage(terms,op,opts){
+  opts=opts||{};op=op||'+';
+  var el=h('div',{class:'dotstage'});
+  var total=op==='+'?sum(terms):terms[0];
+  var dots=[],owner=[],labels=[];
+  if(op==='+'){
+    terms.forEach(function(t,k){
+      for(var j=0;j<t;j++){var d=h('div',{class:'dot'+(k>0?' B':'')});d.style.background=pcol(t,k);dots.push(d);owner.push(k);el.appendChild(d)}
+      var lb=h('div',{class:'dlabel'},[String(t)]);labels.push(lb);el.appendChild(lb);
+    });
+  }else{
+    var a=terms[0],b=terms[1];
+    for(var j=0;j<a;j++){var d=h('div',{class:'dot'+(j>=a-b?' marked':'')});d.style.background=pcol(a);dots.push(d);owner.push(0);el.appendChild(d)}
+    var lb=h('div',{class:'dlabel'},[String(a)]);labels.push(lb);el.appendChild(lb);
+  }
+  var glow=h('div',{class:'glowbox'});el.appendChild(glow);
+  var joined=false,GAP=op==='+'&&terms.length>1?1.7:0,geo={};
+  var canDrag=opts.drag&&op==='+'&&terms.length===2&&terms[1]>0;
+  var hint=null;
+  if(canDrag){el.classList.add('drag');hint=h('div',{class:'draghint'},['👆 drag the dots ←']);el.appendChild(hint)}
+  function prefix(k){var p=0;for(var i=0;i<k;i++)p+=terms[i];return p}
+  function layout(){
+    var w=el.clientWidth||300;
+    var apartCols=Math.ceil(total/2)+GAP*(terms.length-1)+.2;
+    var d=Math.max(13,Math.min(opts.max||46,Math.floor(w/(Math.max(apartCols,2)*1.14))));
+    var step=d*1.14,gap=joined?0:GAP;
+    var cols=Math.ceil(total/2)+(op==='+'?gap*(terms.length-1):0);
+    var x0=Math.max(0,(w-cols*step)/2+(step-d)/2),top=26;
+    geo={d:d,step:step,x0:x0,top:top,gapPx:GAP*step};
+    el.style.height=(top+2*step+8+(hint&&!joined?26:0))+'px';
+    dots.forEach(function(dt,i){dt.style.width=dt.style.height=d+'px';var col=Math.floor(i/2),row=i%2,k=owner[i];dt.style.left=(x0+(col+k*gap)*step)+'px';dt.style.top=(top+row*step)+'px'});
+    labels.forEach(function(lb,k){
+      var p=op==='+'?prefix(k):0,t=op==='+'?terms[k]:total;
+      var c1=Math.floor(p/2)+k*gap,c2=Math.floor((p+Math.max(t,1)-1)/2)+k*gap;
+      lb.style.left=(x0+c1*step)+'px';lb.style.width=((c2-c1+1)*step-(step-d))+'px';lb.style.top='-2px';lb.style.fontSize=Math.max(15,Math.min(21,d*.6))+'px';
+      lb.style.opacity=joined&&op==='+'?0:1;
+      if(op==='-'){lb.textContent=joined?String(terms[0]-terms[1]):String(terms[0]);lb.style.color=joined?(isOdd(terms[0]-terms[1])?'var(--odd-ink)':'var(--even-ink)'):'var(--ink)'}
+    });
+    if(hint){var bx=x0+(Math.floor(terms[0]/2)+GAP)*step;hint.style.left=Math.max(0,Math.min(bx,w-150))+'px';hint.style.top=(top+2*step+2)+'px';hint.style.display=joined?'none':''}
+    if(joined){var left=op==='+'?total:terms[0]-terms[1];var c=Math.ceil(left/2);
+      glow.style.left=(x0-6)+'px';glow.style.top=(top-6)+'px';glow.style.width=(c*step-(step-d)+12)+'px';glow.style.height=(2*step-(step-d)+12)+'px'}
+  }
+  function lonely(){
+    dots.forEach(function(dt){dt.classList.remove('lonely')});
+    if(!joined){
+      if(op==='+')dots.forEach(function(dt,i){var p=i^1;if(p>=dots.length||owner[p]!==owner[i])dt.classList.add('lonely')});
+      else if(isOdd(total))dots[total-1].classList.add('lonely');
+    }else{var left=op==='+'?total:terms[0]-terms[1];if(isOdd(left))dots[left-1].classList.add('lonely');else if(left>0)glow.classList.add('on')}
+  }
+  requestAnimationFrame(function(){layout();lonely()});
+  if(window.ResizeObserver)new ResizeObserver(function(){layout()}).observe(el);
+  var api={el:el,done:false,onJoin:null};
+  function go(cb){
+    if(joined){if(cb)cb();return}
+    joined=true;api.done=true;sSnap();
+    if(op==='-')dots.forEach(function(dt,i){if(i>=terms[0]-terms[1])dt.classList.add('gone')});
+    dots.forEach(function(dt){dt.classList.remove('lonely');if(owner[dt._i]!==0)dt.style.transform=''});
+    dots.forEach(function(dt){dt.style.transform=''});labels.forEach(function(l){l.style.transform=''});
+    layout();later(function(){lonely();if(cb)cb();if(api.onJoin)api.onJoin()},760);
+  }
+  api.go=go;
+  if(canDrag){
+    var startX=null,dx=0;
+    el.addEventListener('pointerdown',function(e){if(joined)return;if(!e.target.classList.contains('B')&&e.target!==labels[1])return;startX=e.clientX;dx=0;el.classList.add('dragging');try{el.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault()});
+    el.addEventListener('pointermove',function(e){if(startX==null)return;dx=Math.max(-geo.gapPx,Math.min(20,e.clientX-startX));dots.forEach(function(dt,i){if(owner[i]===1)dt.style.transform='translateX('+dx+'px)'});labels[1].style.transform='translateX('+dx+'px)'});
+    function end(){if(startX==null)return;startX=null;el.classList.remove('dragging');if(dx<-geo.gapPx*.4)go();else{dots.forEach(function(dt){dt.style.transform=''});labels[1].style.transform=''}}
+    el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+  }
+  return api;
+}
+function exprStr(terms,op){return terms.join(op==='+'?' + ':' '+MINUS+' ')}
+function resOf(terms,op){return op==='-'?terms[0]-terms[1]:sum(terms)}
+function resultLine(terms,op){var r=resOf(terms,op);
+  return '<div class="rl"><div class="eqline">'+exprStr(terms,op)+' = '+r+' '+chip(r)+'</div>'+(isOdd(r)?'<b class="o">1 dot left over</b>':'<b class="e">Every dot has a partner</b>')+'</div>'}
+function TestPanel(terms,op,opts){
+  opts=opts||{};op=op||'+';
+  var box=h('div',{class:'test'});
+  if(opts.title)box.appendChild(h('div',{class:'rl',html:opts.title}));
+  var st=DotStage(terms,op,{max:opts.max||42,drag:!opts.auto&&op==='+'&&terms.length===2});box.appendChild(st.el);
+  var out=h('div'),played=false,waiters=[];
+  function finish(){out.innerHTML=resultLine(terms,op)+(opts.after?'<div class="rl" style="font-weight:700">'+opts.after+'</div>':'');var w=waiters;waiters=[];w.forEach(function(f){f()});if(opts.onDone)opts.onDone()}
+  st.onJoin=function(){if(!played){played=true;if(btnRow)btnRow.remove();finish()}};
+  function run(cb){if(cb)waiters.push(cb);if(played){finish();return}played=true;if(btnRow)btnRow.remove();st.go(function(){finish()})}
+  var btnRow=null;
+  if(!opts.auto&&!opts.noButton){btnRow=h('div',{class:'row center'},[h('button',{class:'big both small',onclick:function(){run()}},[op==='+'?'✨ Join':'✨ Take away'])]);box.appendChild(btnRow)}
+  box.appendChild(out);
+  if(opts.auto)later(function(){run()},450);
+  return {el:box,run:run};
+}
+function BigSum(a,b,opts){
+  opts=opts||{};var w=h('div');
+  if(a<=20&&b<=20){var tp=TestPanel([a,b],'+',opts);w.appendChild(tp.el);return {el:w,run:tp.run}}
+  var row=h('div',{class:'claim'});row.appendChild(numDots(a,15,9));row.appendChild(h('span',{class:'plus'},['+']));row.appendChild(numDots(b,15,9));w.appendChild(row);
+  w.appendChild(h('p',{class:'sub',style:'text-align:center',html:'Tens and hundreds are always pairs. Only the <b>ones</b> can have a dot left over.'}));
+  var tp2=TestPanel([a%10,b%10],'+',Object.assign({},opts,{title:'Join the ones'}));w.appendChild(tp2.el);
+  return {el:w,run:tp2.run};
+}
+
+/* ---------- feedback + choices ---------- */
+function feedback(host,kind,html,viz){
+  var old=host.querySelector(':scope > .fb');if(old)old.remove();
+  var f=h('div',{class:'fb '+kind,role:'status'});
+  f.innerHTML='<span class="face" aria-hidden="true">'+(kind==='good'?'⭐':kind==='bad'?'🤔':'💡')+'</span><div class="msg">'+html+'</div>';
+  if(viz){var v=h('div',{class:'viz'});v.appendChild(viz);f.appendChild(v)}
+  host.appendChild(f);later(function(){f.scrollIntoView({behavior:'smooth',block:'nearest'})},80);
+  return f;
+}
+function choiceQ(box,api,opts,onRight,cfg){
+  cfg=cfg||{};var wrap=h('div',{class:'choices'+(cfg.col?' col':'')}),solved=false;
+  opts.forEach(function(o){
+    var b=h('button',{class:(cfg.cls?cfg.cls(o):'opt'),html:o.html||o.label});
+    b.addEventListener('click',function(){
+      if(solved)return;
+      if(o.ok){solved=true;b.classList.add('right','sel');sGood();Array.prototype.forEach.call(wrap.children,function(x){if(x!==b)x.disabled=true});onRight(o,b)}
+      else{api.miss();sBad();b.classList.add('wrongpick');b.disabled=true;feedback(box,'bad',o.why||cfg.wrongMsg||'Not quite. Test it with dots!',o.viz?o.viz():null)}
+    });
+    wrap.appendChild(b);
+  });
+  box.appendChild(wrap);return wrap;
+}
+
+/* =====================================================================
+   THE BOOK PAGES (high-resolution scans) and their answer key
+   ===================================================================== */
+var PAGES={
+  wb45:{w:1600,h:913,book:'wb',n:45},wb46:{w:1447,h:2031,book:'wb',n:46},wb47:{w:1471,h:2003,book:'wb',n:47},wb48:{w:1456,h:774,book:'wb',n:48},
+  lb49:{w:1523,h:634,book:'lb',n:49},lb50:{w:1490,h:1954,book:'lb',n:50},lb51:{w:1471,h:1941,book:'lb',n:51},lb52:{w:1493,h:1959,book:'lb',n:52}
+};
+var BOOKNAME={lb:"Learner's Book",wb:'Workbook'};
+/* [page, x, y, w, h, text, align, fontPx] in page pixels */
+var ANS={
+  wb1:['wb46',524,536,80,56,'H','c',56],
+  wb2a:['wb46',274,1180,71,71,'16','c',46],wb2b:['wb46',729,1180,71,71,'42','c',46],wb2c:['wb46',1165,1180,71,71,'106','c',42],wb2s:['wb46',723,1358,147,52,'even','c',44],
+  wb4a1:['wb47',190,364,1180,52,'Always true. 1 + 3 = 4, 25 + 13 = 38','l',42],wb4a2:['wb47',190,449,1180,52,'(odd + odd = even)','l',42],
+  wb4b1:['wb47',190,597,1180,52,'Never true. 1 + 3 + 5 = 9, which is odd.','l',42],wb4b2:['wb47',190,682,1180,52,'(odd + odd = even, then even + odd = odd)','l',42],
+  wb5a:['wb47',260,915,71,71,'17','c',46],wb5b:['wb47',715,915,71,71,'43','c',46],wb5c:['wb47',1170,915,71,71,'111','c',42],wb5s:['wb47',1013,1078,145,54,'odd','c',44],
+  wb6a:['wb47',454,1334,71,71,'✓','c',64],wb6b:['wb47',454,1430,71,71,'✓','c',64],wb6c:['wb47',661,1526,71,71,'✓','c',64],
+  wb7a:['wb48',148,304,1230,52,'odd + odd + even = even,','l',42],wb7b:['wb48',148,389,1230,52,'and 33 is odd. Leroy cannot be correct.','l',42],
+  wb8a:['wb48',148,601,1230,52,'Never true. odd − odd = even,','l',42],wb8b:['wb48',148,686,1230,52,'for example 13 − 9 = 4.','l',42],
+  lb1a:['lb51',800,596,660,50,'2 + 4 = 6, 10 + 12 = 22, 20 + 8 = 28','l',34],lb1b:['lb51',800,652,660,50,'1+3+5 = 9, 3+5+7 = 15, 11+23+35 = 69','l',34],
+  lb2:['lb51',958,900,140,56,'even','c',46],
+  lb3a:['lb51',150,1286,53,53,'6','c',44],lb3b:['lb51',246,1286,53,53,'4','c',44],lb3c:['lb51',344,1286,53,53,'2','c',44],lb3d:['lb51',430,1286,900,52,'Yes! 10 − 4 = 6 is even too.','l',40],
+  lb4:['lb51',962,1494,500,48,'3 + 5 = 8 (even!)','l',40],
+  lb5:['lb51',150,1688,1250,54,'even + even + even = even, and 25 is odd.','l',42],
+  lb6a:['lb52',600,258,860,48,'No! 1 + 5 = 6, and 6 is even.','l',38],lb6b:['lb52',600,314,860,48,'odd + 5 = even, even + 5 = odd','l',38],
+  lb7a:['lb52',600,478,860,48,'No! 5 − 3 = 2, and 2 is even.','l',38],lb7b:['lb52',600,534,860,48,'odd − odd = even','l',38]
+};
+var WB1={page:'wb46',x0:627,y0:487,cw:83,ch:83,nums:[416,636,50,32,412,232,861,220,657,154,198,423,8,53,654,110,5,851,825,730,404,53,676,595,358,206,45,294,687,590,682,566,742,174,552]};
+var WB3={calc:[[147,1546,180,52],[147,1668,192,52],[147,1789,204,52]],ends:[[322,1571],[335,1693],[347,1814]],box:{even:[528,1585,110,72],odd:[528,1709,110,72]},tgt:{even:[528,1621],odd:[528,1745]},ans:['even','odd','even']};
+
+/* BookView: a (cropped) real book page. Answers are written into it in handwriting. */
+function BookView(key,opts){
+  opts=opts||{};var P=PAGES[key];var y0=opts.crop?opts.crop[0]:0,y1=opts.crop?opts.crop[1]:P.h;
+  var wrap=h('div',{class:'bookwrap '+P.book});var el=h('div',{class:'book '+P.book});el.style.aspectRatio=P.w+' / '+(y1-y0);
+  if(opts.maxw)wrap.style.maxWidth=opts.maxw;
+  var sheet=h('div',{class:'sheet'});sheet.style.top=(-y0/(y1-y0)*100)+'%';sheet.style.height=(P.h/(y1-y0)*100)+'%';
+  sheet.appendChild(h('img',{src:IMG+key+'.jpg',alt:BOOKNAME[P.book]+' page '+P.n,draggable:'false'}));
+  var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','lines');svg.setAttribute('viewBox','0 0 '+P.w+' '+P.h);svg.setAttribute('preserveAspectRatio','none');sheet.appendChild(svg);
+  el.appendChild(sheet);
+  wrap.appendChild(h('div',{class:'label'},[BOOKNAME[P.book]+' · page '+P.n]));wrap.appendChild(el);
+  function pos(node,x,y,w,hh){node.style.left=(x/P.w*100)+'%';node.style.top=(y/P.h*100)+'%';node.style.width=(w/P.w*100)+'%';node.style.height=(hh/P.h*100)+'%';return node}
+  var api={el:wrap,book:el,sheet:sheet,P:P,written:{}};
+  api.put=function(x,y,w,hh,text,align,fontPx,shown){
+    var n=pos(h('div',{class:'hw '+(align==='c'?'c':'')+(shown?' shown':'')},[text]),x,y,w,hh);
+    n.style.setProperty('--fs',(fontPx/P.w*100).toFixed(3));sheet.appendChild(n);return n};
+  api.write=function(id,delay){
+    var a=ANS[id];if(!a||a[0]!==key||api.written[id])return;api.written[id]=true;
+    var n=api.put(a[1],a[2],a[3],a[4],a[5],a[6],a[7],false);
+    later(function(){n.classList.add('go');sWrite();later(function(){api.sparkle(a[1]+a[3]*(a[6]==='c'?.5:.0)+Math.min(a[3],a[7]*a[5].length*.45),a[2]+a[4]/2)},700)},delay||0);
+  };
+  api.show=function(id){var a=ANS[id];if(!a||a[0]!==key||api.written[id])return;api.written[id]=true;api.put(a[1],a[2],a[3],a[4],a[5],a[6],a[7],true)};
+  api.sparkle=function(x,y){for(var i=0;i<7;i++){var s=h('span',{class:'spark'},['✨']);s.style.left=(x/P.w*100)+'%';s.style.top=(y/P.h*100)+'%';var ang=Math.random()*Math.PI*2,r=30+Math.random()*40;s.style.setProperty('--dx',Math.cos(ang)*r+'px');s.style.setProperty('--dy',Math.sin(ang)*r+'px');sheet.appendChild(s);(function(s){later(function(){s.remove()},1000)})(s)}};
+  api.hot=function(x,y,w,hh,label,fn,hint){var b=pos(h('button',{class:'hot'+(hint===false?'':' hint'),'aria-label':label}),x,y,w,hh);b.onclick=fn;sheet.appendChild(b);return b};
+  api.shade=function(x,y,w,hh){var s=pos(h('div',{class:'shade'}),x,y,w,hh);sheet.insertBefore(s,svg);requestAnimationFrame(function(){requestAnimationFrame(function(){s.classList.add('on')})});return s};
+  api.marker=function(x,y,w,hh,delay){var m=pos(h('div',{class:'marker'}),x,y,w,hh);sheet.insertBefore(m,svg);later(function(){m.classList.add('on')},delay||200);return m};
+  api.line=function(x1,y1,x2,y2,bad){var l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);if(bad)l.setAttribute('class','bad');svg.appendChild(l);return l};
+  (opts.show||[]).forEach(api.show);
+  return api;
+}
+/* fill a page with its full answer key (for the answer book) */
+function fillPage(v,key){
+  Object.keys(ANS).forEach(function(id){if(ANS[id][0]===key)v.show(id)});
+  if(key==='wb46'){WB1.nums.forEach(function(n,i){if(isOdd(n)){var r=Math.floor(i/5),c=i%5;var s=v.shade(WB1.x0+c*WB1.cw+3,WB1.y0+r*WB1.ch+3,WB1.cw-6,WB1.ch-6)}});
+    WB3.ans.forEach(function(a,i){var l=v.line(WB3.ends[i][0],WB3.ends[i][1],WB3.tgt[a][0],WB3.tgt[a][1]);l.style.animation='none';l.style.strokeDashoffset='0'})}
+}
+function zoomPage(key){
+  var m=h('div',{class:'modal',role:'dialog','aria-modal':'true'});var inner=h('div',{class:'inner'});
+  inner.appendChild(h('div',{class:'closeb'},[h('button',{class:'big plain small',onclick:function(){m.remove()}},['✕ Close'])]));
+  var v=BookView(key,{zoom:false});fillPage(v,key);inner.appendChild(v.el);m.appendChild(inner);document.body.appendChild(m);
+}
+
+/* =====================================================================
+   LESSON ENGINE
+   ===================================================================== */
+var E5=[{k:'Warm up',c:'var(--e1)'},{k:'Discover',c:'var(--e2)'},{k:'Learn the rule',c:'var(--e3)'},{k:'Practise',c:'var(--e4)'},{k:'Check',c:'var(--e5)'}];
+function topBar(back){
+  var b=h('div',{class:'bar noprint'});
+  if(back)b.appendChild(h('button',{class:'pill',onclick:home},['← Lesson map']));
+  else if(window.ODD_EVEN_STANDALONE)b.appendChild(h('a',{class:'pill',href:'../',style:'text-decoration:none'},['← Grade 3 games']));
+  b.appendChild(h('div',{class:'grow'}));
+  b.appendChild(h('button',{class:'pill',onclick:function(){answerBook()}},['📖 Copy to my book']));
+  b.appendChild(h('button',{class:'pill',onclick:wordBank},['Word bank']));
+  var m=h('button',{class:'pill'},[muted?'🔇 Sound':'🔊 Sound']);
+  m.onclick=function(){muted=!muted;SAVE.muted=muted;persist();m.textContent=muted?'🔇 Sound':'🔊 Sound'};
+  b.appendChild(m);return b;
+}
+
+function runLesson(id,start){
+  var L=LESSONS[id],i=start||0,mistakes=0;
+  app.innerHTML='';app.appendChild(topBar(true));
+  var head=h('div',{class:'lesson-head'});
+  head.appendChild(mascot());
+  head.appendChild(h('div',{style:'flex:1;min-width:220px'},[h('div',{class:'today',html:L.when}),h('h2',null,[L.title]),h('div',{class:'today',html:'Today I can: <b>'+L.goal+'</b>'})]));
+  app.appendChild(head);
+  var stepper=h('div',{class:'stepper'});app.appendChild(stepper);
+  var card=h('section',{class:'card'});app.appendChild(card);
+  function drawStepper(){
+    stepper.innerHTML='';
+    L.stations.forEach(function(s,k){
+      var ec=s.c||E5[k%5].c;
+      var b=h('button',{class:'step'+(k===i?' now':'')+(SAVE.done[id+k]?' done':''),style:'--ec:'+ec,onclick:function(){i=k;show()}});
+      b.innerHTML='<span class="n"><span>'+(s.short||k+1)+'</span></span><span class="t">'+s.name+'</span>';
+      stepper.appendChild(b);
+    });
+  }
+  function show(){
+    drawStepper();card.innerHTML='';window.scrollTo({top:0,behavior:'smooth'});
+    var s=L.stations[i],ec=s.c||E5[i%5].c;card.style.borderColor=ec;
+    var t=h('div',{class:'estage-title'});t.innerHTML='<span class="badge" style="--ec:'+ec+'">'+s.name+'</span>'+(s.src?'<span class="today">'+s.src+'</span>':'');
+    card.appendChild(t);
+    var stage=h('div');card.appendChild(stage);
+    var finished=false;
+    var api={
+      miss:function(){mistakes++},
+      done:function(msg){
+        if(finished)return;finished=true;SAVE.done[id+i]=true;persist();drawStepper();sGood();
+        var r=h('div',{class:'next-row'});
+        if(msg)stage.appendChild(feedback(h('div'),'good',msg));
+        var last=i===L.stations.length-1;
+        var b=h('button',{class:'big go',onclick:function(){if(last)certificate(id,mistakes);else{i++;show()}}},[last?'Finish 🏆':'Next: '+L.stations[i+1].name+' →']);
+        r.appendChild(b);stage.appendChild(r);later(function(){r.scrollIntoView({behavior:'smooth',block:'nearest'})},300);
+      }
+    };
+    s.render(stage,api);
+  }
+  show();
+}
+function certificate(id,mistakes){
+  var L=LESSONS[id];var s=mistakes===0?3:mistakes<=3?2:1;
+  if(!SAVE.stars[id]||SAVE.stars[id]<s){SAVE.stars[id]=s;persist()}
+  app.innerHTML='';app.appendChild(topBar(true));
+  var c=h('section',{class:'card cert'});
+  c.appendChild(h('div',{class:'row center'},[mascot('huge','wow')]));
+  c.appendChild(h('h2',{style:'font-size:clamp(32px,5vw,48px)'},['Amazing work, detective!']));
+  c.appendChild(h('div',{class:'bigstars',html:starStr(s)}));
+  var lw=h('div',{class:'lwicd'});lw.innerHTML='<div class="t">Look what I can do!</div><div class="bdy"><div class="box"><span>✓</span></div><div>'+L.lookWhat+'</div></div>';c.appendChild(lw);
+  if(L.copy){c.appendChild(h('p',{class:'task'},['Now copy the answers into your book.']));}
+  var r=h('div',{class:'row center',style:'margin-top:10px'});
+  if(L.copy)r.appendChild(h('button',{class:'big both',onclick:function(){answerBook(L.copy)}},['📖 Copy to my book']));
+  r.appendChild(h('button',{class:'big go',onclick:home},['Lesson map']));
+  c.appendChild(r);app.appendChild(c);sWin();confetti(120);later(function(){confetti(60)},900);
+}
+
+/* =====================================================================
+   DAY 1 — Make general statements (Learner's Book pp. 49–50)
+   ===================================================================== */
+function d1Engage(st,api){
+  st.appendChild(guide('What is an even number? What is an odd number? Tap a number. Watch the dots find a partner!'));
+  var pad=h('div',{class:'numpad'}),show=h('div'),tried={},count=0;
+  for(var n=1;n<=12;n++)(function(n){
+    var b=h('button',null,[String(n)]);
+    b.onclick=function(){
+      sPop();show.innerHTML='';
+      var row=h('div',{class:'pairs'});
+      var caps=Math.ceil(n/2);
+      for(var c=0;c<caps;c++){var full=c*2+1<n;var cp=h('div',{class:'cap '+(full?'full':'alone')});cp.style.animationDelay=(c*.12)+'s';
+        cp.appendChild(h('i',{style:'background:'+(isOdd(n)?'var(--odd)':'var(--even)')}));if(full)cp.appendChild(h('i',{style:'background:'+(isOdd(n)?'var(--odd)':'var(--even)')}));row.appendChild(cp)}
+      show.appendChild(row);
+      var v=h('div',{class:'verdict',html:isOdd(n)?n+' = '+Math.floor(n/2)+' pairs + <span class="o">1 left over</span>. '+n+' is <span class="o">ODD</span>':n+' = '+(n/2)+' pairs. Everyone has a partner! '+n+' is <span class="e">EVEN</span>'});
+      v.style.opacity=0;show.appendChild(v);later(function(){v.style.transition='opacity .4s';v.style.opacity=1;isOdd(n)?tone([440,330],.12):sGood()},caps*120+300);
+      b.className=par(n);
+      if(!tried[n]){tried[n]=1;count++}
+      if(count===4){later(function(){
+        var tk=h('div',{class:'frame',html:'🗣️ Say it out loud:<br><span class="e">Even</span> = every dot has a partner. <span class="o">Odd</span> = one dot is left over.'});
+        st.appendChild(tk);api.done();
+      },caps*120+700)}
+    };
+    pad.appendChild(b);
+  })(n);
+  st.appendChild(pad);st.appendChild(show);
+}
+function d1Explore(st,api){
+  st.appendChild(guide('Each L-shape is an odd number. Drag the light shape into the gap. What shape do you make?'));
+  var bk=BookView('lb50',{crop:[195,615]});st.appendChild(bk.el);
+  var rounds=[[3,3],[5,5],[7,7],[3,4]],k=0,area=h('div');st.appendChild(area);
+  function round(){
+    area.innerHTML='';var t=rounds[k],last=k===rounds.length-1;
+    area.appendChild(h('p',{class:'task',html:last?'Now try <span class="o">odd</span> + <span class="e">even</span>: 3 + 4. Do you get a rectangle?':'Put two <span class="o">odd</span> L-shapes together: '+t[0]+' + '+t[1]}));
+    var tp=TestPanel(t,'+',{max:48,onDone:function(){
+      var r=t[0]+t[1];
+      later(function(){
+        if(!isOdd(r)){bk.marker(88,490,920,115,0);feedback(area,'good','<b>A rectangle!</b> '+t[0]+' + '+t[1]+' = '+r+'. A rectangle is <span class="e">even</span>.')}
+        else feedback(area,'info','<b>No rectangle.</b> One dot is still left over. 3 + 4 = 7 is <span class="o">odd</span>.');
+        var nb=h('button',{class:'big go',onclick:function(){k++;if(k<rounds.length)round();else api.done('<b>You found it!</b> Two odd L-shapes always make a rectangle.')}},[last?'Done ✓':'Next shape →']);
+        if(k<rounds.length-1||last)area.appendChild(h('div',{class:'next-row'},[nb]));
+      },300);
+    }});
+    area.appendChild(tp.el);
+  }
+  round();
+}
+function d1Explain(st,api){
+  st.appendChild(guide('Here is the big idea from page 50. Tap each card to see the rule.'));
+  var bk=BookView('lb50',{crop:[650,1110]});st.appendChild(bk.el);
+  bk.marker(86,880,460,48,600);bk.marker(86,940,990,150,1600);
+  st.appendChild(h('div',{class:'row center',style:'margin:8px 0'},[
+    h('div',{class:'frame',style:'flex:1;min-width:240px',html:'<span class="e">Even</span> = pairs '+'<span style="display:inline-block;vertical-align:middle">'+sdots(6,14).outerHTML+'</span>'}),
+    h('div',{class:'frame',style:'flex:1;min-width:240px',html:'<span class="o">Odd</span> = 1 left over '+'<span style="display:inline-block;vertical-align:middle">'+sdots(5,14).outerHTML+'</span>'})]));
+  var rules=[{q:'odd + odd',t:[3,5],a:'even'},{q:'odd + even',t:[3,4],a:'odd'},{q:'even + even',t:[4,2],a:'even'}];
+  var fl=h('div',{class:'flips'}),opened=0;
+  rules.forEach(function(r){
+    var f=h('div',{class:'flip'}),inn=h('div',{class:'in'});
+    var front=h('button',{class:'f',html:cw(r.q).replace(/class="[oe]"/g,'')+' = ?<small>Tap to see</small>'});
+    var back=h('div',{class:'b'});
+    front.onclick=function(){if(f.classList.contains('on'))return;f.classList.add('on');sPop();
+      var tp=TestPanel(r.t,'+',{auto:true,max:30});back.appendChild(h('div',{class:'eqline',html:cw(r.q)+' = '+word(r.a)}));back.appendChild(tp.el);
+      opened++;if(opened===3)later(function(){
+        st.appendChild(h('div',{class:'frame',style:'margin-top:12px',html:'An <span class="o">odd</span> number + an <span class="o">odd</span> number is always <span class="e">even</span>.<br><small style="font-weight:700">This is a <b>generalisation</b>: a rule that works for ALL numbers.</small>'}));
+        api.done()},1600)};
+    inn.appendChild(front);inn.appendChild(back);f.appendChild(inn);fl.appendChild(f);
+  });
+  st.appendChild(fl);
+}
+function d1Elaborate(st,api){
+  st.appendChild(guide('Paula has a puzzle for you! Read Worked example 4 in your book.'));
+  var bk=BookView('lb50',{crop:[1150,1790]});st.appendChild(bk.el);
+  var tests=h('div',{class:'tests'});
+  var tp=TestPanel([1,3,5],'+',{title:'Test Paula’s idea: three odd numbers'});tests.appendChild(tp.el);
+  var cl=h('div',{class:'test'});cl.appendChild(h('div',{class:'rl'},['Paula’s answer: 50']));var cr=h('div',{class:'claim'});cr.appendChild(numDots(50,18));cl.appendChild(cr);cl.appendChild(h('div',{class:'rl',html:chip(50)}));tests.appendChild(cl);
+  st.appendChild(tests);
+  st.appendChild(h('p',{class:'task'},['Why can’t Paula be correct?']));
+  choiceQ(st,api,shuffle([{label:'odd + odd + odd = odd, but 50 is even.',ok:true},{label:'50 is too big.',why:'Size is not the problem. Compare the dots: is there one left over?'},{label:'You can’t add three numbers.',why:'You can! Join the dots and see.'}]),function(){
+    tp.run();var bk2=BookView('lb51',{crop:[190,425]});st.appendChild(bk2.el);bk2.marker(100,272,580,120,300);bk2.marker(745,365,350,45,900);
+    api.done('<b>Case solved!</b> The book says the same: odd + odd + odd = odd.');
+  },{col:true});
+}
+function thumbsQuiz(st,api,items,after){
+  var k=0,area=h('div');st.appendChild(area);
+  function q(){
+    area.innerHTML='';if(k>=items.length){after();return}
+    var it=items[k];
+    area.appendChild(h('div',{class:'today',style:'text-align:center'},['Question '+(k+1)+' of '+items.length]));
+    area.appendChild(h('div',{class:'bigstate',html:cw(it.s)}));
+    var row=h('div',{class:'thumbs'});
+    [['up','👍','True',true],['down','👎','Not true',false]].forEach(function(t){
+      var b=h('button',{class:'thumb '+t[0],'aria-label':t[2],html:t[1]+'<small>'+t[2]+'</small>'});
+      b.onclick=function(){
+        Array.prototype.forEach.call(row.children,function(x){x.disabled=true});
+        var ok=t[3]===it.t;if(ok)sGood();else{sBad();api.miss()}
+        var tp=TestPanel(it.ex,it.op||'+',{auto:true,max:36});
+        feedback(area,ok?'good':'bad',(ok?'<b>Yes!</b> ':'<b>Look at the dots.</b> ')+'It is '+(it.t?'true':'not true')+'.',tp.el);
+        area.appendChild(h('div',{class:'next-row'},[h('button',{class:'big go',onclick:function(){k++;q()}},['Next →'])]));
+      };
+      row.appendChild(b);
+    });
+    area.appendChild(row);
+  }
+  q();
+}
+function d1Evaluate(st,api){
+  st.appendChild(guide('Thumbs up if it is true. Thumbs down if it is not true!'));
+  thumbsQuiz(st,api,[
+    {s:'odd + odd = even',t:true,ex:[5,7]},
+    {s:'odd + even = even',t:false,ex:[3,6]},
+    {s:'even + even = even',t:true,ex:[4,6]},
+    {s:'odd + even = odd',t:true,ex:[7,2]},
+    {s:'odd − odd = odd',t:false,ex:[9,5],op:'-'}
+  ],function(){api.done('<b>Exit ticket done!</b>')});
+}
+
+/* =====================================================================
+   DAY 2 — Test general statements (Learner's Book pp. 51–52)
+   ===================================================================== */
+function hassan(){var w=h('div',{class:'who'});w.innerHTML='<div class="avatar" style="background:#FF7A3D">H</div><div class="bubble"><span class="name">Hassan says</span>‘Adding two <span class="o">odd</span> numbers always gives an <span class="o">odd</span> number answer.’</div><div class="stamp">COUNTER-EXAMPLE!</div>';return w}
+function d2Engage(st,api){
+  st.appendChild(guide('Is Hassan right? Show thumbs up or thumbs down. Then test it!'));
+  var w=hassan();st.appendChild(w);
+  var row=h('div',{class:'thumbs'});
+  [['up','👍','True'],['down','👎','Not true']].forEach(function(t){row.appendChild(h('button',{class:'thumb '+t[0],html:t[1]+'<small>'+t[2]+'</small>',onclick:function(){
+    row.remove();var tp=TestPanel([3,5],'+',{title:'Test it: 3 + 5. Drag the shapes together!',onDone:function(){
+      later(function(){w.querySelector('.stamp').classList.add('on');sBad();api.done('<b>Hassan is wrong!</b> 3 + 5 = 8 is even.')},400)}});st.appendChild(tp.el)}}))});
+  st.appendChild(row);
+}
+function pascalRows(n){var R=[[1]];for(var r=1;r<n;r++){var p=R[r-1],row=[1];for(var c=1;c<r;c++)row.push(p[c-1]+p[c]);row.push(1);R.push(row)}return R}
+function d2Explore(st,api){
+  st.appendChild(guide('This is Pascal’s triangle. Each number is the sum of the two numbers above it. Shade all the even numbers!'));
+  var R=pascalRows(8),cells=[],need=0,got=0,phase=1;
+  var tri=h('div',{class:'pascal'});
+  var info=h('div');
+  var kinds={'odd+odd':false,'even+even':false,'odd+even':false};
+  var found=h('div',{class:'found'});
+  function drawFound(){found.innerHTML='';[['odd+odd','odd + odd = even'],['even+even','even + even = even'],['odd+even','odd + even = odd']].forEach(function(k){found.appendChild(h('span',{class:kinds[k[0]]?'got':'',html:(kinds[k[0]]?'✓ ':'? ')+cw(k[1])}))})}
+  R.forEach(function(row,r){var pr=h('div',{class:'prow'});cells[r]=[];row.forEach(function(v,c){
+    if(!isOdd(v))need++;
+    var b=h('button',{class:'pc'},[String(v)]);cells[r][c]=b;
+    b.onclick=function(){
+      if(phase===1){
+        if(b.classList.contains('ev'))return;
+        if(!isOdd(v)){b.classList.add('ev');sPop();got++;info.innerHTML='';info.appendChild(h('div',{class:'claim',html:'<b style="font-size:24px">'+v+'</b>'}));info.firstChild.appendChild(numDots(v,14));if(got===need)reveal()}
+        else{api.miss();sBad();b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake','od');info.innerHTML='';var cl=h('div',{class:'claim',html:'<b style="font-size:24px">'+v+'</b>'});cl.appendChild(numDots(v,14));info.appendChild(cl);info.appendChild(h('div',{class:'rl',html:v+' has a dot left over. It is '+word('odd')+'.'}))}
+      }else{
+        cells.forEach(function(rr){rr.forEach(function(x){x.classList.remove('parent','kid')})});
+        info.innerHTML='';
+        if(r===0||c===0||c===r){info.appendChild(h('p',{class:'rl'},['The 1s on the edge have only one number above. Tap a number inside!']));return}
+        var a=R[r-1][c-1],bb=R[r-1][c];cells[r-1][c-1].classList.add('parent');cells[r-1][c].classList.add('parent');b.classList.add('kid');sPop();
+        var key=isOdd(a)&&isOdd(bb)?'odd+odd':(!isOdd(a)&&!isOdd(bb)?'even+even':'odd+even');
+        var newOne=!kinds[key];kinds[key]=true;drawFound();
+        info.appendChild(h('div',{class:'eqline',html:a+' + '+bb+' = '+v+'<br><span style="font-size:20px">'+word(par(a))+' + '+word(par(bb))+' = '+word(par(v))+'</span>'}));
+        if(newOne&&kinds['odd+odd']&&kinds['even+even']&&kinds['odd+even'])api.done('<b>You found all three rules in Pascal’s triangle!</b>');
+      }
+    };
+    pr.appendChild(b);});tri.appendChild(pr)});
+  function reveal(){
+    phase=2;tri.classList.add('reveal');sWin();confetti(50);
+    st.insertBefore(h('div',{class:'frame',html:'✨ Look! The <span class="e">even</span> numbers make an upside-down triangle!<br><small style="font-weight:700">Now tap a number to see the two numbers above it. Find all three rules.</small>'}),tri);
+    drawFound();tri.after(found);
+  }
+  st.appendChild(tri);st.appendChild(info);
+  var skip=h('button',{class:'big plain small',onclick:function(){cells.forEach(function(rr,r){rr.forEach(function(b,c){if(!isOdd(R[r][c]))b.classList.add('ev')})});skip.remove();reveal()}},['Shade them for me']);
+  st.appendChild(h('div',{class:'row center noprint',style:'margin-top:8px'},[skip]));
+}
+function d2Explain(st,api){
+  st.appendChild(guide('A counter-example is ONE example that shows a statement is wrong. Always true means it works every time.'));
+  var w=hassan();st.appendChild(w);
+  var btn=h('button',{class:'big both',onclick:function(){btn.remove();
+    var tp=TestPanel([3,5],'+',{auto:true,title:'One example: 3 + 5'});area.appendChild(tp.el);
+    later(function(){w.querySelector('.stamp').classList.add('on');sBad();
+      area.appendChild(h('div',{class:'frame',html:'3 + 5 = 8 is a <b>counter-example</b>.<br>So Hassan’s rule is <b>not always true</b>. One example is enough!'}));
+      area.appendChild(h('p',{class:'task'},['Which one is a counter-example to “odd + odd = odd”?']));
+      choiceQ(area,api,shuffle([{label:'7 + 9 = 16',ok:true},{label:'3 + 4 = 7',why:'4 is even. We need two odd numbers.'},{label:'2 + 2 = 4',why:'2 is even. We need two odd numbers.'}]),function(){area.appendChild(TestPanel([7,9],'+',{auto:true,max:30}).el);api.done('<b>Yes!</b> 7 + 9 = 16 is even, so it shows Hassan is wrong.')},{cls:function(){return 'big plain'}});
+    },1500)}},['🔍 Find a counter-example']);
+  var area=h('div');st.appendChild(h('div',{class:'row center'},[btn]));st.appendChild(area);
+}
+/* Learner's Book Exercise 3.3, pp. 51–52, question by question on the real page */
+function d2Elaborate(st,api){
+  var Q=[lbQ1,lbQ2,lbQ3,lbQ4,lbQ5,lbQ6,lbQ7],k=0;
+  var bar=h('div',{class:'row'}),area=h('div');st.appendChild(bar);st.appendChild(area);
+  function drawBar(){bar.innerHTML='';Q.forEach(function(_,j){bar.appendChild(h('span',{class:'chip',style:'background:'+(j<k?'var(--good)':j===k?'var(--e4)':'#C9D8EE')},['Q'+(j+1)]))})}
+  function next(){k++;if(k<Q.length)go();else api.done('<b>Exercise 3.3 finished!</b> Every answer is written in the book pages.')}
+  function go(){drawBar();area.innerHTML='';Q[k](area,api,function(){area.appendChild(h('div',{class:'next-row'},[h('button',{class:'big go',onclick:function(){next();window.scrollTo({top:0,behavior:'smooth'})}},[k<Q.length-1?'Next question →':'Finish exercise ✓'])]))})}
+  go();
+}
+function pickMany(area,api,opts,need,onDone){
+  var wrap=h('div',{class:'choices'}),got=0;
+  opts.forEach(function(o){var b=h('button',{class:'opt',html:o.label});b.onclick=function(){
+    if(b.disabled)return;b.disabled=true;
+    if(o.ok){b.classList.add('right');sGood();got++;if(got===need){Array.prototype.forEach.call(wrap.children,function(x){x.disabled=true});onDone()}}
+    else{b.classList.add('wrongpick');sBad();api.miss();feedback(area,'bad',o.why)}};wrap.appendChild(b)});
+  area.appendChild(wrap);
+}
+function lbQ1(a,api,done){
+  a.appendChild(guide('Find three examples for each general statement. Tap 3 that match!'));
+  var bk=BookView('lb51',{crop:[540,705]});a.appendChild(bk.el);
+  a.appendChild(TestPanel([2,4],'+',{title:'Test: 2 + 4. Drag to join!',max:32}).el);
+  a.appendChild(h('p',{class:'task',html:'The sum of two <span class="e">even</span> numbers is <span class="e">even</span>:'}));
+  pickMany(a,api,shuffle([{label:'2 + 4 = 6',ok:true},{label:'10 + 12 = 22',ok:true},{label:'20 + 8 = 28',ok:true},{label:'3 + 5 = 8',why:'3 and 5 are odd numbers.'},{label:'4 + 7 = 11',why:'7 is odd.'},{label:'6 + 1 = 7',why:'1 is odd.'}]),3,function(){
+    bk.write('lb1a');
+    a.appendChild(h('p',{class:'task',html:'The sum of three <span class="o">odd</span> numbers is <span class="o">odd</span>:'}));
+    pickMany(a,api,shuffle([{label:'1 + 3 + 5 = 9',ok:true},{label:'3 + 5 + 7 = 15',ok:true},{label:'11 + 23 + 35 = 69',ok:true},{label:'2 + 4 + 6 = 12',why:'2, 4 and 6 are even.'},{label:'1 + 2 + 3 = 6',why:'2 is even.'},{label:'5 + 5 = 10',why:'That is only two numbers.'}]),3,function(){bk.write('lb1b');done()});
+  });
+}
+function lbQ2(a,api,done){
+  a.appendChild(guide('Tap the right card in the book to finish the sentence.'));
+  var bk=BookView('lb51',{crop:[715,985]});a.appendChild(bk.el);
+  var tp=TestPanel([5,7],'+',{title:'Test: add two odd numbers. Drag to join!'});a.appendChild(tp.el);
+  var solved=false;
+  [['odd',150,772,232,78],['even',421,772,232,78],['odd or even',692,772,232,78]].forEach(function(c){
+    var hb=bk.hot(c[1],c[2],c[3],c[4],c[0],function(){if(solved)return;
+      if(c[0]==='even'){solved=true;hb.classList.add('picked');tp.run();bk.write('lb2',300);sGood();feedback(a,'good','<b>even!</b> Two odd numbers always make even.');done()}
+      else{api.miss();sBad();hb.classList.remove('badtap');void hb.offsetWidth;hb.classList.add('badtap');feedback(a,'bad','Join the dots and look. Is a dot left over?')}});
+  });
+}
+function lbQ3(a,api,done){
+  a.appendChild(guide('Tap the digit cards in the book to fill the green boxes. Make even − even = even.'));
+  var bk=BookView('lb51',{crop:[985,1445]});a.appendChild(bk.el);
+  var xs=[150,296,443,590,736,882],slots=[null,null,null],slotEls=[],cards=[];
+  var boxes=[[150,1286],[246,1286],[344,1286]];
+  function drawSlots(){slotEls.forEach(function(e){e.remove()});slotEls=[];slots.forEach(function(v,i){if(v!=null)slotEls.push(bk.put(boxes[i][0],boxes[i][1],53,53,String(v),'c',44,true))})}
+  xs.forEach(function(x,i){var n=i+1;cards[n]=bk.hot(x,1043,108,108,'card '+n,function(){var s=slots.indexOf(null);if(s<0)return;slots[s]=n;cards[n].classList.add('used');sPop();drawSlots();if(slots.indexOf(null)<0)check()})});
+  var out=h('div');a.appendChild(out);
+  a.appendChild(h('div',{class:'row center'},[h('button',{class:'big plain small',onclick:reset},['Clear the boxes'])]));
+  function reset(){slots=[null,null,null];cards.forEach(function(c){if(c)c.classList.remove('used')});drawSlots()}
+  function check(){
+    var x=slots[0],y=slots[1],z=slots[2],odds=slots.filter(isOdd);
+    if(odds.length){api.miss();sBad();var v=h('div',{class:'claim'});odds.forEach(function(o){v.appendChild(h('b',{class:'o',style:'font-size:24px'},[String(o)]));v.appendChild(sdots(o,18))});feedback(out,'bad',odds.join(', ')+(odds.length>1?' have':' has')+' a dot left over. Use only <span class="e">even</span> cards!',v);later(reset,900);return}
+    if(x-y!==z){api.miss();sBad();feedback(out,'bad',x+' '+MINUS+' '+y+' is not '+z+'. Try another order!',x>y?TestPanel([x,y],'-',{auto:true,max:32}).el:null);later(reset,1400);return}
+    slotEls.forEach(function(e){e.remove()});slotEls=[];
+    var ids={6:'lb3a',4:'lb3b',2:'lb3c'};
+    if(x===6&&y===4){bk.write('lb3a');bk.write('lb3b',200);bk.write('lb3c',400)}else{slots.forEach(function(v,i){var n=bk.put(boxes[i][0],boxes[i][1],53,53,String(v),'c',44,false);later(function(){n.classList.add('go');sWrite()},i*200)})}
+    sGood();var tp=TestPanel([x,y],'-',{auto:true,max:34});
+    feedback(out,'good','<b>'+x+' '+MINUS+' '+y+' = '+z+'</b>. Pairs take away pairs leaves pairs!',tp.el);
+    later(function(){out.appendChild(h('p',{class:'task'},['Two other even numbers: 10 '+MINUS+' 4 = ?']));out.appendChild(TestPanel([10,4],'-',{title:'10 − 4',max:30,onDone:function(){bk.write('lb3d');done()}}).el)},1500);
+  }
+}
+function whoQ(a,api,o){
+  var w=h('div',{class:'who'});w.innerHTML='<div class="avatar" style="background:'+o.col+'">'+o.who[0]+'</div><div class="bubble"><span class="name">'+o.who+' says</span>‘'+cw(o.say)+'’</div>';a.appendChild(w);return w;
+}
+function lbQ4(a,api,done){
+  var bk=BookView('lb51',{crop:[1452,1548]});a.appendChild(bk.el);
+  whoQ(a,api,{who:'Hassan',col:'#FF7A3D',say:'Adding two odd numbers always gives an odd number answer.'});
+  a.appendChild(h('p',{class:'task'},['Pick a counter-example. Watch the dots!']));
+  var opts=[{label:'3 + 5 = 8',ok:true,t:[3,5]},{label:'3 + 4 = 7',t:[3,4],why:'4 is even. Hassan said two odd numbers.'},{label:'2 + 6 = 8',t:[2,6],why:'2 and 6 are even.'}];
+  opts.forEach(function(o){o.viz=function(){return TestPanel(o.t,'+',{auto:true,max:30}).el}});
+  choiceQ(a,api,shuffle(opts),function(){feedback(a,'good','<b>3 + 5 = 8 is even.</b> Hassan is wrong!',TestPanel([3,5],'+',{auto:true,max:34}).el);bk.write('lb4',600);done()},{cls:function(){return 'big plain'}});
+}
+function lbQ5(a,api,done){
+  var bk=BookView('lb51',{crop:[1552,1760]});a.appendChild(bk.el);
+  whoQ(a,api,{who:'Martha',col:'#7A4CE0',say:'I added three even numbers and my answer was 25.'});
+  var tests=h('div',{class:'tests'});var tp=TestPanel([2,4,6],'+',{title:'Test: three even numbers'});tests.appendChild(tp.el);
+  var cl=h('div',{class:'test'});cl.appendChild(h('div',{class:'rl'},['Martha’s answer: 25']));var cr=h('div',{class:'claim'});cr.appendChild(numDots(25,16));cl.appendChild(cr);cl.appendChild(h('div',{class:'rl',html:chip(25)}));tests.appendChild(cl);a.appendChild(tests);
+  a.appendChild(h('p',{class:'task'},['Why can’t Martha be correct?']));
+  choiceQ(a,api,shuffle([{label:'even + even + even = even, but 25 is odd.',ok:true},{label:'even + even + even = odd.',why:'Join the dots: 2 + 4 + 6 = 12. Is a dot left over?'},{label:'25 is even.',why:'25 ends in 5. Look: 1 dot is left over.'}]),function(){tp.run();bk.write('lb5',400);done()},{col:true});
+}
+function lbQ6(a,api,done){
+  var bk=BookView('lb52',{crop:[200,380]});a.appendChild(bk.el);
+  whoQ(a,api,{who:'Salem',col:'#16A3A3',say:'When you add 5 to any number the answer will be odd.'});
+  var tests=h('div',{class:'tests'}),t1=TestPanel([2,5],'+',{noButton:true,title:'2 + 5'}),t2=TestPanel([1,5],'+',{noButton:true,title:'1 + 5'});tests.appendChild(t1.el);tests.appendChild(t2.el);a.appendChild(tests);
+  var go=h('button',{class:'big both small',onclick:function(){go.remove();t1.run();later(function(){t2.run()},500)}},['✨ Test both']);a.appendChild(h('div',{class:'row center'},[go]));
+  a.appendChild(h('p',{class:'task'},['Is Salem correct?']));
+  choiceQ(a,api,[{label:'Yes',why:'Look at 1 + 5. Is 6 odd?'},{label:'No',ok:true}],function(){if(go.parentNode)go.remove();t1.run();t2.run();bk.write('lb6a',300);bk.write('lb6b',1400);done()},{cls:function(){return 'big plain'}});
+}
+function lbQ7(a,api,done){
+  var bk=BookView('lb52',{crop:[385,605]});a.appendChild(bk.el);
+  whoQ(a,api,{who:'Heidi',col:'#1FA563',say:'When you find the difference between two odd numbers the answer is odd.'});
+  var tests=h('div',{class:'tests'}),t1=TestPanel([5,3],'-',{noButton:true,title:'5 − 3'}),t2=TestPanel([9,5],'-',{noButton:true,title:'9 − 5'});tests.appendChild(t1.el);tests.appendChild(t2.el);a.appendChild(tests);
+  var go=h('button',{class:'big both small',onclick:function(){go.remove();t1.run();later(function(){t2.run()},500)}},['✨ Take away']);a.appendChild(h('div',{class:'row center'},[go]));
+  a.appendChild(h('p',{class:'task'},['Is Heidi correct?']));
+  choiceQ(a,api,[{label:'Yes',why:'Look at 5 − 3 = 2. Is 2 odd?'},{label:'No',ok:true}],function(){if(go.parentNode)go.remove();t1.run();t2.run();bk.write('lb7a',300);bk.write('lb7b',1400);done()},{cls:function(){return 'big plain'}});
+}
+function d2Evaluate(st,api){
+  st.appendChild(guide('Odds and evens card game! Flip the cards, then say: is the total odd or even?'));
+  var rounds=6,k=0,score=0,area=h('div');st.appendChild(area);
+  function card(n){var c=h('div',{class:'pcard'}),inn=h('div',{class:'in'});inn.appendChild(h('div',{class:'f'}));var b=h('div',{class:'b'});b.appendChild(h('span',{class:par(n)==='odd'?'o':'e'},[String(n)]));b.appendChild(sdots(n,10));inn.appendChild(b);c.appendChild(inn);return c}
+  function round(){
+    area.innerHTML='';
+    if(k>=rounds){rules();return}
+    var a=1+Math.floor(Math.random()*10),b=1+Math.floor(Math.random()*10);
+    area.appendChild(h('div',{class:'today',style:'text-align:center'},['Round '+(k+1)+' of '+rounds+' · Score '+score]));
+    var row=h('div',{class:'pcards'}),c1=card(a),c2=card(b);row.appendChild(c1);row.appendChild(h('span',{class:'plus',style:'font-size:40px'},['+']));row.appendChild(c2);area.appendChild(row);
+    var flip=h('button',{class:'big both',onclick:function(){flip.remove();c1.classList.add('on');sPop();later(function(){c2.classList.add('on');sPop();area.appendChild(ask)},350)}},['Flip the cards!']);
+    area.appendChild(h('div',{class:'row center'},[flip]));
+    var ask=h('div',{class:'choices'});
+    ['odd','even'].forEach(function(p){ask.appendChild(h('button',{class:'big '+p,onclick:function(){
+      Array.prototype.forEach.call(ask.children,function(x){x.disabled=true});
+      var ok=p===par(a+b);if(ok){score++;sGood()}else{sBad();api.miss()}
+      var tp=TestPanel([a,b],'+',{auto:true,max:30});
+      feedback(area,ok?'good':'bad',(ok?'<b>Yes!</b> ':'')+cw(par(a)+' + '+par(b)+' = '+par(a+b)),tp.el);
+      area.appendChild(h('div',{class:'next-row'},[h('button',{class:'big go',onclick:function(){k++;round()}},['Next round →'])]));
+    }},[p.toUpperCase()]))});
+  }
+  function rules(){
+    area.appendChild(h('div',{class:'bigstate'},['Score: '+score+' / '+rounds]));
+    area.appendChild(guide('Now say the 4 rules! Tap a word to fill each gap.'));
+    var R=[['odd','odd','even'],['even','even','even'],['odd','even','odd'],['even','odd','odd']],ok=0;
+    R.forEach(function(r){
+      var line=h('div',{class:'frame',style:'margin:8px 0'});
+      line.innerHTML='An '+word(r[0])+' number + an '+word(r[1])+' number is always ';
+      var slot=h('span',{class:'row',style:'display:inline-flex;gap:8px'});
+      ['odd','even'].forEach(function(p){slot.appendChild(h('button',{class:'big small '+p,onclick:function(){
+        if(p===r[2]){slot.innerHTML='<b class="'+(p==='odd'?'o':'e')+'" style="font-size:28px">'+p+'</b>';sGood();speak('An '+r[0]+' number plus an '+r[1]+' number is always '+r[2]);ok++;if(ok===4)api.done('<b>You know all 4 rules!</b>')}
+        else{sBad();api.miss()}}},[p]))});
+      line.appendChild(slot);line.appendChild(document.createTextNode('.'));area.appendChild(line);
+    });
+  }
+  round();
+}
+
+/* =====================================================================
+   HOMEWORK — Workbook pp. 45–48
+   ===================================================================== */
+function wbLook(st,api){
+  st.appendChild(guide('Read the worked example. Test both sums with dots!'));
+  st.appendChild(BookView('wb45').el);
+  var tests=h('div',{class:'tests'});var n=0;
+  [[1,2],[2,4]].forEach(function(t){tests.appendChild(TestPanel(t,'+',{onDone:function(){n++;if(n===2)api.done('One sum is odd and one is even, so it is <b>sometimes true</b>.')}}).el)});
+  st.appendChild(tests);
+}
+function wbQ1(st,api){
+  st.appendChild(guide('Tap every odd number in the book to shade it. What letter appears?'));
+  var bk=BookView('wb46',{crop:[440,1075]});st.appendChild(bk.el);
+  var lens=h('div',{class:'test',style:'text-align:center'});lens.innerHTML='<div class="rl">Dot lens: tap a number</div>';st.appendChild(lens);
+  var need=WB1.nums.filter(isOdd).length,got=0;
+  WB1.nums.forEach(function(n,i){
+    var r=Math.floor(i/5),c=i%5,x=WB1.x0+c*WB1.cw,y=WB1.y0+r*WB1.ch,done=false;
+    var hb=bk.hot(x,y,WB1.cw,WB1.ch,String(n),function(){
+      lens.innerHTML='';lens.appendChild(h('div',{class:'eqline'},[String(n)]));lens.appendChild(numDots(n,18));lens.appendChild(h('div',{class:'rl',html:numWhy(n)}));
+      if(done)return;
+      if(isOdd(n)){done=true;bk.shade(x+3,y+3,WB1.cw-6,WB1.ch-6);hb.classList.remove('hint');sPop();got++;if(got===need)ask()}
+      else{api.miss();sBad();hb.classList.remove('badtap');void hb.offsetWidth;hb.classList.add('badtap')}
+    },false);
+  });
+  function ask(){
+    st.appendChild(h('p',{class:'task',style:'text-align:center'},['All shaded! What is the hidden letter?']));
+    choiceQ(st,api,shuffle([{label:'H',ok:true},{label:'N'},{label:'T'},{label:'E'}]),function(){bk.write('wb1');api.done('<b>It is H!</b>')},{cls:function(){return 'big plain'}});
+  }
+}
+function boxesQ(st,api,page,crop,items,sentence){
+  var bk=BookView(page,{crop:crop});st.appendChild(bk.el);
+  var panel=h('div');st.appendChild(panel);var left=items.length;
+  items.forEach(function(it){
+    var a=ANS[it.id];var hb=bk.hot(a[1],a[2],a[3],a[4],it.a+' + '+it.b,function(){
+      if(it.done)return;panel.innerHTML='';
+      panel.appendChild(h('div',{class:'eqline'},[it.a+' + '+it.b+' = ?']));
+      var viz=BigSum(it.a,it.b,{noButton:true});
+      choiceQ(panel,api,shuffle(it.opts).map(function(v){return {label:String(v),ok:v===it.a+it.b,why:'Add the ones first: '+(it.a%10)+' + '+(it.b%10)+' = '+(it.a%10+it.b%10)+'.'}}),function(){
+        it.done=true;hb.remove();bk.write(it.id);panel.appendChild(viz.el);viz.run();left--;
+        if(left===0)later(fill,1600);
+      },{cls:function(){return 'big plain'}});
+    });
+  });
+  panel.appendChild(h('p',{class:'task',style:'text-align:center'},['👆 Tap a box in the book.']));
+  function fill(){
+    panel.innerHTML='';
+    panel.appendChild(h('p',{class:'task',html:'Look at your answers. '+sentence.q}));
+    choiceQ(panel,api,[{label:'odd',k:'odd'},{label:'even',k:'even'},{label:'odd or even',k:'both'}].map(function(c){c.ok=c.k===sentence.a;return c}),function(){bk.write(sentence.id);api.done()},{cls:function(c){return 'big '+c.k}});
+  }
+}
+function wbQ2(st,api){st.appendChild(guide('Tap each box in the book and work it out.'));
+  boxesQ(st,api,'wb46',[1090,1425],[{id:'wb2a',a:5,b:11,opts:[16,15,17]},{id:'wb2b',a:23,b:19,opts:[42,41,32]},{id:'wb2c',a:101,b:5,opts:[106,105,116]}],{q:'The sum of two odd numbers is always ...',a:'even',id:'wb2s'})}
+function wbQ5(st,api){st.appendChild(guide('Tap each box in the book and work it out.'));
+  boxesQ(st,api,'wb47',[830,1150],[{id:'wb5a',a:5,b:12,opts:[17,16,18]},{id:'wb5b',a:23,b:20,opts:[43,42,33]},{id:'wb5c',a:101,b:10,opts:[111,110,101]}],{q:'The sum of one odd number and one even number is always ...',a:'odd',id:'wb5s'})}
+function wbQ3(st,api){
+  st.appendChild(guide('Tap a calculation in the book, then tap its answer box. A line will join them!'));
+  var bk=BookView('wb46',{crop:[1425,1845]});st.appendChild(bk.el);
+  var picked=null,calcHots=[],done=0,out=h('div');
+  var ex=[[3,5],[3,4],[2,6]];
+  WB3.calc.forEach(function(c,i){calcHots[i]=bk.hot(c[0],c[1],c[2],c[3],'calculation '+(i+1),function(){if(calcHots[i].done)return;calcHots.forEach(function(x){x.classList.remove('picked')});picked=i;calcHots[i].classList.add('picked');sPop()})});
+  ['even','odd'].forEach(function(k){var b=WB3.box[k];bk.hot(b[0],b[1],b[2],b[3],k,function(){
+    if(picked==null){feedback(out,'info','First tap a calculation.');return}
+    var i=picked,ok=WB3.ans[i]===k;picked=null;calcHots[i].classList.remove('picked');
+    var l=bk.line(WB3.ends[i][0],WB3.ends[i][1],WB3.tgt[k][0],WB3.tgt[k][1],!ok);
+    var tp=TestPanel(ex[i],'+',{auto:true,max:30,title:'Test: '+ex[i].join(' + ')});
+    if(ok){calcHots[i].done=true;calcHots[i].classList.remove('hint');calcHots[i].style.pointerEvents='none';sWrite();done++;feedback(out,'good','<b>Yes!</b>',tp.el);if(done===3)api.done()}
+    else{api.miss();sBad();feedback(out,'bad','Watch the dots. Is one left over?',tp.el);later(function(){l.remove()},1200)}
+  })});
+  st.appendChild(out);
+}
+function asnQ(st,api,o){
+  st.appendChild(h('p',{class:'task',html:cw(o.s)}));
+  var tests=h('div',{class:'tests'}),tps=[];o.ex.forEach(function(e){var tp=TestPanel(e[0],e[1]||'+',{noButton:true,title:exprStr(e[0],e[1]||'+'),max:30});tps.push(tp);tests.appendChild(tp.el)});st.appendChild(tests);
+  var go=h('button',{class:'big both small',onclick:function(){go.remove();tps.forEach(function(t,i){later(function(){t.run()},i*400)})}},['✨ Test them']);st.appendChild(h('div',{class:'row center'},[go]));
+  var box=h('div');st.appendChild(box);
+  choiceQ(box,api,[{k:'always',label:'Always'},{k:'sometimes',label:'Sometimes'},{k:'never',label:'Never'}].map(function(c){c.ok=c.k===o.a;c.why='Test them with dots first!';return c}),function(){if(go.parentNode)go.remove();tps.forEach(function(t){t.run()});o.then()},{cls:function(c){return 'big '+(c.k==='always'?'go':c.k==='never'?'odd':'both')}});
+}
+function wbQ4(st,api){
+  st.appendChild(guide('Is it always, sometimes or never true? Test with dots, then choose.'));
+  var bk=BookView('wb47',{crop:[190,755]});st.appendChild(bk.el);
+  var b=h('div');
+  asnQ(st,api,{s:'a  The sum of two odd numbers is even.',ex:[[[1,3]],[[5,7]]],a:'always',then:function(){bk.write('wb4a1');bk.write('wb4a2',900);st.appendChild(b);
+    asnQ(b,api,{s:'b  The sum of three odd numbers is even.',ex:[[[1,3,5]],[[3,3,3]]],a:'never',then:function(){bk.write('wb4b1');bk.write('wb4b2',900);api.done()}})}});
+}
+function wbQ6(st,api){
+  st.appendChild(guide('Test each statement, then tap True or Not true in the book.'));
+  var bk=BookView('wb47',{crop:[1170,1615]});st.appendChild(bk.el);
+  var rows=[{t:true,ex:[5,2],op:'+',y:1334,id:'wb6a'},{t:true,ex:[3,5],op:'+',y:1430,id:'wb6b'},{t:false,ex:[7,3],op:'-',y:1526,id:'wb6c'}],left=3,out=h('div');
+  rows.forEach(function(r){
+    [[454,true],[661,false]].forEach(function(c){var hb=bk.hot(c[0],r.y,71,71,c[1]?'true':'not true',function(){
+      if(r.done)return;
+      var tp=TestPanel(r.ex,r.op,{auto:true,max:30,title:'Test: '+exprStr(r.ex,r.op)});
+      if(c[1]===r.t){r.done=true;bk.write(r.id);left--;feedback(out,'good','<b>'+(r.t?'True!':'Not true!')+'</b>',tp.el);if(left===0)api.done()}
+      else{api.miss();sBad();hb.classList.remove('badtap');void hb.offsetWidth;hb.classList.add('badtap');feedback(out,'bad','Check with dots:',tp.el)}
+    })});
+  });
+  st.appendChild(out);
+}
+function wbQ7(st,api){
+  var bk=BookView('wb48',{crop:[190,465]});st.appendChild(bk.el);
+  whoQ(st,api,{who:'Leroy',col:'#2F7BF5',say:'I add two odd numbers and one even number and my answer is 33.'});
+  var tests=h('div',{class:'tests'});var tp=TestPanel([1,3,2],'+',{title:'Test: odd + odd + even'});tests.appendChild(tp.el);
+  var cl=h('div',{class:'test'});cl.appendChild(h('div',{class:'rl'},['Leroy’s answer: 33']));var cr=h('div',{class:'claim'});cr.appendChild(numDots(33,16));cl.appendChild(cr);cl.appendChild(h('div',{class:'rl',html:chip(33)}));tests.appendChild(cl);st.appendChild(tests);
+  st.appendChild(h('p',{class:'task'},['Why can’t Leroy be correct?']));
+  choiceQ(st,api,shuffle([{label:'odd + odd + even = even, but 33 is odd.',ok:true},{label:'odd + odd + even = odd.',why:'Join the dots: 1 + 3 + 2 = 6. Is a dot left over?'},{label:'33 is too small.',why:'Size is not the problem. Think odd and even.'}]),function(){tp.run();bk.write('wb7a',300);bk.write('wb7b',1300);api.done()},{col:true});
+}
+function wbQ8(st,api){
+  st.appendChild(guide('Mary has an idea. Test it, then decide!'));
+  var bk=BookView('wb48',{crop:[465,765]});st.appendChild(bk.el);
+  whoQ(st,api,{who:'Mary',col:'#E0559B',say:'The difference between two odd numbers is odd.'});
+  asnQ(st,api,{s:'Is Mary’s statement always, sometimes or never true?',ex:[[[7,3],'-'],[[13,9],'-']],a:'never',then:function(){bk.write('wb8a');bk.write('wb8b',1000);api.done()}});
+}
+
+/* =====================================================================
+   LESSONS
+   ===================================================================== */
+var LESSONS={
+  d1:{title:'Odd and even: make general statements',when:'Day 1 · Learner’s Book pages 49–50',color:'var(--e1)',
+    goal:'I can make general statements about adding and subtracting odd and even numbers.',
+    lookWhat:'I can make general statements about adding and subtracting odd and even numbers.',copy:null,
+    stations:[
+      {name:'Warm up',render:d1Engage,src:'What makes a number odd or even?'},
+      {name:'Discover',render:d1Explore,src:"Learner's Book p. 50"},
+      {name:'Learn the rule',render:d1Explain,src:"Learner's Book p. 50"},
+      {name:'Practise',render:d1Elaborate,src:'Paula’s puzzle'},
+      {name:'Check',render:d1Evaluate,src:'True or not true?'}
+    ]},
+  d2:{title:'Odd and even: test general statements',when:'Day 2 · Learner’s Book pages 51–52',color:'var(--e4)',
+    goal:'I can test general statements about odd and even numbers.',
+    lookWhat:'I can make and test general statements involving addition and subtraction of odd and even numbers.',copy:'lb',
+    stations:[
+      {name:'Warm up',render:d2Engage,src:'Hassan’s claim'},
+      {name:'Discover',render:d2Explore,src:'Pascal’s triangle'},
+      {name:'Learn the rule',render:d2Explain,src:'One example can prove it wrong'},
+      {name:'Practise',render:d2Elaborate,src:"Learner's Book questions 1–7"},
+      {name:'Check',render:d2Evaluate,src:'Odds and evens card game'}
+    ]},
+  hw:{title:'Homework: Workbook pages 45–48',when:'Homework · Workbook pages 45–48',color:'#5B6B8F',
+    goal:'I can test general statements about odd and even numbers.',lookWhat:'I finished Workbook Exercise 3.3.',copy:'wb',
+    stations:[
+      {name:'p. 45',short:'👀',c:'#5B6B8F',render:wbLook,src:'Worked example 4'},
+      {name:'Q1',short:'1',c:'#2F7BF5',render:wbQ1,src:'Workbook p. 46'},
+      {name:'Q2',short:'2',c:'#1FA563',render:wbQ2,src:'Workbook p. 46'},
+      {name:'Q3',short:'3',c:'#7A4CE0',render:wbQ3,src:'Workbook p. 46'},
+      {name:'Q4',short:'4',c:'#E0559B',render:wbQ4,src:'Workbook p. 47'},
+      {name:'Q5',short:'5',c:'#FF7A3D',render:wbQ5,src:'Workbook p. 47'},
+      {name:'Q6',short:'6',c:'#2F7BF5',render:wbQ6,src:'Workbook p. 47'},
+      {name:'Q7',short:'7',c:'#1FA563',render:wbQ7,src:'Workbook p. 48'},
+      {name:'Q8',short:'8',c:'#7A4CE0',render:wbQ8,src:'Workbook p. 48'}
+    ]}
+};
+
+/* =====================================================================
+   SCREENS
+   ===================================================================== */
+function home(){
+  app.innerHTML='';app.appendChild(topBar(false));
+  var hero=h('section',{class:'hero'});
+  hero.appendChild(mascot('huge'));
+  hero.appendChild(h('div',null,[
+    h('div',{class:'tag'},['Grade 3 · Odd and even numbers']),
+    h('h1',{html:'<span class="o">Odd</span> and <span class="e">Even</span> Detectives'}),
+    h('p',{class:'sub',style:'font-size:18px;margin-top:6px'},['Real book pages. Magic dots. Answers written right into the book.'])]));
+  app.appendChild(hero);
+  var days=h('div',{class:'days'});
+  ['d1','d2'].forEach(function(id){
+    var L=LESSONS[id];var b=h('button',{class:'day',style:'--c:'+L.color,onclick:function(){runLesson(id)}});
+    var path=h('div',{class:'epath'});L.stations.forEach(function(s,k){path.appendChild(h('span',{class:'echip'+(SAVE.done[id+k]?' done':''),style:'--ec:'+E5[k].c,html:'<b>'+(k+1)+'</b>'+s.name}))});
+    b.appendChild(h('div',{class:'when'},[L.when.split(' · ').slice(0,2).join(' · ')]));
+    b.appendChild(h('h2',null,[L.title]));
+    b.appendChild(h('div',{class:'goal',html:'Today I can: '+L.goal}));
+    b.appendChild(path);
+    b.appendChild(h('div',{class:'daystars',html:starStr(SAVE.stars[id]||0)}));
+    days.appendChild(b);
+  });
+  app.appendChild(days);
+  var more=h('div',{class:'mini-cards'});
+  [['hw','📓','Homework','Workbook pages 45–48']].forEach(function(x){
+    var b=h('button',{class:'day',style:'--c:'+LESSONS[x[0]].color,onclick:function(){runLesson(x[0])}});
+    b.innerHTML='<div class="when">'+x[1]+' '+x[2]+'</div><h2 style="font-size:22px">'+x[3]+'</h2><div class="daystars">'+starStr(SAVE.stars[x[0]]||0)+'</div>';more.appendChild(b)});
+  var cb=h('button',{class:'day',style:'--c:var(--pen)',onclick:function(){answerBook()}});
+  cb.innerHTML='<div class="when">📖 Copy to my book</div><h2 style="font-size:22px">See every page with the answers written in</h2><div class="sub">One book at a time</div>';more.appendChild(cb);
+  app.appendChild(more);
+}
+function answerBook(which){
+  app.innerHTML='';app.appendChild(topBar(true));
+  var c=h('section',{class:'card'});
+  c.appendChild(h('h2',{style:'font-size:clamp(26px,4vw,36px)'},['📖 Copy to my book']));
+  c.appendChild(guide('Here are your book pages with the answers written in. Copy one book first. Then do the other book.'));
+  var tabs=h('div',{class:'booktabs noprint'}),list=h('div');var cur=which||'lb';
+  var pages={lb:['lb51','lb52'],wb:['wb46','wb47','wb48']};
+  function draw(){
+    tabs.innerHTML='';['lb','wb'].forEach(function(bk){tabs.appendChild(h('button',{class:bk+(cur===bk?' on':''),onclick:function(){cur=bk;draw()}},[(bk==='lb'?'1. ':'2. ')+BOOKNAME[bk]]))});
+    list.innerHTML='';
+    pages[cur].forEach(function(k){
+      list.appendChild(h('div',{class:'row'},[h('div',{class:'pagehead',style:'flex:1'},[BOOKNAME[cur]+' · page '+PAGES[k].n]),h('button',{class:'big plain small noprint',onclick:function(){zoomPage(k)}},['🔍 Bigger'])]));
+      var v=BookView(k);fillPage(v,k);list.appendChild(v.el);
+    });
+    var other=cur==='lb'?'wb':'lb';
+    list.appendChild(h('div',{class:'row center noprint',style:'margin-top:16px'},[h('button',{class:'big go',onclick:function(){cur=other;draw();window.scrollTo(0,0)}},['Now the '+BOOKNAME[other]+' →'])]));
+    if(window.ODD_EVEN_STANDALONE)list.appendChild(h('div',{class:'row center noprint',style:'margin-top:10px'},[h('button',{class:'big plain',onclick:function(){window.print()}},['🖨 Print these pages'])]));
+  }
+  c.appendChild(tabs);c.appendChild(list);app.appendChild(c);draw();window.scrollTo(0,0);
+}
+function wordBank(){
+  var m=h('div',{class:'modal',role:'dialog','aria-modal':'true'}),inner=h('div',{class:'inner card',style:'max-width:720px'});
+  inner.appendChild(h('div',{class:'closeb'},[h('button',{class:'big plain small',onclick:function(){m.remove()}},['✕ Close'])]));
+  inner.appendChild(h('h2',null,['Word bank']));
+  [['<span class="o">odd</span>','One dot is left over. Ends in 1, 3, 5, 7 or 9.',sdots(5,18)],['<span class="e">even</span>','Every dot has a partner. Ends in 0, 2, 4, 6 or 8.',sdots(6,18)],
+   ['generalisation','A rule that works for ALL numbers: odd + odd = even.'],['counter-example','ONE example that shows a statement is wrong: 3 + 5 = 8.'],['sum','The answer when you add.'],['difference','The answer when you take away.']].forEach(function(w){
+    var d=h('div',{class:'test',style:'margin:8px 0'});d.appendChild(h('div',{class:'row'},[h('b',{style:'font-family:var(--display);font-size:26px',html:w[0]}),canSpeak?h('button',{class:'big plain small',onclick:function(){speak(w[0].replace(/<[^>]+>/g,'')+'. '+w[1])}},['🔊']):null]));
+    d.appendChild(h('div',{style:'font-weight:700',html:cw(w[1])}));if(w[2])d.appendChild(w[2]);inner.appendChild(d)});
+  m.appendChild(inner);m.addEventListener('click',function(e){if(e.target===m)m.remove()});document.body.appendChild(m);
+}
+home();
+})();
+</script>
+
+</body></html>

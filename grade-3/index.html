@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&display=swap">
+<title>Grade 3 Math Games</title><link rel="stylesheet" href="../assets/site.css"></head>
+<body><main class="wrap">
+<a class="back" href="../">← All grades</a>
+<section class="hero"><div class="mascot" id="m"></div><div><div class="tag" style="color:var(--g3)">Math Games</div><h1>Grade 3</h1><p>Choose a lesson.</p></div></section>
+<div class="lessons" id="list"></div>
+<p class="foot">Made by Teacher Dima Abuhaifa</p>
+</main>
+<script src="../assets/lessons.js"></script>
+<script>
+document.getElementById('m').innerHTML=MASCOT;
+var G=MATH_GAMES[3],list=document.getElementById('list');
+if(!G.lessons.length){list.innerHTML='<div class="empty"><span class="big">🎲</span>New games are coming soon!</div>'}
+G.lessons.forEach(function(l){var a=document.createElement('a');a.className='lesson';a.href=l.path;a.style.setProperty('--c',G.color);
+  a.innerHTML='<span class="code"></span><span><h2></h2><p></p></span><span class="go">Play ▶</span>';
+  a.querySelector('.code').textContent=l.code;a.querySelector('h2').textContent=l.title;a.querySelector('p').textContent=l.about;list.appendChild(a)});
+</script>
+</body></html>

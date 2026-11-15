@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;800&display=swap">
+<title>Math Games</title><link rel="stylesheet" href="assets/site.css"></head>
+<body><main class="wrap">
+<section class="hero"><div class="mascot" id="m"></div><div><div class="tag">Play · Learn · Have fun</div><h1>Math Games</h1><p>Pick your grade to start.</p></div></section>
+<nav class="grades" aria-label="Grades">
+  <a class="grade g2" href="grade-2/"><span class="num">2</span><span class="lbl">Grade 2</span><span class="cnt" id="c2"></span></a>
+  <a class="grade g3" href="grade-3/"><span class="num">3</span><span class="lbl">Grade 3</span><span class="cnt" id="c3"></span></a>
+</nav>
+<p class="foot">Made by Teacher Dima Abuhaifa</p>
+</main>
+<script src="assets/lessons.js"></script>
+<script>document.getElementById('m').innerHTML=MASCOT;[2,3].forEach(function(g){var n=MATH_GAMES[g].lessons.length;document.getElementById('c'+g).textContent=n?n+(n===1?' game':' games'):'Coming soon'})</script>
+</body></html>
