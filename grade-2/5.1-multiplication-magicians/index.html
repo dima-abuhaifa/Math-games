@@ -241,8 +241,8 @@ h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
 .pv{max-width:520px;margin:10px auto;border:3px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff}
 .pv .hd,.pv .rw{display:grid;grid-template-columns:repeat(3,1fr)}
 .pv .hd div{background:#8DC2CC;text-align:center;font-weight:800;font-size:20px;padding:4px;border-right:2px solid var(--ink)}
-.pv .rw div{position:relative;height:66px;border-right:2px solid var(--ink);border-top:2px solid var(--ink)}
-.pv .hd div:last-child,.pv .rw div:last-child{border-right:0}
+.pv .rw>div{position:relative;height:66px;border-right:2px solid var(--ink);border-top:2px solid var(--ink)}
+.pv .hd div:last-child,.pv .rw>div:last-child{border-right:0}
 .pv .dg{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--hand);font-size:46px;color:var(--pen);transition:transform 1s cubic-bezier(.5,0,.3,1.3)}
 .pv .dg.slide{transform:translateX(-100%)}
 .pv .dg.zero{color:var(--b10);animation:zeroin .8s backwards}
@@ -320,7 +320,7 @@ h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
   .mach .box{width:100px;height:90px}.mach .box span{font-size:22px}.mach .chipn{min-width:60px;font-size:24px}
   .rid span{width:44px;height:50px;font-size:20px}
   .tile{min-width:62px;height:58px;font-size:28px}
-  .pv .dg{font-size:38px}.pv .rw div{height:56px}
+  .pv .dg{font-size:38px}.pv .rw>div{height:56px}
 }
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.hw.go{clip-path:inset(0 0 0 0)}}
 @media print{.bar,.booktabs,.noprint{display:none!important}body{background:#fff}.book{break-inside:avoid;box-shadow:none}}
@@ -590,12 +590,13 @@ function sdots(n,s,color){
 
 /* Array of stars (or wheels). It can turn, make groups and split apart. */
 var STAR='<svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.1.8-5.3 4.9 1.5 7.1L12 17.6 5.6 21.2l1.5-7.1L1.8 9.2l7.1-.8z" fill="#F5B731" stroke="#3B3B3B" stroke-width="1.3" stroke-linejoin="round"/></svg>';
+var COUNTER='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.2" fill="#E5484D" stroke="#9E1F25" stroke-width="1.6"/><circle cx="12" cy="12" r="6" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.4"/></svg>';
 var WHEEL='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="#222"/><circle cx="12" cy="12" r="7" fill="#C9CED6"/><g stroke="#666" stroke-width="1.6"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></g><circle cx="12" cy="12" r="2.2" fill="#333"/></svg>';
 function ArrayView(R,C,opts){
   opts=opts||{};
   var el=h('div',{class:'arr'}),items=[],grps=[];
   var st={turn:false,split:null,gk:.7};
-  for(var i=0;i<R*C;i++){var it=h('div',{class:'it',html:opts.item==='wheel'?WHEEL:STAR});items.push(it);el.appendChild(it)}
+  for(var i=0;i<R*C;i++){var it=h('div',{class:'it',html:opts.item==='wheel'?WHEEL:opts.item==='counter'?COUNTER:STAR});items.push(it);el.appendChild(it)}
   var cap=h('div',{class:'arrcap'});
   function dims(){return st.turn?[C,R]:[R,C]}
   function rc(i){var r=Math.floor(i/C),c=i%C;return st.turn?[c,r]:[r,c]}
@@ -900,59 +901,8 @@ function factBoxes(a,api,bk,f,arr,done){
 }
 
 /* =====================================================================
-   DAY 1 — Multiples of 2, 5 and 10 (Learner's Book pp. 73–74)
+   Learner's Book pp. 73–74 — questions 1 to 3
    ===================================================================== */
-function d1Warm(st,api){
-  st.appendChild(guide('Let’s count in jumps on the hundred square! Count in <span class="c2">2s</span>. Tap the next number.'));
-  var info=h('div',{class:'frame'}),hs=HundredSquare(),ctrl=h('div',{class:'row center'});
-  st.appendChild(info);st.appendChild(hs.el);st.appendChild(ctrl);
-  var plan=[{k:2,taps:5,msg:'Look! The <span class="c2">2s</span> make stripes. They all end in <b>0, 2, 4, 6 or 8</b>.'},
-            {k:5,taps:4,msg:'The <span class="c5">5s</span> make two lines. They all end in <b>5 or 0</b>.'},
-            {k:10,taps:3,msg:'The <span class="c10">10s</span> make one line at the end. They all end in <b>0</b>.'}];
-  var pi=0,next=2,tapped=0,phase='tap';
-  function startK(){var p=plan[pi];hs.clear();next=p.k;tapped=0;phase='tap';ctrl.innerHTML='';
-    info.innerHTML='Count in '+kw(p.k)+'s. Tap <b>'+p.k+'</b> to start!';}
-  hs.cells.forEach(function(c,n){if(!c)return;c.onclick=function(){
-    if(phase!=='tap')return;var p=plan[pi];
-    if(n===next){c.classList.add('m'+p.k,'pop');sPop();tapped++;next+=p.k;
-      info.innerHTML='Count in '+kw(p.k)+'s: '+Array.apply(null,Array(tapped)).map(function(_,i){return (i+1)*p.k}).join(', ')+' ...';
-      if(tapped===p.taps){phase='wait';ctrl.innerHTML='';ctrl.appendChild(h('button',{class:'big magic',onclick:wand},['🪄 Magic wand: finish the '+p.k+'s!']))}}
-    else{api.miss();sBad();c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');info.innerHTML='Not '+n+'. Count on '+p.k+' from <b>'+(next-p.k)+'</b>.'}
-  }});
-  function wand(){var p=plan[pi];ctrl.innerHTML='';sMagic();var n=next,t=0;
-    (function go(){if(n>100){later(function(){info.innerHTML=p.msg;sGood();
-        ctrl.appendChild(h('button',{class:'big go',onclick:function(){pi++;if(pi<plan.length){startK();window.scrollTo({top:0,behavior:'smooth'})}else together()}},[pi<plan.length-1?'Now count in '+plan[pi+1].k+'s →':'Put them all together ✨']))},300);return}
-      hs.cells[n].classList.add('m'+p.k,'pop');if(t++%2===0)tone([900+n*4],.04,'sine');n+=p.k;later(go,p.k===2?70:110)})();
-  }
-  function together(){ctrl.innerHTML='';hs.clear();sMagic();
-    for(var n=1;n<=100;n++)(function(n){later(function(){if(n%2===0)hs.cells[n].classList.add('l2');if(n%5===0)hs.cells[n].classList.add('l5');if(n%10===0)hs.cells[n].classList.add('l10','pop')},n*12)})(n);
-    st.insertBefore(h('div',{class:'legend',html:'<span><i style="background:var(--b2-soft);border:2px solid var(--line)"></i>multiple of 2</span><span><i style="box-shadow:inset 0 0 0 4px var(--b5)"></i>multiple of 5</span><span><b class="c10">★</b> multiple of 10</span>'}),hs.el);
-    later(function(){info.innerHTML='The <span class="c10">★ 10s</span> are blue <b>and</b> have an orange box. Multiples of 10 are multiples of 2 and 5 too!';api.done()},1400);
-  }
-  startK();
-}
-function d1Discover(st,api){
-  st.appendChild(guide('Make equal groups. Then let the dots find a partner. Is one dot left over?'));
-  var tabs=h('div',{class:'tabs'}),area=h('div');st.appendChild(tabs);st.appendChild(area);
-  var seen={2:0,5:0,10:0},cur=2,count={2:0,5:0,10:0},finished=false;
-  [2,5,10].forEach(function(k){tabs.appendChild(h('button',{class:'big small b'+k,onclick:function(){cur=k;draw()}},['Groups of '+k]))});
-  function draw(){each(tabs.children,function(b,i){b.classList.toggle('on',[2,5,10][i]===cur)});
-    area.innerHTML='';var k=cur,tray=h('div',{class:'gtray'}),out=h('div',{class:'panel'});
-    var add=h('button',{class:'big b'+k},['+ Add a group of '+k]);
-    function render(anim){tray.innerHTML='';for(var g=0;g<count[k];g++){var G=h('div',{class:'grp1',style:'--gc:'+KC[k]});if(!anim||g<count[k]-1)G.style.animation='none';for(var j=0;j<k;j++)G.appendChild(h('i'));G.appendChild(h('em',null,[String((g+1)*k)]));tray.appendChild(G)}
-      var n=count[k]*k;out.innerHTML='';if(!n){out.innerHTML='<div class="ttl">Tap the button to make a group.</div>';return}
-      out.appendChild(h('div',{class:'eqline',html:count[k]+' group'+(count[k]>1?'s':'')+' of '+k+' = '+n}));
-      var pr=h('div',{style:'text-align:center;margin:6px 0'});pr.appendChild(sdots(n,n>30?10:14,KC[k]));out.appendChild(pr);
-      out.appendChild(h('div',{class:'verdict',html:isOdd(n)?'<span class="c5">1 dot is left over. '+n+' is odd.</span>':'<span class="c2">Every dot has a partner. '+n+' is even.</span>'}));}
-    add.onclick=function(){if(count[k]>=(k===10?4:6))return;count[k]++;seen[k]=Math.max(seen[k],count[k]);sPop();render(true);if(count[k]>=(k===10?4:6))add.disabled=true;check()};
-    area.appendChild(h('div',{class:'row center'},[add]));area.appendChild(tray);area.appendChild(out);render(false);if(count[k]>=(k===10?4:6))add.disabled=true;
-  }
-  function check(){if(finished)return;
-    if(seen[cur]===3)feedback(st,'info',cur===2?'Groups of 2 are always pairs. <b>Multiples of 2 are always even.</b> Try groups of 5!':cur===5?'Look: odd, even, odd ... <b>Multiples of 5 go odd, even, odd, even.</b>':'Groups of 10 are always pairs. <b>Multiples of 10 are always even.</b>');
-    if(seen[2]>=3&&seen[5]>=3&&seen[10]>=3){finished=true;later(function(){
-      st.appendChild(h('div',{class:'frame',html:'<span class="c2">×2: always even</span> &nbsp;·&nbsp; <span class="c5">×5: odd, even, odd, even</span> &nbsp;·&nbsp; <span class="c10">×10: always even</span>'}));api.done()},900)}}
-  draw();
-}
 function d1Rule(st,api){
   st.appendChild(guide('Here is the secret: look at the <b>ones digit</b>! Tap each card.'));
   var cards=[{k:2,t:'Multiples of 2',r:'end in 0, 2, 4, 6 or 8',ex:[12,14,16,18,20,36]},{k:5,t:'Multiples of 5',r:'end in 5 or 0',ex:[15,20,25,30,45,90]},{k:10,t:'Multiples of 10',r:'end in 0',ex:[10,20,30,60,90,100]}];
@@ -994,74 +944,9 @@ function lbQ3(a,api,done){
   });
 }
 function d1Practise(st,api){questionRun(st,api,[lbQ1,lbQ2,lbQ3],['Q1','Q2','Q3'],'<b>Pages 73 and 74 are finished!</b>')}
-function d1Check(st,api){
-  st.appendChild(guide('Magic sorting hats! Choose <b>every</b> hat the number fits. Then check.'));
-  var pool=shuffle([20,35,46,50,85,12,70,95,64,100,15,38,60,25]).slice(0,6),k=0,score=0,area=h('div');st.appendChild(area);
-  function round(){area.innerHTML='';if(k>=pool.length){area.appendChild(h('div',{class:'bigstate'},['Score: '+score+' / '+pool.length]));api.done('<b>Great sorting!</b> Look at the ones digit every time.');return}
-    var n=pool[k],sel={};
-    area.appendChild(h('div',{class:'today',style:'text-align:center'},['Number '+(k+1)+' of '+pool.length]));
-    area.appendChild(h('div',{class:'bigstate'},[String(n)]));
-    var hats=h('div',{class:'choices'});[2,5,10].forEach(function(m){var b=h('button',{class:'big b'+m},['🎩 multiple of '+m]);b.onclick=function(){sel[m]=!sel[m];b.classList.toggle('on',sel[m]);sPop()};hats.appendChild(b)});area.appendChild(hats);
-    area.appendChild(h('div',{class:'row center'},[h('button',{class:'big go',onclick:function(){
-      var ok=[2,5,10].every(function(m){return !!sel[m]===(n%m===0)});each(hats.children,function(b){b.disabled=true});this.remove();
-      if(ok){score++;sGood()}else{sBad();api.miss()}
-      var d=n%10,msg=n+' ends in <b>'+d+'</b>: '+[2,5,10].map(function(m){return '<span class="c'+m+'">'+(n%m===0?'✓':'✗')+' multiple of '+m+'</span>'}).join(' &nbsp; ');
-      feedback(area,ok?'good':'bad',(ok?'<b>Yes!</b> ':'<b>Look again.</b> ')+msg);
-      nextBtn(area,'Next →',function(){k++;round()});
-    }},['Check ✓'])]));
-  }
-  round();
-}
-
 /* =====================================================================
-   DAY 2 — Fact families (Learner's Book p. 75)
+   Learner's Book p. 75 — questions 4 and 5
    ===================================================================== */
-function d2Warm(st,api){
-  st.appendChild(guide('Let’s build arrays! An <b>array</b> is rows that are all the same. Add rows until you have the number.'));
-  var rounds=[{per:4,target:12},{per:5,target:20}],k=0,area=h('div');st.appendChild(area);
-  function round(){area.innerHTML='';var R=rounds[k],rows=0;
-    area.appendChild(h('p',{class:'task',style:'text-align:center',html:'Make <b>'+R.target+'</b> stars with rows of <span class="c2">'+R.per+'</span>.'}));
-    var box=h('div',{style:'display:flex;flex-direction:column;gap:6px;align-items:center;min-height:60px'});area.appendChild(box);
-    var add=h('button',{class:'big b2'},['+ Add a row of '+R.per]),stop=h('button',{class:'big go'},['Stop! I made '+R.target]);
-    add.onclick=function(){if(rows>=6)return;rows++;sPop();var r=h('div',{style:'display:flex;gap:6px;align-items:center;animation:capin .4s'});for(var i=0;i<R.per;i++)r.appendChild(h('span',{style:'width:34px;height:34px;display:block',html:STAR}));r.appendChild(h('b',{class:'c2',style:'font-family:var(--display);font-size:22px;margin-left:8px;width:40px'},[String(rows*R.per)]));box.appendChild(r)};
-    stop.onclick=function(){var n=rows*R.per;if(n!==R.target){api.miss();sBad();feedback(area,'bad',n<R.target?'You have '+n+'. Keep going!':'You have '+n+'. That is too many! Start again.');if(n>R.target){box.innerHTML='';rows=0}return}
-      add.disabled=stop.disabled=true;sGood();
-      feedback(area,'good','<b>'+rows+' rows of '+R.per+' = '+n+'</b><br>'+Array(rows).fill(R.per).join(' + ')+' = '+n+' &nbsp;→&nbsp; <span class="c10">'+rows+' × '+R.per+' = '+n+'</span>');
-      nextBtn(area,k<rounds.length-1?'Next array →':'Done ✓',function(){k++;if(k<rounds.length)round();else api.done()})};
-    area.appendChild(h('div',{class:'row center',style:'margin-top:10px'},[add,stop]));
-  }
-  round();
-}
-function d2Discover(st,api){
-  st.appendChild(guide('This is the star array from your book. Tap each magic fact and watch the stars!'));
-  var bk=BookView('lb75',{crop:[215,820]});st.appendChild(bk.el);
-  var arr=ArrayView(6,5,{max:46});var p=h('div',{class:'panel'});p.appendChild(arr.el);p.appendChild(arr.cap);
-  var facts=[{op:'×',a:5,b:6,txt:'5 × 6 = 30'},{op:'×',a:6,b:5,txt:'6 × 5 = 30'},{op:'÷',a:30,b:5,txt:'30 ÷ 5 = 6'},{op:'÷',a:30,b:6,txt:'30 ÷ 6 = 5'}];
-  var btns=h('div',{class:'factbtns'}),tried=0,busy=false;
-  facts.forEach(function(f){var b=h('button',{class:'big plain'},[f.txt.split(' =')[0]]);b.onclick=function(){if(busy)return;busy=true;each(btns.children,function(x){x.disabled=true});
-    factOnArray(arr,f,function(){busy=false;each(btns.children,function(x){x.disabled=false});if(!b.classList.contains('tried')){b.classList.add('tried');tried++;if(tried===4)turnIt()}})};btns.appendChild(b)});
-  st.appendChild(btns);st.appendChild(p);
-  function turnIt(){var t=h('button',{class:'big magic'},['🔄 Turn the array!']);t.onclick=function(){t.remove();arr.turn(function(){
-    st.appendChild(h('div',{class:'frame',html:'6 rows of 5 or 5 rows of 6: still <b>30</b>!<br>5, 6 and 30 make a <span class="c10">fact family</span>.'}));api.done()})};st.appendChild(h('div',{class:'row center'},[t]))}
-}
-function d2Rule(st,api){
-  st.appendChild(guide('A fact family uses the <b>same three numbers</b>. The biggest number is the whole. Tap the magic button!'));
-  st.appendChild(triangle(5,6,30));
-  var b=h('button',{class:'big magic'},['✨ Show the family']);st.appendChild(h('div',{class:'row center'},[b]));
-  b.onclick=function(){b.remove();sMagic();st.appendChild(factsGrid(5,6,true));later(balance,3200)};
-  function balance(){
-    st.appendChild(guide('The = sign is like a balance. Both sides are the same, so we can swap them!'));
-    var ss=h('div',{class:'seesaw'}),beam=h('div',{class:'beam'}),A=h('span',{class:'side a'},['5 × 6']),E=h('span',null,['=']),B=h('span',{class:'side b'},['30']);
-    beam.appendChild(A);beam.appendChild(E);beam.appendChild(B);ss.appendChild(beam);ss.appendChild(h('div',{class:'pivot'}));st.appendChild(ss);
-    var sw=h('button',{class:'big magic small'},['🔁 Swap the sides']);st.appendChild(h('div',{class:'row center'},[sw]));
-    sw.onclick=function(){sw.remove();var ra=A.getBoundingClientRect(),rb=B.getBoundingClientRect();A.style.transform='translateX('+(rb.right-ra.right)+'px)';B.style.transform='translateX('+(ra.left-rb.left)+'px)';sMagic();
-      later(function(){A.style.transition=B.style.transition='none';A.style.transform=B.style.transform='';beam.insertBefore(B,E);beam.appendChild(A);
-        st.appendChild(h('div',{class:'frame',html:'30 = 5 × 6 is true too!<br><small>When we divide, we always <b>start with the biggest number</b>: 30 ÷ 5 = 6.</small>'}));
-        st.appendChild(h('p',{class:'task'},['Which fact is NOT in the family?']));
-        choiceQ(st,api,shuffle([{label:'30 = 5 ÷ 6',ok:true},{label:'6 = 30 ÷ 5',why:'6 = 30 ÷ 5 is true: 30 shared into 5 groups gives 6.'},{label:'30 = 6 × 5',why:'30 = 6 × 5 is true: both sides are 30.'}]),function(){api.done('<b>Yes!</b> 5 ÷ 6 is not 30. Start with the biggest number: 30 ÷ 5 = 6.')},{cls:function(){return 'big plain'}});
-      },750)};
-  }
-}
 function lbQ4(a,api,done){
   a.appendChild(guide('Write the fact family for the star array. Tap the number tiles to fill the glowing boxes.'));
   var bk=BookView('lb75',{crop:[215,1372]});a.appendChild(bk.el);
@@ -1089,63 +974,9 @@ function lbQ5(a,api,done){
     },false)});
   },{cls:function(){return 'big plain'}});
 }
-function d2Practise(st,api){questionRun(st,api,[lbQ4,lbQ5],['Q4','Q5'],'<b>Page 75 is finished!</b>')}
-function d2Check(st,api){
-  st.appendChild(guide('Fact family triangles! Find the missing number.'));
-  var fam=[[2,4],[5,4],[10,3],[2,7],[5,5]],k=0,score=0,area=h('div');st.appendChild(area);
-  function round(){area.innerHTML='';if(k>=fam.length){area.appendChild(h('div',{class:'bigstate'},['Score: '+score+' / '+fam.length]));api.done('<b>You know your fact families!</b>');return}
-    var a=fam[k][0],b=fam[k][1],c=a*b,q,ans,opts;
-    area.appendChild(h('div',{class:'today',style:'text-align:center'},['Triangle '+(k+1)+' of '+fam.length]));
-    area.appendChild(triangle(a,b,c));
-    if(a===b){q='How many facts are in this family?';ans=4;opts=[4,8,2]}
-    else{var t=k%3;if(t===0){q=c+' ÷ '+a+' = ?';ans=b}else if(t===1){q=a+' × ? = '+c;ans=b}else{q='? = '+c+' ÷ '+b;ans=a}
-      opts=[ans,a+b,c+a].filter(function(v,i,s){return s.indexOf(v)===i});if(opts.length<3)opts.push(c+1)}
-    area.appendChild(h('div',{class:'eqline'},[q]));
-    var ch=h('div',{class:'choices'});shuffle(opts).forEach(function(v){var bt=h('button',{class:'big plain'},[String(v)]);bt.onclick=function(){
-      each(ch.children,function(x){x.disabled=true});var ok=v===ans;if(ok){score++;sGood();bt.classList.add('sel')}else{sBad();api.miss()}
-      feedback(area,ok?'good':'bad',(ok?'<b>Yes!</b> ':'The answer is <b>'+ans+'</b>. ')+(a===b?a+' × '+a+' turned round is the same fact, so there are only 4.':'The family:'),factsGrid(a,b,false));
-      nextBtn(area,'Next →',function(){k++;round()})};ch.appendChild(bt)});area.appendChild(ch);
-  }
-  round();
-}
-
 /* =====================================================================
-   DAY 3 — Multiply by 10 (Learner's Book pp. 76–77)
+   Learner's Book pp. 76–77 — questions 6 to 9
    ===================================================================== */
-function d3Warm(st,api){
-  st.appendChild(guide('Each box has <b>10 pencils</b>. Tap to add boxes and count in tens!'));
-  var pb=PencilBoxes(),area=h('div');st.appendChild(pb.el);st.appendChild(area);pb.set(0);
-  var add=h('button',{class:'big b2'},['+ Add a box of 10']);area.appendChild(h('div',{class:'row center'},[add]));
-  add.onclick=function(){var n=pb.add();speak(String(n*10));if(n===5){add.remove();
-    area.appendChild(h('p',{class:'task',style:'text-align:center'},['5 boxes of 10 pencils. How many pencils?']));
-    choiceQ(area,api,shuffle([{label:'50',ok:true},{label:'15',why:'Count in tens: 10, 20, 30, 40, 50.'},{label:'510',why:'Count in tens: 10, 20, 30, 40, 50.'}]),function(){
-      feedback(area,'good','<b>5 × 10 = 50</b>');round2()},{cls:function(){return 'big plain'}})}};
-  function round2(){
-    var b=h('button',{class:'big magic'},['🪄 Fill 12 boxes']);area.appendChild(h('div',{class:'row center'},[b]));
-    b.onclick=function(){b.remove();sMagic();pb.set(12);var c=h('button',{class:'big magic'},['📦 Pack 10 boxes into a crate']);area.appendChild(h('div',{class:'row center'},[c]));
-      c.onclick=function(){c.remove();pb.bundle();area.appendChild(h('p',{class:'task',style:'text-align:center'},['12 × 10 = ?']));
-        choiceQ(area,api,shuffle([{label:'120',ok:true},{label:'22',why:'That is 12 + 10. Count the crate (100) and 2 boxes (20).'},{label:'1200',why:'Count the crate (100) and 2 boxes (20).'}]),function(){api.done('<b>12 × 10 = 120.</b> 10 boxes make a hundred!')},{cls:function(){return 'big plain'}})}};
-  }
-}
-function d3Discover(st,api){
-  st.appendChild(guide('Watch the magic! When we multiply by 10, every <b>one</b> grows into a <b>ten</b>, and every ten grows into a <b>hundred</b>.'));
-  var tabs=h('div',{class:'tabs'}),area=h('div');st.appendChild(tabs);st.appendChild(area);var tried={},cnt=0;
-  [3,7,14,28].forEach(function(n){var b=h('button',{class:'big plain small'},[String(n)]);b.onclick=function(){each(tabs.children,function(x){x.classList.remove('on')});b.classList.add('on');show(n)};tabs.appendChild(b)});
-  function show(n){area.innerHTML='';var B=BaseTen(n);area.appendChild(B.el);var g=h('button',{class:'big magic'},['✨ × 10']);area.appendChild(h('div',{class:'row center'},[g]));
-    g.onclick=function(){g.remove();B.go(function(){if(!tried[n]){tried[n]=1;cnt++}if(cnt===3)api.done('<b>Every one became a ten. Every ten became a hundred.</b> The number is 10 times bigger!');else feedback(area,'info','Try another number!')})}}
-  area.appendChild(h('p',{class:'task',style:'text-align:center'},['👆 Choose a number.']));
-}
-function d3Rule(st,api){
-  st.appendChild(guide('In the place value chart, every digit jumps <b>one place to the left</b>. A <span class="c10">0</span> fills the ones place.'));
-  var pv=PVSlide(28);st.appendChild(pv.el);
-  var g=h('button',{class:'big magic'},['✨ × 10']);st.appendChild(h('div',{class:'row center'},[g]));
-  g.onclick=function(){g.remove();pv.go(function(){
-    st.appendChild(h('div',{class:'frame',html:'The 2 tens became 2 <b>hundreds</b>. The 8 ones became 8 <b>tens</b>.<br><span class="c10">28 × 10 = 280</span>'}));
-    var pv2=PVSlide(6);st.appendChild(pv2.el);later(function(){pv2.go(function(){
-      st.appendChild(h('p',{class:'task'},['After × 10, what is always in the ones place?']));
-      choiceQ(st,api,shuffle([{label:'0, so the answer is always even!',ok:true},{label:'The same digit as before.',why:'Look at the ones column after × 10. Every time it is 0!'},{label:'1',why:'Look at the ones column after × 10.'}]),function(){api.done('<b>Yes!</b> A number × 10 always ends in 0, so it is always even.')},{col:true});
-    })},700)})};
-}
 function lbQ6(a,api,done){
   a.appendChild(guide('Choose your own numbers! Tap a number, then do the × 10 magic.'));
   var bk=BookView('lb76',{crop:[0,500]});a.appendChild(bk.el);
@@ -1199,11 +1030,180 @@ function lbQ9(a,api,done){
     b.onclick=function(){b.remove();var to=seq[k];nl.hop(to,'+5',function(){ctl.appendChild(h('p',{class:'task',style:'text-align:center'},['Where did the frog land?']));
       choiceQ(ctl,api,shuffle([{label:String(to),ok:true},{label:String(to-1),why:'Count on 5 from '+seq[k-1]+'.'},{label:String(to+1),why:'Count on 5 from '+seq[k-1]+'.'}]),function(){chipAt(to);bk.write('lb9_'+(k-1));later(hopBtn,700)},{cls:function(){return 'big plain'}})})}}
 }
-function d3Practise(st,api){questionRun(st,api,[lbQ6,lbQ7,lbQ8,lbQ9],['Q6','Q7','Q8','Q9'],'<b>Pages 76 and 77 are finished!</b>')}
-function d3Check(st,api){
-  st.appendChild(guide('The × 10 machine! What will come out?'));
-  var pool=shuffle([4,9,12,25,38,47,60,73,81,56]).slice(0,6),k=0,score=0,area=h('div');st.appendChild(area);
-  function round(){area.innerHTML='';if(k>=pool.length){area.appendChild(h('div',{class:'bigstate'},['Score: '+score+' / '+pool.length]));api.done('<b>Super × 10 magic!</b>');return}
+/* =====================================================================
+   LESSON 1 (Monday) — Multiples and fact families (Learner's Book pp. 73–74)
+   ===================================================================== */
+function m1Warm(st,api){
+  st.appendChild(guide('Here are <b>20</b> counters. Which facts have a <b>product</b> of 20? Choose how many counters go in each row.'));
+  st.appendChild(h('div',{class:'frame',html:'The <b>product</b> is the answer when we multiply.'}));
+  var tabs=h('div',{class:'tabs'}),area=h('div'),found=h('div',{class:'facts'}),got={},n=0,fin=false;
+  st.appendChild(h('p',{class:'task',style:'text-align:center'},['How many counters in each row?']));
+  st.appendChild(tabs);st.appendChild(area);
+  st.appendChild(h('p',{class:'task',style:'text-align:center;margin-top:12px'},['Facts with a product of 20:']));st.appendChild(found);
+  [2,3,4,5,6,10].forEach(function(k){var b=h('button',{class:'big plain small'},[k+' in a row']);b.onclick=function(){each(tabs.children,function(x){x.classList.remove('on')});b.classList.add('on');tryK(k,b)};tabs.appendChild(b)});
+  function tryK(k,b){area.innerHTML='';
+    var r=Math.floor(20/k),left=20%k,arr=ArrayView(r,k,{max:40,item:'counter'}),p=h('div',{class:'panel'});p.appendChild(arr.el);
+    if(left){var lo=h('div',{style:'display:flex;gap:6px;justify-content:center;align-items:center;margin-top:4px'});for(var i=0;i<left;i++)lo.appendChild(h('span',{style:'width:30px;height:30px;display:block',html:COUNTER}));lo.appendChild(h('b',{class:'c5',style:'margin-left:8px'},[left+' left over']));p.appendChild(lo)}
+    p.appendChild(arr.cap);area.appendChild(p);
+    if(left){arr.groups(k,false,r+' rows of '+k+' = '+(r*k)+', and '+left+' left over.',function(){sBad();feedback(area,'info','Rows of '+k+' do not make 20 exactly. <b>20 is not a multiple of '+k+'.</b> Try another row!')});return}
+    arr.groups(k,false,'<span class="c2">'+r+' rows of '+k+'</span> &nbsp;→&nbsp; '+r+' × '+k+' = 20',function(){
+      var fb=area.querySelector(':scope > .fb');if(fb)fb.remove();
+      if(!got[k]){got[k]=1;n++;b.classList.add('tried');found.appendChild(h('div',{class:'m'},[r+' × '+k+' = 20']))}
+      if(n===4&&!fin){fin=true;api.done('<b>4 facts have a product of 20:</b> 10 × 2, 5 × 4, 4 × 5 and 2 × 10.<br>Look: 20 is a multiple of 2, 4, 5 and 10!')}
+      else if(!fin)feedback(area,'info','Count the rows: '+Array.apply(null,Array(r)).map(function(_,i){return (i+1)*k}).join(', ')+'. Find another fact!');
+    })}
+}
+function m1Discover(st,api){
+  st.appendChild(guide('Make an array with counters! Put <b>5</b> counters in each row. Make <b>2</b> rows.'));
+  var box=h('div',{style:'display:flex;flex-direction:column;gap:6px;align-items:center;min-height:50px'}),ctl=h('div',{class:'row center',style:'margin-top:8px'}),area=h('div');
+  st.appendChild(box);st.appendChild(ctl);st.appendChild(area);var rows=0;
+  var add=h('button',{class:'big b2'},['+ Add a row of 5 counters']);ctl.appendChild(add);
+  add.onclick=function(){rows++;sPop();var r=h('div',{style:'display:flex;gap:6px;align-items:center;animation:capin .4s'});for(var i=0;i<5;i++)r.appendChild(h('span',{style:'width:36px;height:36px;display:block',html:COUNTER}));r.appendChild(h('b',{class:'c5',style:'font-family:var(--display);font-size:22px;margin-left:8px;width:40px'},[String(rows*5)]));box.appendChild(r);
+    if(rows===2){add.remove();later(facts,500)}};
+  function facts(){box.remove();
+    st.insertBefore(h('div',{class:'frame',html:'<b>2 rows of 5 = 10.</b> Now say the facts! Tap each fact and watch the counters.'}),area);
+    var arr=ArrayView(2,5,{max:52,item:'counter'}),p=h('div',{class:'panel'});p.appendChild(arr.el);p.appendChild(arr.cap);
+    var F=[{op:'×',a:2,b:5,txt:'2 × 5 = 10'},{op:'×',a:5,b:2,txt:'5 × 2 = 10'},{op:'÷',a:10,b:2,txt:'10 ÷ 2 = 5'},{op:'÷',a:10,b:5,txt:'10 ÷ 5 = 2'}];
+    var btns=h('div',{class:'factbtns'}),tried=0,busy=false;
+    F.forEach(function(f){var b=h('button',{class:'big plain'},[f.txt.split(' =')[0]]);b.onclick=function(){if(busy)return;busy=true;each(btns.children,function(x){x.disabled=true});speak(f.txt);
+      factOnArray(arr,f,function(){busy=false;each(btns.children,function(x){x.disabled=false});if(!b.classList.contains('tried')){b.classList.add('tried');tried++;if(tried===4)turnIt()}})};btns.appendChild(b)});
+    area.appendChild(btns);area.appendChild(p);
+    function turnIt(){var t=h('button',{class:'big magic'},['🔄 Turn the array!']);t.onclick=function(){t.remove();arr.turn(function(){
+      area.appendChild(h('div',{class:'frame',html:'2 rows of 5 or 5 rows of 2: still <b>10</b>!<br>2 × 5 = 5 × 2. We can swap the numbers. That is <span class="c10">commutative</span>.'}));api.done()})};area.appendChild(h('div',{class:'row center'},[t]))}
+  }
+}
+function m1Rule(st,api){
+  st.appendChild(h('div',{class:'pagehead'},['Secret 1: fact families']));
+  st.appendChild(guide('A <b>fact family</b> uses the <b>same three numbers</b>. The biggest number is the whole. Tap the magic button!'));
+  st.appendChild(triangle(2,5,10));
+  var b=h('button',{class:'big magic'},['✨ Show the family']);st.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.remove();sMagic();st.appendChild(factsGrid(2,5,true));later(function(){seesaw(st,api,2,5,10,secret2)},3200)};
+  function secret2(){var nx=h('button',{class:'big go'},['Secret 2: multiples →']);st.appendChild(h('div',{class:'row center'},[nx]));
+    nx.onclick=function(){nx.parentNode.remove();var sub=h('div');st.appendChild(sub);sub.appendChild(h('div',{class:'pagehead',style:'margin-top:14px'},['Secret 2: multiples of 2, 5 and 10']));d1Rule(sub,api);later(function(){sub.scrollIntoView({behavior:'smooth',block:'start'})},100)}}
+}
+/* the = sign is a balance: both sides can swap */
+function seesaw(st,api,a,b,c,cb){
+  st.appendChild(guide('The = sign is like a balance. Both sides are the same, so we can swap them!'));
+  var ss=h('div',{class:'seesaw'}),beam=h('div',{class:'beam'}),A=h('span',{class:'side a'},[a+' × '+b]),E=h('span',null,['=']),B=h('span',{class:'side b'},[String(c)]);
+  beam.appendChild(A);beam.appendChild(E);beam.appendChild(B);ss.appendChild(beam);ss.appendChild(h('div',{class:'pivot'}));st.appendChild(ss);
+  var sw=h('button',{class:'big magic small'},['🔁 Swap the sides']);st.appendChild(h('div',{class:'row center'},[sw]));
+  sw.onclick=function(){sw.parentNode.remove();var ra=A.getBoundingClientRect(),rb=B.getBoundingClientRect();A.style.transform='translateX('+(rb.right-ra.right)+'px)';B.style.transform='translateX('+(ra.left-rb.left)+'px)';sMagic();
+    later(function(){A.style.transition=B.style.transition='none';A.style.transform=B.style.transform='';beam.insertBefore(B,E);beam.appendChild(A);
+      st.appendChild(h('div',{class:'frame',html:c+' = '+a+' × '+b+' is true too!<br><small>When we divide, we always <b>start with the biggest number</b>: '+c+' ÷ '+a+' = '+b+'.</small>'}));
+      st.appendChild(h('p',{class:'task'},['Which fact is NOT in the family?']));
+      choiceQ(st,api,shuffle([{label:c+' = '+a+' ÷ '+b,ok:true},{label:b+' = '+c+' ÷ '+a,why:b+' = '+c+' ÷ '+a+' is true: '+c+' shared into '+a+' groups gives '+b+'.'},{label:c+' = '+b+' × '+a,why:c+' = '+b+' × '+a+' is true: both sides are '+c+'.'}]),function(){feedback(st,'good','<b>Yes!</b> '+a+' ÷ '+b+' is not '+c+'. Start with the biggest number: '+c+' ÷ '+a+' = '+b+'.');cb()},{cls:function(){return 'big plain'}});
+    },750)};
+}
+/* magic sorting hats, with the sentence frame "__ is a multiple of __ because __" */
+function hats(host,api,count,cb){
+  var pool=shuffle([20,35,46,50,85,12,70,95,64,15,38,60,25]).slice(0,count),k=0,score=0,area=h('div');host.appendChild(area);
+  function round(){area.innerHTML='';if(k>=pool.length){area.appendChild(h('div',{class:'bigstate'},['Score: '+score+' / '+pool.length]));cb();return}
+    var n=pool[k],sel={};
+    area.appendChild(h('div',{class:'today',style:'text-align:center'},['Number '+(k+1)+' of '+pool.length]));
+    area.appendChild(h('div',{class:'bigstate'},[String(n)]));
+    var hs=h('div',{class:'choices'});[2,5,10].forEach(function(m){var b=h('button',{class:'big b'+m},['🎩 multiple of '+m]);b.onclick=function(){sel[m]=!sel[m];b.classList.toggle('on',sel[m]);sPop()};hs.appendChild(b)});area.appendChild(hs);
+    var hp=h('div'),hb=h('button',{class:'big plain small'},['💡 Help: show the 100 square']);hb.onclick=function(){hb.remove();hp.appendChild(helpSquare(n))};
+    area.appendChild(h('div',{class:'row center'},[h('button',{class:'big go',onclick:function(){
+      var ok=[2,5,10].every(function(m){return !!sel[m]===(n%m===0)});each(hs.children,function(b){b.disabled=true});this.remove();
+      if(ok){score++;sGood()}else{sBad();api.miss()}
+      var d=n%10,msg=[2,5,10].map(function(m){return '<div class="c'+m+'">'+n+(n%m===0?' <b>is</b>':' is <b>not</b>')+' a multiple of '+m+' because it ends in '+d+'.</div>'}).join('');
+      feedback(area,ok?'good':'bad',(ok?'<b>Yes!</b>':'<b>Look again.</b>')+msg);
+      nextBtn(area,'Next →',function(){k++;round()});
+    }},['Check ✓'])]));
+    area.appendChild(h('div',{class:'row center',style:'margin-top:8px'},[hb]));area.appendChild(hp);
+  }
+  round();
+}
+/* coloured 100 square for children who need help */
+function helpSquare(n){var w=h('div'),hs=HundredSquare();
+  for(var i=1;i<=100;i++){hs.cells[i].disabled=true;if(i%2===0)hs.cells[i].classList.add('l2');if(i%5===0)hs.cells[i].classList.add('l5');if(i%10===0)hs.cells[i].classList.add('l10')}
+  if(n<=100)hs.cells[n].classList.add('pop'),hs.cells[n].style.outline='4px solid var(--pen)';
+  w.appendChild(h('div',{class:'legend',html:'<span><i style="background:var(--b2-soft);border:2px solid var(--line)"></i>multiple of 2</span><span><i style="box-shadow:inset 0 0 0 4px var(--b5)"></i>multiple of 5</span><span><b class="c10">★</b> multiple of 10</span>'}));w.appendChild(hs.el);return w}
+function m1Check(st,api){
+  var g1=guide('Count in 2s, but start at <b>1</b>! Tap the next number.');st.appendChild(g1);
+  var info=h('div',{class:'frame',html:'Start at <b>1</b>. Count on 2.'}),hs=HundredSquare(),area=h('div');st.appendChild(info);st.appendChild(hs.el);st.appendChild(area);
+  var next=3,seq=[1],phase='tap';hs.cells[1].classList.add('m5','pop');
+  hs.cells.forEach(function(c,n){if(!c)return;c.onclick=function(){if(phase!=='tap')return;
+    if(n===next){c.classList.add('m5','pop');sPop();seq.push(n);next+=2;info.innerHTML='Count in 2s from 1: '+seq.join(', ')+' ...';if(seq.length===6){phase='wait';wand()}}
+    else{api.miss();sBad();c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');info.innerHTML='Not '+n+'. Count on 2 from <b>'+(next-2)+'</b>.'}}});
+  function wand(){var b=h('button',{class:'big magic'},['🪄 Magic wand: finish to 99!']);area.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.parentNode.remove();sMagic();var n=next;(function go(){if(n>100){later(ask,300);return}hs.cells[n].classList.add('m5','pop');n+=2;later(go,60)})()}}
+  function ask(){area.appendChild(h('p',{class:'task'},['1, 3, 5, 7, 9 ... Are these numbers odd or even?']));
+    choiceQ(area,api,[{label:'Odd',ok:true},{label:'Even',why:'Look at the ones digit: 1, 3, 5, 7, 9. One is always left over without a partner.'}],function(){
+      area.appendChild(h('p',{class:'task'},['Are they multiples of 2?']));
+      choiceQ(area,api,[{label:'Yes',why:'Multiples of 2 end in 0, 2, 4, 6 or 8. These end in 1, 3, 5, 7 or 9.'},{label:'No',ok:true}],function(){
+        feedback(area,'good','<b>Yes!</b> Counting in 2s from 1 gives <span class="c5">odd</span> numbers. They are <b>not</b> multiples of 2.');
+        nextBtn(area,'Magic sorting hats →',function(){area.innerHTML='';info.remove();hs.el.remove();g1.remove();
+          st.appendChild(guide('Magic sorting hats! Choose <b>every</b> hat the number fits. Then check.'));
+          hats(st,api,4,function(){feedback(st,'good','<b>Great sorting!</b> Look at the ones digit every time.');bonus(st,'What is the smallest 3-digit number that is a multiple of 2, 5 <b>and</b> 10?',[{label:'100',ok:true},{label:'110',why:'110 works, but is there a smaller one?'},{label:'105',why:'105 ends in 5, so it is not a multiple of 2 or 10.'},{label:'102',why:'102 ends in 2, so it is not a multiple of 5 or 10.'}],'<b>100!</b> It ends in 0, so it is a multiple of 2, 5 and 10.');api.done()});
+        })},{cls:function(){return 'big plain'}})},{cls:function(){return 'big plain'}});
+  }
+}
+/* optional extra question; mistakes here do not count */
+function bonus(host,q,opts,good){
+  var p=h('div',{class:'panel',style:'margin-top:14px;border:3px dashed var(--gold)'});
+  p.appendChild(h('div',{class:'pagehead'},['⭐ Bonus for super magicians']));p.appendChild(h('p',{class:'task',html:q}));
+  choiceQ(p,{miss:function(){}},shuffle(opts),function(){feedback(p,'good',good);confetti(40)},{cls:function(){return 'big plain'}});
+  host.appendChild(p);
+}
+
+/* =====================================================================
+   LESSON 2 (Tuesday) — Fact families and × 10 (Learner's Book pp. 75–77)
+   ===================================================================== */
+function t2Warm(st,api){
+  st.appendChild(guide('Look at the star array in your book. <b>How many stars?</b>'));
+  var bk=BookView('lb75',{crop:[215,820]});st.appendChild(bk.el);
+  var arr=ArrayView(6,5,{max:46}),p=h('div',{class:'panel'});p.appendChild(arr.el);p.appendChild(arr.cap);st.appendChild(p);
+  var area=h('div');st.appendChild(area);
+  choiceQ(area,api,shuffle([{label:'30',ok:true},{label:'11',why:'11 is 6 + 5. Count the rows in 5s: 5, 10, 15 ...'},{label:'25',why:'Count all 6 rows in 5s: 5, 10, 15, 20, 25, 30.'}]),function(){
+    arr.groups(5,false,'<span class="c2">6 rows of 5</span> = 30',function(){feedback(area,'good','<b>30 stars!</b> Now tap each magic fact and watch the stars.');facts()})},{cls:function(){return 'big plain'}});
+  function facts(){
+    var F=[{op:'×',a:5,b:6,txt:'5 × 6 = 30'},{op:'×',a:6,b:5,txt:'6 × 5 = 30'},{op:'÷',a:30,b:5,txt:'30 ÷ 5 = 6'},{op:'÷',a:30,b:6,txt:'30 ÷ 6 = 5'}];
+    var btns=h('div',{class:'factbtns'}),tried=0,busy=false;
+    F.forEach(function(f){var b=h('button',{class:'big plain'},[f.txt.split(' =')[0]]);b.onclick=function(){if(busy)return;busy=true;each(btns.children,function(x){x.disabled=true});speak(f.txt);
+      factOnArray(arr,f,function(){busy=false;each(btns.children,function(x){x.disabled=false});if(!b.classList.contains('tried')){b.classList.add('tried');tried++;if(tried===4)turnIt()}})};btns.appendChild(b)});
+    st.insertBefore(btns,p);
+    function turnIt(){var t=h('button',{class:'big magic'},['🔄 Turn the array!']);t.onclick=function(){t.remove();arr.turn(function(){
+      st.appendChild(h('div',{class:'frame',html:'6 rows of 5 or 5 rows of 6: still <b>30</b>!<br>5, 6 and 30 make a <span class="c10">fact family</span>.'}));api.done()})};st.appendChild(h('div',{class:'row center'},[t]))}
+  }
+}
+function t2Discover(st,api){
+  st.appendChild(guide('Use the place value chart. When we multiply by 10, every <b>one</b> grows into a <b>ten</b>. Start with <b>3</b>!'));
+  var tabs=h('div',{class:'tabs'}),area=h('div');st.appendChild(tabs);st.appendChild(area);var tried={},cnt=0;
+  [3,7,14,28].forEach(function(n,i){var b=h('button',{class:'big plain small'},[String(n)]);if(i)b.disabled=true;b.onclick=function(){each(tabs.children,function(x){x.classList.remove('on')});b.classList.add('on');show(n)};tabs.appendChild(b)});
+  function show(n){area.innerHTML='';var B=BaseTen(n),pv=PVSlide(n);area.appendChild(B.el);area.appendChild(pv.el);var g=h('button',{class:'big magic'},['✨ × 10']);area.appendChild(h('div',{class:'row center'},[g]));
+    g.onclick=function(){g.parentNode.remove();pv.go();B.go(function(){if(!tried[n]){tried[n]=1;cnt++}
+      if(n===3){each(tabs.children,function(x){x.disabled=false});feedback(area,'info','<b>3 ones × 10 → 3 tens.</b> 3 × 10 = 30. Now try another number!')}
+      else if(cnt===3)api.done('<b>Every one became a ten. Every ten became a hundred.</b> The number is 10 times bigger!');else feedback(area,'info','Try another number!')})}}
+  later(function(){tabs.children[0].click()},50);
+}
+function t2Rule(st,api){
+  st.appendChild(guide('Each <b>1</b> becomes <b>10</b>. Each <b>10</b> becomes <b>100</b>. Every digit jumps <b>one place to the left</b>, and a <span class="c10">0</span> fills the ones place.'));
+  var pv=PVSlide(23);st.appendChild(pv.el);
+  var g=h('button',{class:'big magic'},['✨ × 10']);st.appendChild(h('div',{class:'row center'},[g]));
+  g.onclick=function(){g.parentNode.remove();pv.go(function(){
+    st.appendChild(h('div',{class:'frame',html:'The 2 tens became 2 <b>hundreds</b>. The 3 ones became 3 <b>tens</b>.<br><span class="c10">23 × 10 = 230</span>'}));
+    var pv2=PVSlide(6);st.appendChild(pv2.el);later(function(){pv2.go(function(){
+      st.appendChild(h('p',{class:'task'},['After × 10, what is always in the ones place?']));
+      choiceQ(st,api,shuffle([{label:'0, so the answer is always even!',ok:true},{label:'The same digit as before.',why:'Look at the ones column after × 10. Every time it is 0!'},{label:'1',why:'Look at the ones column after × 10.'}]),function(){api.done('<b>Yes!</b> A number × 10 always ends in 0, so it is always even.')},{col:true});
+    })},700)})};
+}
+function t2Practise(st,api){questionRun(st,api,[lbQ4,lbQ5,lbQ6,lbQ7,lbQ8,lbQ9],['Q4','Q5','Q6','Q7','Q8','Q9'],'<b>Pages 75, 76 and 77 are finished!</b>')}
+function t2Check(st,api){
+  st.appendChild(guide('Exit ticket! Answer, then say how you know.'));
+  var area=h('div');st.appendChild(area);
+  area.appendChild(h('div',{class:'bigstate'},['23 × 10 = ?']));
+  choiceQ(area,api,shuffle([{label:'230',ok:true},{label:'33',why:'33 is 23 + 10. Multiplying by 10 makes the number 10 times bigger.'},{label:'2310',why:'Each digit moves one place to the left. Look at the place value chart!'}]),function(){
+    area.appendChild(h('p',{class:'task'},['How do you know?']));
+    choiceQ(area,api,shuffle([{label:'Each digit moves one place to the left, and 0 fills the ones place.',ok:true},{label:'I added 10.',why:'23 + 10 = 33. When we multiply by 10, each digit moves one place.'},{label:'I wrote 23 two times.',why:'Look at the place value chart: the 2 tens become 2 hundreds.'}]),function(){
+      var pv=PVSlide(23);feedback(area,'good','<b>Yes!</b> 2 tens → 2 hundreds, 3 ones → 3 tens. 23 × 10 = 230.',pv.el);later(function(){pv.go()},300);
+      nextBtn(area,'The × 10 machine →',function(){area.innerHTML='';st.appendChild(guide('The × 10 machine! What will come out?'));machineRun(st,api,4,function(){api.done('<b>Super × 10 magic!</b>')})});
+    },{col:true});
+  },{cls:function(){return 'big plain'}});
+}
+function machineRun(host,api,count,cb){
+  var pool=shuffle([4,9,12,25,38,47,60,73,81,56]).slice(0,count),k=0,score=0,area=h('div');host.appendChild(area);
+  function round(){area.innerHTML='';if(k>=pool.length){area.appendChild(h('div',{class:'bigstate'},['Score: '+score+' / '+pool.length]));cb();return}
     var n=pool[k],M=Machine();M.load(n);area.appendChild(h('div',{class:'today',style:'text-align:center'},['Number '+(k+1)+' of '+pool.length]));area.appendChild(M.el);
     var ch=h('div',{class:'choices'});shuffle([n*10,n+10,n*100]).forEach(function(v){var b=h('button',{class:'big plain'},[String(v)]);b.onclick=function(){
       each(ch.children,function(x){x.disabled=true});var ok=v===n*10;if(ok){score++;b.classList.add('sel')}else{api.miss();sBad()}
@@ -1299,32 +1299,23 @@ function wbQ8(st,api){
    LESSONS
    ===================================================================== */
 var LESSONS={
-  d1:{title:'Multiples of 2, 5 and 10',when:'Day 1 · Learner’s Book pages 73–74',color:'var(--e3)',
-    goal:'I can recognise multiples of 2, 5 and 10.',lookWhat:'I can recognise multiples of 2, 5 and 10.',copy:'lb',
+  m1:{title:'Multiples and fact families',when:'Lesson 1 · Learner’s Book pages 73–74',color:'var(--e3)',
+    goal:'I can recognise multiples of 2, 5 and 10, and write fact families.',lookWhat:'I can recognise multiples of 2, 5 and 10. I can write a fact family like 2 × 5 = 10, 5 × 2 = 10, 10 ÷ 2 = 5, 10 ÷ 5 = 2.',copy:'lb',
     stations:[
-      {name:'Warm up',render:d1Warm,src:'Hundred square magic'},
-      {name:'Discover',render:d1Discover,src:'Equal groups: odd or even?'},
-      {name:'Learn the rule',render:d1Rule,src:'The ones digit secret'},
+      {name:'Warm up',render:m1Warm,src:'Which facts make 20?'},
+      {name:'Discover',render:m1Discover,src:'Counter arrays'},
+      {name:'Learn the rule',render:m1Rule,src:'Two magic secrets'},
       {name:'Practise',render:d1Practise,src:"Learner's Book questions 1–3"},
-      {name:'Check',render:d1Check,src:'Magic sorting hats'}
+      {name:'Check',render:m1Check,src:'Count in 2s from 1, then sorting hats'}
     ]},
-  d2:{title:'Fact families',when:'Day 2 · Learner’s Book page 75',color:'var(--e2)',
-    goal:'I can make multiplication and division fact families.',lookWhat:'I can write the multiplication and division fact families for facts in the 1, 2, 5 and 10 times tables.',copy:'lb',
+  t2:{title:'Fact families and × 10',when:'Lesson 2 · Learner’s Book pages 75–77',color:'var(--e5)',
+    goal:'I can multiply 1-digit and 2-digit numbers by 10.',lookWhat:'I can write fact families, and I can multiply 1-digit and 2-digit numbers by 10.',copy:'lb',
     stations:[
-      {name:'Warm up',render:d2Warm,src:'Build an array'},
-      {name:'Discover',render:d2Discover,src:'The star array'},
-      {name:'Learn the rule',render:d2Rule,src:'The fact family triangle'},
-      {name:'Practise',render:d2Practise,src:"Learner's Book questions 4–5"},
-      {name:'Check',render:d2Check,src:'Triangle puzzles'}
-    ]},
-  d3:{title:'Multiply by 10',when:'Day 3 · Learner’s Book pages 76–77',color:'var(--e5)',
-    goal:'I can multiply single-digit and 2-digit numbers by 10.',lookWhat:'I can multiply single-digit and 2-digit numbers by 10.',copy:'lb',
-    stations:[
-      {name:'Warm up',render:d3Warm,src:'Boxes of 10 pencils'},
-      {name:'Discover',render:d3Discover,src:'Growing blocks'},
-      {name:'Learn the rule',render:d3Rule,src:'The place value jump'},
-      {name:'Practise',render:d3Practise,src:"Learner's Book questions 6–9"},
-      {name:'Check',render:d3Check,src:'The × 10 machine'}
+      {name:'Warm up',render:t2Warm,src:'The star array'},
+      {name:'Discover',render:t2Discover,src:'The place value chart'},
+      {name:'Learn the rule',render:t2Rule,src:'Each 1 becomes 10'},
+      {name:'Practise',render:t2Practise,src:"Learner's Book questions 4–9"},
+      {name:'Check',render:t2Check,src:'Exit ticket and the × 10 machine'}
     ]},
   hw:{title:'Homework: Workbook pages 60–63',when:'Homework · Workbook pages 60–63',color:'#5B6B8F',
     goal:'I can use multiples, fact families and × 10.',lookWhat:'I finished Workbook Exercise 5.1.',copy:'wb',
@@ -1355,7 +1346,7 @@ function home(){
     h('p',{class:'sub',style:'font-size:18px;margin-top:6px'},['Real book pages. Magic arrays, jumps and blocks. Answers written right into the book.'])]));
   app.appendChild(hero);
   var days=h('div',{class:'days'});
-  ['d1','d2','d3'].forEach(function(id){
+  ['m1','t2'].forEach(function(id){
     var L=LESSONS[id];var b=h('button',{class:'day',style:'--c:'+L.color,onclick:function(){runLesson(id)}});
     var path=h('div',{class:'epath'});L.stations.forEach(function(s,k){path.appendChild(h('span',{class:'echip'+(SAVE.done[id+k]?' done':''),style:'--ec:'+E5[k].c,html:'<b>'+(k+1)+'</b>'+s.name}))});
     b.appendChild(h('div',{class:'when'},[L.when.split(' · ')[0]+' · '+L.when.split(' · ')[1].replace("Learner’s Book ",'LB ')]));
