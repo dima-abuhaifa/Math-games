@@ -1034,24 +1034,36 @@ function lbQ9(a,api,done){
    LESSON 1 (Monday) — Multiples and fact families (Learner's Book pp. 73–74)
    ===================================================================== */
 function m1Warm(st,api){
-  st.appendChild(guide('Here are <b>20</b> counters. Which facts have a <b>product</b> of 20? Choose how many counters go in each row.'));
-  st.appendChild(h('div',{class:'frame',html:'The <b>product</b> is the answer when we multiply.'}));
-  var tabs=h('div',{class:'tabs'}),area=h('div'),found=h('div',{class:'facts'}),got={},n=0,fin=false;
-  st.appendChild(h('p',{class:'task',style:'text-align:center'},['How many counters in each row?']));
-  st.appendChild(tabs);st.appendChild(area);
-  st.appendChild(h('p',{class:'task',style:'text-align:center;margin-top:12px'},['Facts with a product of 20:']));st.appendChild(found);
-  [2,3,4,5,6,10].forEach(function(k){var b=h('button',{class:'big plain small'},[k+' in a row']);b.onclick=function(){each(tabs.children,function(x){x.classList.remove('on')});b.classList.add('on');tryK(k,b)};tabs.appendChild(b)});
-  function tryK(k,b){area.innerHTML='';
-    var r=Math.floor(20/k),left=20%k,arr=ArrayView(r,k,{max:40,item:'counter'}),p=h('div',{class:'panel'});p.appendChild(arr.el);
-    if(left){var lo=h('div',{style:'display:flex;gap:6px;justify-content:center;align-items:center;margin-top:4px'});for(var i=0;i<left;i++)lo.appendChild(h('span',{style:'width:30px;height:30px;display:block',html:COUNTER}));lo.appendChild(h('b',{class:'c5',style:'margin-left:8px'},[left+' left over']));p.appendChild(lo)}
-    p.appendChild(arr.cap);area.appendChild(p);
-    if(left){arr.groups(k,false,r+' rows of '+k+' = '+(r*k)+', and '+left+' left over.',function(){sBad();feedback(area,'info','Rows of '+k+' do not make 20 exactly. <b>20 is not a multiple of '+k+'.</b> Try another row!')});return}
-    arr.groups(k,false,'<span class="c2">'+r+' rows of '+k+'</span> &nbsp;→&nbsp; '+r+' × '+k+' = 20',function(){
-      var fb=area.querySelector(':scope > .fb');if(fb)fb.remove();
-      if(!got[k]){got[k]=1;n++;b.classList.add('tried');found.appendChild(h('div',{class:'m'},[r+' × '+k+' = 20']))}
-      if(n===4&&!fin){fin=true;api.done('<b>4 facts have a product of 20:</b> 10 × 2, 5 × 4, 4 × 5 and 2 × 10.<br>Look: 20 is a multiple of 2, 4, 5 and 10!')}
-      else if(!fin)feedback(area,'info','Count the rows: '+Array.apply(null,Array(r)).map(function(_,i){return (i+1)*k}).join(', ')+'. Find another fact!');
-    })}
+  st.appendChild(guide('Dotty has <b>20</b> counters. Let’s put them in <b>equal rows</b> and find the facts that make 20!'));
+  var stage=h('div',{class:'panel'}),area=h('div'),board=h('div',{class:'facts'});
+  st.appendChild(stage);st.appendChild(area);
+  st.appendChild(h('p',{class:'task',style:'text-align:center;margin-top:12px'},['⭐ Facts that make 20:']));st.appendChild(board);
+  function pile(){stage.innerHTML='';var w=h('div',{style:'display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:360px;margin:6px auto'});
+    for(var i=0;i<20;i++)w.appendChild(h('span',{style:'width:34px;height:34px;display:block;transform:translate('+(Math.random()*8-4)+'px,'+(Math.random()*8-4)+'px)',html:COUNTER}));
+    stage.appendChild(w);stage.appendChild(h('div',{class:'eqline'},['20 counters']))}
+  var plan=[{k:10,rows:2,opts:[2,10,20]},{k:5,rows:4,opts:[4,5,20]},{k:2,rows:10,opts:[10,2,12]}],i=0;
+  function round(){var P=plan[i];area.innerHTML='';pile();
+    area.appendChild(h('p',{class:'task',style:'text-align:center',html:'Step '+(i+1)+' of 3: put the counters in rows of <b>'+P.k+'</b>.'}));
+    var b=h('button',{class:'big magic'},['🪄 Make rows of '+P.k]);area.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.parentNode.remove();stage.innerHTML='';var arr=ArrayView(P.rows,P.k,{max:38,item:'counter'});stage.appendChild(arr.el);stage.appendChild(arr.cap);
+      arr.groups(P.k,false,'Count in '+P.k+'s: '+Array.apply(null,Array(P.rows)).map(function(_,j){return (j+1)*P.k}).join(', '),function(){
+        area.appendChild(h('p',{class:'task',style:'text-align:center',html:'How many rows of '+P.k+'?'}));
+        choiceQ(area,api,shuffle(P.opts.map(function(v){return v===P.rows?{label:String(v),ok:true}:{label:String(v),why:'Count the rows. Each row has '+P.k+' counters.'}})),function(){
+          var fact=P.rows+' × '+P.k+' = 20';speak(P.rows+' rows of '+P.k+' make 20');
+          feedback(area,'good','<b>'+P.rows+' rows of '+P.k+' = 20</b><br>So <span class="c10">'+fact+'</span>');
+          board.appendChild(h('div',{class:'m'},[fact]));sparkleAt(board.lastChild);
+          nextBtn(area,i<plan.length-1?'Next: rows of '+plan[i+1].k+' →':'One more magic trick →',function(){i++;if(i<plan.length){round();stage.scrollIntoView({behavior:'smooth',block:'center'})}else turn()});
+        },{cls:function(){return 'big plain'}});
+      })};
+  }
+  function turn(){area.innerHTML='';
+    area.appendChild(h('p',{class:'task',style:'text-align:center',html:'4 rows of 5 make 20. What about 5 rows of 4?'}));
+    var b=h('button',{class:'big magic'},['🔄 Turn the counters']);area.appendChild(h('div',{class:'row center'},[b]));
+    stage.innerHTML='';var arr=ArrayView(4,5,{max:38,item:'counter'});stage.appendChild(arr.el);stage.appendChild(arr.cap);
+    b.onclick=function(){b.parentNode.remove();arr.turn(function(){board.appendChild(h('div',{class:'m'},['5 × 4 = 20']));sparkleAt(board.lastChild);
+      api.done('<b>Still 20!</b> 2 × 10, 4 × 5, 5 × 4 and 10 × 2 all make 20.<br>The answer to a multiplication is called the <b>product</b>. The product is 20.')})};
+  }
+  round();
 }
 function m1Discover(st,api){
   st.appendChild(guide('Make an array with counters! Put <b>5</b> counters in each row. Make <b>2</b> rows.'));
