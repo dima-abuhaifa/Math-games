@@ -55,7 +55,7 @@ h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
 .choices.col{flex-direction:column;align-items:stretch;max-width:680px;margin-inline:auto}
 
 /* home */
-.hero{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;background:var(--paper);border-radius:30px;padding:22px 26px;border:3px solid var(--line);position:relative;overflow:hidden}
+.hero{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;background:var(--paper);border-radius:30px;padding:22px 26px;border:3px solid var(--line);position:relative;overflow:hidden}
 .hero h1{font-size:clamp(34px,5.6vw,58px);font-weight:800}
 .hero .sparkles{position:absolute;inset:0;pointer-events:none}
 .hero .sparkles i{position:absolute;font-style:normal;animation:twinkle 2.4s ease-in-out infinite}
@@ -87,6 +87,8 @@ h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
 
 /* lesson shell */
 .lesson-head{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--paper);border:3px solid var(--line);border-radius:24px;padding:12px 16px;margin-bottom:12px}
+.schoollogo{width:120px;height:auto;display:block}.lesson-head .schoollogo{width:64px;margin-left:auto}
+@media (max-width:600px){.hero .schoollogo{position:absolute;top:10px;right:10px;width:64px}}
 .lesson-head h2{font-size:clamp(22px,3vw,30px)}
 .today{font-weight:800;color:var(--soft);font-size:15px}
 .today b{color:var(--ink)}
@@ -741,6 +743,7 @@ function Machine(){
    LESSON ENGINE
    ===================================================================== */
 var E5=[{k:'Warm up',c:'var(--e1)'},{k:'Discover',c:'var(--e2)'},{k:'Learn the rule',c:'var(--e3)'},{k:'Practise',c:'var(--e4)'},{k:'Check',c:'var(--e5)'}];
+function schoolLogo(){return h('img',{class:'schoollogo',src:'img/insightia-logo.png',alt:'Insightia International Academy'})}
 function topBar(back){
   var b=h('div',{class:'bar noprint'});
   if(back)b.appendChild(h('button',{class:'pill',onclick:home},['← Lesson map']));
@@ -758,6 +761,7 @@ function runLesson(id,start){
   var head=h('div',{class:'lesson-head'});
   head.appendChild(mascot());
   head.appendChild(h('div',{style:'flex:1;min-width:200px'},[h('div',{class:'today',html:L.when}),h('h2',null,[L.title]),h('div',{class:'today',html:'Today I can: <b>'+L.goal+'</b>'})]));
+  head.appendChild(schoolLogo());
   app.appendChild(head);
   var stepper=h('div',{class:'stepper'});app.appendChild(stepper);
   var card=h('section',{class:'card'});app.appendChild(card);
@@ -1358,6 +1362,7 @@ function home(){
     h('div',{class:'tag'},['Grade 2 · Multiplication and division · by Teacher Dima Abuhaifa']),
     h('h1',{html:'Multiplication <span style="color:var(--b10)">Magicians</span>'}),
     h('p',{class:'sub',style:'font-size:18px;margin-top:6px'},['Real book pages. Magic arrays, jumps and blocks. Answers written right into the book.'])]));
+  hero.appendChild(schoolLogo());
   app.appendChild(hero);
   var days=h('div',{class:'days'});
   ['m1','t2'].forEach(function(id){
