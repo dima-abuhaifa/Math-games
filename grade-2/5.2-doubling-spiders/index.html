@@ -383,6 +383,13 @@ h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
 button.qchip{border:0;cursor:pointer;font-family:inherit;padding:4px 14px;margin:2px}
 button.qchip.now{outline:3px solid var(--line);outline-offset:2px}
 .qhint{font-size:14px;font-weight:700;color:var(--soft);margin-left:6px}
+.fillrow{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:14px 0}
+.fillbox{width:78px;height:64px;border:3px solid var(--line);border-radius:14px;text-align:center;font-family:var(--display);font-size:30px;font-weight:800;color:var(--ink);background:#fff}
+.fillbox:disabled{opacity:1;color:var(--ink);-webkit-text-fill-color:var(--ink)}
+.fillbox.now{border-color:#F4B400;background:#FFF6D6;box-shadow:0 0 0 4px rgba(244,180,0,.35)}
+.fillbox.ok{border-color:var(--good);background:var(--good-soft)}
+.fillbox.bad{border-color:#E5484D;background:#FFE7E7;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 </style>
 <style>
 /* Watermark (website copy only) */
@@ -1096,20 +1103,31 @@ function hopTask(a,api,bk,cfg,done){
   return nl;
 }
 /* colour cells on a number grid in the book */
+/* fill the boxes: type each multiple in order, and its square in the book is coloured */
 function colourTask(a,api,bk,cfg,done){
-  var need=[],got=0,hots={},cnt=0;
-  for(var n=cfg.from;n<=cfg.to;n++){(function(n){var b=cfg.cell(n),ok=cfg.yes(n);if(ok)need.push(n);
-    hots[n]=bk.hot(b[0],b[1],b[2],b[3],String(n),function(){
-      if(hots[n].classList.contains('used'))return;
-      if(ok){hots[n].classList.add('used');hots[n].style.background='transparent';bk.fill(b[0]+3,b[1]+3,b[2]-6,b[3]-6,cfg.col);got++;cnt++;info.innerHTML=cfg.say(n,true,got);
-        if(got===need.length){helpRow.remove();feedback(a,'good',cfg.allDone||'<b>All coloured!</b>');done()}}
-      else{api.miss();sBad();hots[n].classList.remove('badtap');void hots[n].offsetWidth;hots[n].classList.add('badtap');info.innerHTML=cfg.say(n,false,got)}
-    },false)})(n)}
-  var info=h('div',{class:'panel',style:'text-align:center;font-weight:800;font-size:19px'},[cfg.intro||'👆 Tap the numbers in the book.']);a.appendChild(info);
-  var helpRow=h('div',{class:'row center'});
-  var hb=h('button',{class:'big plain small'},['💡 Show me the next one']);hb.onclick=function(){var n=need.filter(function(x){return !hots[x].classList.contains('used')})[0];if(n==null)return;
-    var b=cfg.cell(n);var g=bk.glow(b[0],b[1],b[2],b[3]);later(function(){g.remove()},1800);info.innerHTML=cfg.hint(n)};
-  helpRow.appendChild(hb);a.appendChild(helpRow);
+  var need=[];for(var n=cfg.from;n<=cfg.to;n++)if(cfg.yes(n))need.push(n);
+  var k=0,step=need[1]-need[0],glow=null;
+  var info=h('div',{class:'panel',style:'text-align:center;font-weight:800;font-size:19px'});a.appendChild(info);
+  var row=h('div',{class:'fillrow'});a.appendChild(row);
+  var boxes=need.map(function(v,i){var inp=h('input',{class:'fillbox',type:'text',inputmode:'numeric',maxlength:'3',autocomplete:'off','aria-label':'Box '+(i+1),'data-a':String(v)});
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter')check()});
+    inp.addEventListener('input',function(){inp.value=inp.value.replace(/[^0-9]/g,'');inp.classList.remove('bad');if(inp.value.length>=String(need[k]).length)later(check,250)});
+    row.appendChild(inp);return inp});
+  var ctl=h('div',{class:'row center'});
+  var cb=h('button',{class:'big go'},['Check ✓']);cb.onclick=check;
+  var hb=h('button',{class:'big plain small'},['💡 Help me']);hb.onclick=function(){if(k<need.length){info.innerHTML=cfg.hint(need[k]);var c=cfg.cell(need[k]);if(glow)glow.remove();glow=bk.glow(c[0],c[1],c[2],c[3])}};
+  ctl.appendChild(cb);ctl.appendChild(hb);a.appendChild(ctl);
+  function colour(v){var c=cfg.cell(v);bk.fill(c[0]+3,c[1]+3,c[2]-6,c[3]-6,cfg.col)}
+  function setNow(){boxes.forEach(function(b,i){b.disabled=i!==k;b.classList.toggle('now',i===k)});
+    if(k<need.length){var bx=boxes[k];later(function(){try{bx.focus({preventScroll:true})}catch(e){}},100);
+      info.innerHTML='✏️ Type the next multiple of '+step+' in the yellow box.<br><small>Add '+step+' to '+need[k-1]+'.</small>'}}
+  function check(){if(k>=need.length)return;var bx=boxes[k],v=+bx.value;if(!bx.value)return;
+    if(v===need[k]){bx.classList.add('ok');bx.disabled=true;sGood();colour(v);if(glow){glow.remove();glow=null}info.innerHTML=cfg.say(v,true,k+1);k++;
+      if(k===need.length){boxes.forEach(function(b){b.disabled=true;b.classList.remove('now')});ctl.remove();feedback(a,'good',cfg.allDone||'<b>All done!</b>');done()}else later(setNow,700)}
+    else{api.miss();sBad();bx.classList.add('bad');info.innerHTML='Not '+v+'. '+cfg.hint(need[k]);later(function(){bx.value='';bx.classList.remove('bad');try{bx.focus({preventScroll:true})}catch(e){}},900)}}
+  /* the first one is done for them, as an example */
+  boxes[0].value=String(need[0]);boxes[0].classList.add('ok');boxes[0].disabled=true;colour(need[0]);k=1;setNow();
+  info.innerHTML='The first one is done for you: <b>'+need[0]+'</b>.<br>✏️ Type the next multiple of '+step+' in the yellow box. Add '+step+' each time!';
 }
 /* fill in a doubling / halving table in the book, one empty cell at a time, with groups that grow or shrink */
 function factTable(a,api,bk,items,done){
@@ -1301,7 +1319,7 @@ function lbQ4(a,api,done){
   b.onclick=function(){b.parentNode.remove();P.count(function(){speak('8, 16, 24, 32, 40');tilesFact(a,api,bk,['lb4_0','lb4_1','lb4_2'],[8,5],[8,5,40,13],done)},'5 spiders, 8 legs each: 5 groups of '+tc(8)+' = <b>40</b>')};
 }
 function lbQ5(a,api,done){
-  a.appendChild(guide('Colour all the multiples of <span class="tcol" style="color:#7A4CE0">8</span>. Count on 8 each time!'));
+  a.appendChild(guide('Fill the boxes with the multiples of <span class="tcol" style="color:#7A4CE0">8</span>. Add 8 each time! I colour each one in the book for you.'));
   var bk=BookView('lb79',{crop:[740,1540]});a.appendChild(bk.el);
   colourTask(a,api,bk,{from:71,to:120,cell:c79,yes:function(n){return n%8===0},col:PURPLE,
     intro:'👆 Tap the multiples of 8 in the book. Hint: 8 × 9 = 72.',
@@ -1464,7 +1482,7 @@ function wbQ2(st,api){
   nxt();
 }
 function wbQ3(st,api){
-  st.appendChild(guide('Colour all the multiples of <span class="tcol" style="color:#7A4CE0">8</span>. Start at 8 and count on 8!'));
+  st.appendChild(guide('Fill the boxes with the multiples of <span class="tcol" style="color:#7A4CE0">8</span>. Start at 8 and add 8 each time! I colour each one in the book for you.'));
   var bk=BookView('wb65',{crop:[880,1400]});st.appendChild(bk.el);
   colourTask(st,api,bk,{from:1,to:50,cell:c65,yes:function(n){return n%8===0},col:PURPLE,intro:'👆 Tap the multiples of 8 in the book. The first one is 8.',
     say:function(n,ok){return ok?'<b>'+n+'</b> = 8 × '+n/8+' ✓':'<b>'+n+'</b> is not a multiple of 8. Count in 8s: 8, 16, 24 ...'},hint:function(n){return n===8?'Start at <b>8</b>!':'Count on 8: '+(n-8)+' + 8 = <b>'+n+'</b>'},allDone:'<b>8, 16, 24, 32, 40, 48!</b>'},function(){api.done()});
