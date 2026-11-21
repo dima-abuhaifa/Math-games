@@ -1,0 +1,1586 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script>window.MM_STANDALONE=true;</script>
+<title>Doubling Spiders</title><link rel="icon" type="image/png" href="../../assets/favicon.png"><link rel="apple-touch-icon" href="../../assets/insightia-logo.png">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&family=Gochi+Hand&display=swap">
+<style>
+/* Lesson map -> one lesson at a time. The real book page is always on screen; answers are hand-written into its blanks. */
+:root{
+  --bg:#EEF6FF; --paper:#FFFFFF; --ink:#1D2B4F; --soft:#5B6B8F; --line:#C9D8EE;
+  --b2:#2F7BF5; --b2-soft:#DCE9FF; --b2-ink:#1450B8;
+  --b5:#FF7A3D; --b5-soft:#FFE6D9; --b5-ink:#B8410C;
+  --b10:#7A4CE0; --b10-soft:#EEE7FF; --b10-ink:#5A33B5;
+  --good:#1FA563; --good-soft:#DDF6E8; --bad:#E5484D; --bad-soft:#FFE3E3;
+  --star:#FFC21A; --gold:#F4B400; --pen:#D81B60; --teal:#16A3A3;
+  --e1:#E0559B; --e2:#FF7A3D; --e3:#2F7BF5; --e4:#1FA563; --e5:#7A4CE0;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Trebuchet MS",system-ui,sans-serif;
+  --hand:"Gochi Hand","Comic Sans MS","Segoe Print",cursive;
+  color-scheme:light;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  -webkit-tap-highlight-color:transparent;overflow-x:hidden;
+  background-image:radial-gradient(circle at 14px 14px,rgba(122,76,224,.08) 2px,transparent 3px),radial-gradient(circle at 0 0,rgba(255,194,26,.12) 2px,transparent 3px);background-size:28px 28px,56px 56px}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;touch-action:manipulation}
+button:focus-visible{outline:4px solid var(--b10);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding-block:16px 60px}
+.c2{color:var(--b2-ink);font-weight:800}.c5{color:var(--b5-ink);font-weight:800}.c10{color:var(--b10-ink);font-weight:800}
+.sub{color:var(--soft);font-size:16px;margin:0}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.center{justify-content:center}
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.bar .grow{flex:1}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:800;font-size:16px;color:var(--ink)}
+.pill:hover{border-color:var(--b10)}
+
+.big{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:60px;min-width:110px;padding:10px 24px;border-radius:18px;font-family:var(--display);font-weight:800;font-size:24px;border:3px solid transparent;box-shadow:0 5px 0 rgba(29,43,79,.2);transition:transform .08s}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(29,43,79,.2)}
+.big.magic{background:linear-gradient(135deg,#7A4CE0,#E0559B);color:#fff}
+.big.b2{background:var(--b2);color:#fff}.big.b5{background:var(--b5);color:#fff}.big.b10{background:var(--b10);color:#fff}
+.big.plain{background:var(--paper);border-color:var(--line)}.big.go{background:var(--good);color:#fff}
+.big.sel,.opt.sel{outline:5px solid var(--star);outline-offset:2px}
+.big.small{min-height:48px;font-size:19px;padding:6px 16px;min-width:0}
+.big[disabled]{opacity:.4;pointer-events:none}
+.big.on{outline:5px solid var(--star);outline-offset:2px}
+.opt{background:var(--paper);border:3px solid var(--line);border-radius:18px;padding:12px 18px;font-size:20px;font-weight:800;min-height:58px;text-align:left;box-shadow:0 4px 0 var(--line)}
+.opt:hover{border-color:var(--b10)}.opt.right{background:var(--good-soft);border-color:var(--good)}.opt.wrongpick{background:var(--bad-soft);border-color:var(--bad)}
+.opt[disabled]{opacity:.75}
+.choices{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.choices.col{flex-direction:column;align-items:stretch;max-width:680px;margin-inline:auto}
+
+/* home */
+.hero{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;background:var(--paper);border-radius:30px;padding:22px 26px;border:3px solid var(--line);position:relative;overflow:hidden}
+.hero h1{font-size:clamp(34px,5.6vw,58px);font-weight:800}
+.hero .sparkles{position:absolute;inset:0;pointer-events:none}
+.hero .sparkles i{position:absolute;font-style:normal;animation:twinkle 2.4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.15)}}
+.tag{font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--b10)}
+.days{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-top:18px}
+.day{text-align:left;background:var(--paper);border:3px solid var(--line);border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:10px;transition:transform .15s,border-color .15s;position:relative;min-width:0}
+.day:hover{transform:translateY(-3px);border-color:var(--c,var(--b10))}
+.day .when{font-weight:800;color:var(--c);text-transform:uppercase;letter-spacing:.06em;font-size:14px}
+.day h2{font-size:26px}
+.day .goal{background:#F4F8FE;border-radius:14px;padding:8px 12px;font-weight:700;font-size:16px}
+.epath{display:flex;gap:6px;flex-wrap:wrap}
+.echip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px 3px 4px;font-size:13px;font-weight:800;color:#fff;background:var(--ec)}
+.echip b{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.3);display:grid;place-items:center;font-size:12px}
+.echip.done::after{content:"\2713";margin-left:2px}
+.daystars{font-size:22px;letter-spacing:2px}
+.star-on{color:var(--star)}.star-off{color:#D5DEEC}
+.mini-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:16px}
+
+/* mascot + speech */
+.guide{display:flex;gap:12px;align-items:flex-start;margin:6px 0 10px}
+.mascot{flex:none;width:80px;height:80px;animation:bob 2.4s ease-in-out infinite}
+.mascot.huge{width:124px;height:124px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.say{position:relative;background:var(--paper);border:3px solid var(--ink);border-radius:22px;padding:12px 16px;font-size:clamp(19px,2.4vw,23px);font-weight:800;min-width:0;flex:1;max-width:780px}
+.say::before{content:"";position:absolute;left:-14px;top:22px;border:12px solid transparent;border-right-color:var(--ink);border-left:0}
+.say .spk{float:right;margin:-4px -6px 4px 8px;width:42px;height:42px;border-radius:50%;background:var(--b10-soft);font-size:20px}
+.say .nm{display:block;font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em}
+
+/* lesson shell */
+.lesson-head{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--paper);border:3px solid var(--line);border-radius:24px;padding:12px 16px;margin-bottom:12px}
+.schoollogo{width:120px;height:auto;display:block}.lesson-head .schoollogo{width:64px;margin-left:auto}
+@media (max-width:600px){.hero .schoollogo{position:absolute;top:10px;right:10px;width:64px}}
+.lesson-head h2{font-size:clamp(22px,3vw,30px)}
+.today{font-weight:800;color:var(--soft);font-size:15px}
+.today b{color:var(--ink)}
+.stepper{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.step{display:flex;align-items:center;gap:8px;border-radius:16px;padding:6px 12px 6px 6px;background:var(--paper);border:3px solid var(--line);font-weight:800;font-size:15px;opacity:.75}
+.step .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--ec);font-family:var(--display);font-size:16px}
+.step.now{border-color:var(--ec);opacity:1;box-shadow:0 0 0 4px color-mix(in srgb,var(--ec) 20%,transparent)}
+.step.done{opacity:1}.step.done .n::after{content:"\2713"}.step.done .n span{display:none}
+.card{background:var(--paper);border-radius:28px;border:3px solid var(--line);padding:20px;min-width:0;position:relative}
+.estage-title{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.estage-title .badge{border-radius:999px;padding:4px 14px;color:#fff;font-family:var(--display);font-weight:800;font-size:20px;background:var(--ec)}
+.task{font-size:20px;font-weight:800;margin:10px 0}
+.next-row{display:flex;justify-content:flex-end;margin-top:14px}
+.qbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.qchip{display:inline-block;border-radius:999px;padding:1px 12px;font-size:16px;font-weight:800;color:#fff}
+
+/* book page */
+.bookwrap{margin:8px 0}.bookwrap>.label{display:table;margin:0 6px 8px auto;background:var(--bk,#5B6B8F);color:#fff;border-radius:999px;padding:3px 12px;font-weight:800;font-size:13px}
+.bookwrap.lb{--bk:var(--e2)} .bookwrap.wb{--bk:#5B6B8F}
+.book{position:relative;border-radius:14px;overflow:hidden;overflow:clip;box-shadow:0 10px 30px rgba(29,43,79,.18),0 0 0 3px #fff,0 0 0 6px var(--bk,#5B6B8F);background:#fff;container-type:inline-size}
+.book .sheet{position:absolute;left:0;width:100%}
+.book img{display:block;width:100%;height:100%;user-select:none;-webkit-user-drag:none}
+.book.lb{--bk:var(--e2)} .book.wb{--bk:#5B6B8F}
+.hw{position:absolute;display:flex;align-items:center;font-family:var(--hand);color:var(--pen);line-height:1;white-space:nowrap;pointer-events:none;clip-path:inset(0 100% 0 0);font-size:calc(var(--fs) * 1cqw);z-index:3}
+.hw.c{justify-content:center}
+.hw.shown{clip-path:inset(0 0 0 0)}
+.hw.go{animation:write 1.1s steps(16,end) forwards}
+.hw.ghost{color:#9AA8C4;clip-path:none}
+@keyframes write{to{clip-path:inset(0 0 0 0)}}
+.hot{position:absolute;border-radius:10px;z-index:4}
+.hot.hint{animation:hint 1.6s ease-in-out infinite}
+@keyframes hint{0%,100%{box-shadow:0 0 0 0 rgba(122,76,224,0)}50%{box-shadow:0 0 0 4px rgba(122,76,224,.55)}}
+.hot.picked{box-shadow:0 0 0 5px var(--star)!important;animation:none;background:rgba(255,194,26,.18)}
+.hot.badtap{animation:badtap .5s}
+@keyframes badtap{0%,100%{background:transparent}40%{background:rgba(229,72,77,.35)}}
+.hot.used{background:rgba(255,255,255,.72);pointer-events:none;animation:none}
+.hot.area{border-radius:0}
+.rowglow{position:absolute;border-radius:12px;box-shadow:0 0 0 5px var(--star),0 0 22px 6px rgba(255,194,26,.6);pointer-events:none;z-index:2;animation:glowp 1.4s ease-in-out infinite}
+@keyframes glowp{50%{box-shadow:0 0 0 7px var(--star),0 0 30px 10px rgba(255,194,26,.75)}}
+.marker{position:absolute;background:rgba(255,213,0,.45);mix-blend-mode:multiply;border-radius:6px;transform-origin:left;transform:scaleX(0);transition:transform .8s ease}
+.marker.on{transform:scaleX(1)}
+.book svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.book svg.lines .ink{fill:none;stroke:var(--pen);stroke-width:6;stroke-linecap:round;stroke-dasharray:1.02;stroke-dashoffset:1.02;animation:draw .8s ease forwards}
+.book svg.lines .ink.now{animation:none;stroke-dashoffset:0}
+.book svg.lines .ink.bad{stroke:var(--bad);stroke-dasharray:.04 .03;animation:none;stroke-dashoffset:0;opacity:.9}
+@keyframes draw{to{stroke-dashoffset:0}}
+.spark{position:absolute;z-index:6;pointer-events:none;font-size:22px;animation:spark .9s ease-out forwards}
+@keyframes spark{from{transform:translate(0,0) scale(.4);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(1.1);opacity:0}}
+.flyer{position:fixed;z-index:70;pointer-events:none;font-family:var(--hand);color:var(--pen);font-size:34px;transition:left .8s cubic-bezier(.5,0,.3,1),top .8s cubic-bezier(.5,-.6,.4,1),transform .8s;text-shadow:0 0 12px #fff}
+
+/* feedback */
+.fb{margin-top:12px;border-radius:18px;padding:12px 16px;font-size:18px;font-weight:700;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;animation:fbin .3s}
+@keyframes fbin{from{transform:translateY(8px);opacity:0}}
+.fb.good{background:var(--good-soft);border:3px solid var(--good)}.fb.bad{background:var(--bad-soft);border:3px solid var(--bad)}.fb.info{background:var(--b10-soft);border:3px solid var(--b10)}
+.fb .msg{flex:1;min-width:200px}.fb .face{font-size:30px;line-height:1}.fb .viz{width:100%}
+.frame{background:#FFF8E1;border:3px solid #F2C94C;border-radius:18px;padding:12px 16px;font-size:clamp(19px,2.4vw,24px);font-weight:800;text-align:center;margin:10px 0}
+.panel{background:#F4F8FE;border:2px solid var(--line);border-radius:20px;padding:12px;margin:10px 0;min-width:0;overflow:hidden}
+.panel .ttl{text-align:center;font-weight:800;font-size:17px;margin-bottom:4px}
+.eqline{font-family:var(--display);font-size:clamp(24px,3.4vw,32px);font-weight:800;text-align:center;line-height:1.2}
+.bigstate{font-family:var(--display);font-size:clamp(30px,5vw,50px);font-weight:800;text-align:center;margin:8px 0}
+
+/* hundred square */
+.hs{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;max-width:600px;margin:10px auto}
+.hc{position:relative;aspect-ratio:1;border-radius:10px;background:#fff;border:2px solid var(--line);font-family:var(--display);font-weight:800;font-size:clamp(12px,2.6vw,21px);line-height:1;padding:0;transition:background .25s,color .25s,transform .2s}
+.hc.m2{background:var(--b2);border-color:var(--b2-ink);color:#fff}
+.hc.m5{background:var(--b5);border-color:var(--b5-ink);color:#fff}
+.hc.m10{background:var(--b10);border-color:var(--b10-ink);color:#fff}
+.hc.pop{animation:pop .45s}
+.hc.shake{animation:shake .4s}
+.hc.l2{background:var(--b2-soft)}
+.hc.l5{box-shadow:inset 0 0 0 4px var(--b5)}
+.hc.l10::after{content:"★";position:absolute;right:1px;top:-3px;font-size:clamp(10px,1.8vw,15px);color:var(--b10)}
+.hc .od{color:inherit}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.wands{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-weight:800;font-size:15px;margin:6px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:20px;height:20px;border-radius:6px}
+
+/* dots and groups */
+.sdots{display:inline-grid;grid-auto-flow:column;grid-template-rows:repeat(2,var(--s,18px));gap:3px;vertical-align:middle}
+.sdots b{width:var(--s,18px);height:var(--s,18px);border-radius:50%;border:1.5px solid rgba(29,43,79,.45);display:block}
+.sdots b.lone{box-shadow:0 0 0 3px var(--star);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,194,26,.9)}50%{box-shadow:0 0 0 9px rgba(255,194,26,0)}}
+.gtray{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;min-height:70px;margin:10px 0;align-items:center}
+.grp1{display:flex;gap:4px;padding:6px;border-radius:14px;border:3px solid var(--gc);background:color-mix(in srgb,var(--gc) 10%,#fff);animation:capin .45s backwards;position:relative;flex-wrap:wrap;max-width:146px;justify-content:center}
+.grp1 i{width:22px;height:22px;border-radius:50%;background:var(--gc);display:block;border:2px solid rgba(29,43,79,.35)}
+.grp1 em{position:absolute;top:-12px;right:-8px;background:var(--gc);color:#fff;font-style:normal;font-family:var(--display);font-weight:800;font-size:14px;border-radius:999px;padding:0 7px}
+@keyframes capin{from{transform:translateY(-30px) scale(.5);opacity:0}}
+.verdict{text-align:center;font-family:var(--display);font-size:clamp(20px,3vw,28px);font-weight:800}
+.tabs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+
+/* flip cards */
+.flips{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.flip{perspective:900px;min-height:230px}
+.flip .in{position:relative;width:100%;height:100%;min-height:230px;transition:transform .7s;transform-style:preserve-3d}
+.flip.on .in{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;border:3px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;background:var(--paper);text-align:center;gap:8px}
+.flip .f{color:#fff;font-family:var(--display);font-size:30px;font-weight:800;cursor:pointer;border:0}
+.flip .f small{font-family:var(--body);font-size:15px;opacity:.9}
+.flip .b{transform:rotateY(180deg);font-weight:800;font-size:19px}
+.strip{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;font-family:var(--display);font-weight:800;font-size:22px}
+.strip span{background:#F4F8FE;border-radius:10px;padding:0 8px}
+.strip u{text-decoration:none;color:#fff;background:var(--uc);border-radius:6px;padding:0 3px}
+
+/* arrays */
+.arr{position:relative;margin:6px auto;transition:height .4s}
+.arr .it{position:absolute;transition:left .7s cubic-bezier(.4,1.3,.5,1),top .7s cubic-bezier(.4,1.3,.5,1),transform .4s,opacity .4s}
+.arr .it svg{display:block;width:100%;height:100%}
+.arr .it.lit{transform:scale(1.18)}
+.arr .grp{position:absolute;border:4px solid var(--gc,var(--b10));border-radius:14px;background:color-mix(in srgb,var(--gc,var(--b10)) 9%,transparent);transition:left .7s cubic-bezier(.4,1.3,.5,1),top .7s cubic-bezier(.4,1.3,.5,1),width .7s,height .7s,opacity .3s;animation:grpin .35s backwards;pointer-events:none}
+.arr .grp b{position:absolute;right:-12px;top:-14px;background:var(--gc,var(--b10));color:#fff;border-radius:999px;font-family:var(--display);font-size:16px;padding:0 8px;line-height:24px;white-space:nowrap}
+.arr .grp.cols b{right:auto;left:50%;top:auto;bottom:-14px;transform:translateX(-50%)}
+@keyframes grpin{from{transform:scale(1.2);opacity:0}}
+.arrcap{text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,28px);min-height:1.4em}
+.factbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.factbtns .big{font-size:26px;min-width:120px}
+.factbtns .big.tried{background:var(--good-soft);border-color:var(--good)}
+
+/* fact family triangle */
+.tri{display:block;margin:0 auto;max-width:300px;width:100%;height:auto}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:520px;margin:10px auto}
+.facts div{background:#fff;border:3px solid var(--line);border-radius:14px;padding:6px;text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,26px);animation:capin .4s backwards}
+.facts div.m{border-color:var(--b2)}.facts div.d{border-color:var(--b5)}
+.seesaw{display:flex;flex-direction:column;align-items:center;margin:10px 0}
+.seesaw .beam{display:flex;align-items:center;gap:10px;background:#fff;border:4px solid var(--ink);border-radius:16px;padding:8px 14px;font-family:var(--display);font-weight:800;font-size:clamp(24px,4vw,34px);transition:transform .6s}
+.seesaw .pivot{width:0;height:0;border-left:26px solid transparent;border-right:26px solid transparent;border-bottom:34px solid var(--ink)}
+.seesaw .side{padding:2px 12px;border-radius:12px;transition:transform .7s}
+.seesaw .side.a{background:var(--b2-soft)}.seesaw .side.b{background:var(--b5-soft)}
+
+/* tiles */
+.tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.tile{min-width:72px;height:64px;border-radius:16px;font-family:var(--display);font-size:32px;font-weight:800;color:#fff;background:var(--b10);box-shadow:0 5px 0 var(--b10-ink);padding:0 12px}
+.tile.used{opacity:.25;pointer-events:none}
+.tile.alt{background:var(--teal);box-shadow:0 5px 0 #0E7A7A}
+.pad{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;max-width:460px;margin:10px auto}
+.pad button{height:58px;border-radius:14px;background:var(--paper);border:3px solid var(--line);font-family:var(--display);font-size:28px;font-weight:800}
+.pad button.used{background:var(--good-soft);border-color:var(--good);pointer-events:none}
+
+/* base ten */
+.b10stage{display:flex;gap:18px;justify-content:center;align-items:flex-end;flex-wrap:wrap;min-height:120px;margin:10px 0}
+.b10grp{display:flex;flex-direction:column;align-items:center;gap:6px}
+.b10blocks{display:flex;gap:4px;align-items:flex-end;flex-wrap:wrap;justify-content:center;max-width:330px}
+.blk{--u:8px;width:var(--u);height:var(--u);background:var(--b2);border:1px solid var(--b2-ink);transition:width .9s cubic-bezier(.4,1.4,.5,1),height .9s cubic-bezier(.4,1.4,.5,1),background .6s;
+  background-image:linear-gradient(rgba(255,255,255,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.35) 1px,transparent 1px);background-size:var(--u) var(--u)}
+.blk.rod{height:calc(var(--u)*10);background-color:var(--b5);border-color:var(--b5-ink)}
+.blk.flat{width:calc(var(--u)*10);height:calc(var(--u)*10);background-color:var(--b10);border-color:var(--b10-ink)}
+.b10lbl{font-weight:800;font-size:16px;background:#fff;border:2px solid var(--line);border-radius:999px;padding:2px 12px;white-space:nowrap}
+
+/* place value slide */
+.pv{max-width:520px;margin:10px auto;border:3px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff}
+.pv .hd,.pv .rw{display:grid;grid-template-columns:repeat(3,1fr)}
+.pv .hd div{background:#8DC2CC;text-align:center;font-weight:800;font-size:20px;padding:4px;border-right:2px solid var(--ink)}
+.pv .rw>div{position:relative;height:66px;border-right:2px solid var(--ink);border-top:2px solid var(--ink)}
+.pv .hd div:last-child,.pv .rw>div:last-child{border-right:0}
+.pv .dg{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--hand);font-size:46px;color:var(--pen);transition:transform 1s cubic-bezier(.5,0,.3,1.3)}
+.pv .dg.slide{transform:translateX(-100%)}
+.pv .dg.zero{color:var(--b10);animation:zeroin .8s backwards}
+@keyframes zeroin{from{transform:scale(3) rotate(-30deg);opacity:0}}
+.pv .dg.trail::after{content:"";position:absolute;left:60%;top:50%;width:80%;height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(255,194,26,.9),transparent);opacity:0;animation:trail 1s}
+@keyframes trail{30%{opacity:1}100%{opacity:0}}
+
+/* pencil boxes */
+.pboxes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:flex-end;margin:10px 0;min-height:60px}
+.pbox{width:34px;height:46px;border-radius:5px;background:linear-gradient(#2A4D8F 0 18%,#3A7BD5 18%);position:relative;animation:capin .35s backwards;flex:none}
+.pbox::before{content:"";position:absolute;left:3px;right:3px;top:-8px;height:10px;background:repeating-linear-gradient(90deg,#E5484D 0 3px,#FFC21A 3px 6px,#1FA563 6px 9px,#7A4CE0 9px 12px)}
+.pbox::after{content:"10";position:absolute;left:0;right:0;bottom:3px;text-align:center;color:#fff;font-weight:800;font-size:13px}
+.crate{display:flex;flex-wrap:wrap;gap:3px;width:118px;padding:16px 5px 5px;border:4px solid var(--b10);border-radius:12px;background:var(--b10-soft);position:relative;animation:capin .5s backwards}
+.crate .pbox{width:20px;height:28px;animation:none}.crate .pbox::after{font-size:9px}.crate .pbox::before{top:-5px;height:6px}
+.crate b{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--b10);color:#fff;border-radius:999px;padding:0 10px;font-family:var(--display);font-size:16px}
+.count{font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,40px);text-align:center}
+
+/* number line */
+.nl{position:relative;height:150px;margin:6px 4px 0}
+.nl svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.nl .tk{position:absolute;top:96px;transform:translateX(-50%);min-width:30px;height:40px;border-radius:10px;font-family:var(--display);font-weight:800;font-size:clamp(13px,2.2vw,19px);padding:0 2px;background:#fff;border:2px solid var(--line)}
+.nl .tk.on{background:var(--b5);border-color:var(--b5-ink);color:#fff}
+.nl .tk.start{background:var(--b2);border-color:var(--b2-ink);color:#fff}
+.nl .tk.shake{animation:shake .4s}
+.nl .frog{position:absolute;top:44px;font-size:38px;transform:translate(-50%,0);line-height:1;transition:none;z-index:3}
+.nl .jl{position:absolute;top:2px;transform:translateX(-50%);font-weight:800;color:var(--b5-ink);font-size:15px}
+
+/* x10 machine */
+.mach{display:flex;align-items:center;justify-content:center;gap:10px;margin:14px 0;flex-wrap:nowrap}
+.mach .chipn{min-width:74px;height:62px;border-radius:16px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:30px;background:#fff;border:3px solid var(--line);transition:transform .7s,opacity .5s;padding:0 10px}
+.mach .box{width:130px;height:110px;border-radius:22px;background:linear-gradient(160deg,#9AA8C4,#5B6B8F);border:4px solid var(--ink);display:grid;place-items:center;position:relative;flex:none}
+.mach .box span{background:#fff;border-radius:10px;padding:4px 10px;font-family:var(--display);font-weight:800;font-size:28px}
+.mach .box::before,.mach .box::after{content:"";position:absolute;top:-16px;width:18px;height:18px;border-radius:50%;background:var(--star);border:3px solid var(--ink)}
+.mach .box::before{left:24px}.mach .box::after{right:24px}
+.mach .box.work{animation:shake .25s 3}
+.mach .out{color:var(--b10-ink);border-color:var(--b10)}
+.mach .chipn.in-go{transform:translateX(60px) scale(.3);opacity:0}
+
+/* riddle */
+.rid{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.rid span{width:52px;height:56px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:24px;background:#fff;border:3px solid var(--line);transition:opacity .5s,transform .5s}
+.rid span.out{opacity:.15;transform:scale(.7) rotate(-12deg)}
+.rid span.win{background:var(--star);border-color:var(--gold);transform:scale(1.3);animation:pop .6s}
+.clues{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+/* certificate */
+.cert{text-align:center;padding:10px 0}
+.lwicd{max-width:720px;margin:14px auto;border-radius:12px;overflow:hidden;text-align:left}
+.lwicd .t{background:#3F8F9C;color:#fff;font-weight:800;padding:10px 16px;font-size:20px}
+.lwicd .bdy{background:#A0C9CF;padding:14px 16px;display:flex;gap:14px;align-items:center;font-weight:700;font-size:19px}
+.lwicd .box{flex:none;width:40px;height:40px;background:#fff;border-radius:6px;display:grid;place-items:center;font-family:var(--hand);font-size:40px;color:var(--pen)}
+.lwicd .box span{clip-path:inset(0 100% 0 0);animation:write .8s .6s steps(8,end) forwards}
+.bigstars{font-size:60px;letter-spacing:8px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.confetti i{position:absolute;top:-20px;width:12px;height:16px;border-radius:3px;animation:fall 1.9s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* copy to my book */
+.booktabs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.booktabs button{font-family:var(--display);font-weight:800;font-size:22px;padding:10px 22px;border-radius:16px;border:3px solid var(--line);background:var(--paper)}
+.booktabs button.on.lb{background:var(--b5-soft);border-color:var(--b5)}.booktabs button.on.wb{background:#E7EBF1;border-color:#5B6B8F}
+.pagehead{font-family:var(--display);font-weight:800;font-size:24px;margin-top:16px}
+.modal{position:fixed;inset:0;background:rgba(29,43,79,.6);z-index:50;overflow:auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 30px max(16px,env(safe-area-inset-left,0px))}
+.modal .inner{max-width:1100px;margin:0 auto}
+.modal .closeb{position:sticky;top:0;z-index:10;display:flex;justify-content:flex-end;margin-bottom:8px}
+
+@media (max-width:600px){
+  body{font-size:17px}
+  .hero{grid-template-columns:1fr;padding:18px;text-align:center}.hero .mascot{margin:0 auto}
+  .card{padding:14px;border-radius:22px}
+  .big{min-width:90px;font-size:21px;padding:8px 16px}
+  .mascot{width:58px;height:58px}
+  .step .t{display:none}
+  .hs{gap:2px}.hc{border-radius:6px;border-width:1px}
+  .mach .box{width:100px;height:90px}.mach .box span{font-size:22px}.mach .chipn{min-width:60px;font-size:24px}
+  .rid span{width:44px;height:50px;font-size:20px}
+  .tile{min-width:62px;height:58px;font-size:28px}
+  .pv .dg{font-size:38px}.pv .rw>div{height:56px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.hw.go{clip-path:inset(0 0 0 0)}}
+@media print{.bar,.booktabs,.noprint{display:none!important}body{background:#fff}.book{break-inside:avoid;box-shadow:none}}
+/* Unit 5 extras: equal groups, pictures, counting stick, coloured cells */
+.cfill{position:absolute;border-radius:8px;mix-blend-mode:multiply;z-index:2;animation:cfin .45s}
+.cfill.now{animation:none}
+@keyframes cfin{from{transform:scale(.2);opacity:0}}
+.tcol{font-weight:800}
+.dbl{display:inline-block;background:var(--good-soft);border:2px solid var(--good);border-radius:10px;padding:0 8px;color:#14804B}
+.hlv{display:inline-block;background:var(--b10-soft);border:2px solid var(--b10);border-radius:10px;padding:0 8px;color:var(--b10-ink)}
+.gv{--d:24px;display:flex;flex-direction:column;gap:calc(var(--d)*.35);align-items:center;margin:8px auto;max-width:760px}
+.gvrow{display:flex;align-items:center;gap:10px;border-radius:999px;padding:3px 10px;background:#fff;border:2px solid var(--line);transition:box-shadow .2s,transform .2s;max-width:100%}
+.gvrow.lit{box-shadow:0 0 0 4px var(--star);transform:scale(1.03)}
+.gvrow.pop{animation:capin .45s}
+.gvdots{display:flex;gap:calc(var(--d)*.3)}
+.gvdots i{display:block;width:var(--d);height:var(--d);border-radius:50%;border:2px solid rgba(29,43,79,.35);transition:opacity .5s,transform .5s}
+.gvdots i.new{animation:dotin .5s backwards}
+.gvdots i.gone{opacity:0;transform:scale(.2)}
+@keyframes dotin{from{transform:scale(0) translateY(-14px);opacity:0}60%{transform:scale(1.3)}}
+.gvtot{min-width:38px;font-family:var(--display);font-size:calc(var(--d)*.85 + 6px);color:var(--soft);opacity:0;transition:opacity .2s}
+.gvtot.on{opacity:1;color:var(--ink)}
+.pics{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:10px 0}
+.pic{position:relative;width:86px;display:flex;justify-content:center;padding:4px;border-radius:14px;transition:background .2s}
+.pics.spider .pic{width:100px}.pics.domino .pic{width:62px}
+.pic.now{background:#FFF8E1}
+.pic.pop{animation:capin .45s}
+.pic svg{width:100%;height:auto;display:block}
+.pic .parts > *{stroke:#1D2B4F;transition:stroke .2s}
+.pics.square .pic .parts > *{stroke:#1D2B4F}
+.pic .parts > .lit{stroke:var(--star)}
+.pics.spider .pic .parts > .lit{stroke:#7A4CE0}
+.pic .pt,.pic .pb{transition:fill .2s}
+.pic .pt.lit{fill:#F4B400}.pic .pb.lit{fill:#16A3A3}
+.pic .word{display:grid;place-items:center;width:78px;height:58px;border:3px solid var(--ink);border-radius:8px;background:#fff;font-weight:800;font-size:20px}
+.pbadge{position:absolute;top:-10px;right:-6px;background:var(--ink);color:#fff;font-family:var(--display);font-size:18px;border-radius:999px;padding:0 9px;opacity:0;transform:scale(.5);transition:opacity .2s,transform .2s}
+.pbadge.on{opacity:1;transform:scale(1)}
+.cstick{position:relative;margin:16px 6% 10px 6%}
+.stickbar{display:flex;height:26px;border-radius:6px;overflow:hidden;border:3px solid var(--ink)}
+.stickbar span{flex:1}
+.cstick .zero{position:absolute;left:0;top:-26px;transform:translateX(-50%);font-family:var(--display);font-weight:800;font-size:18px}
+.stickrows{margin-top:8px}
+.srow{position:relative;height:54px}
+.slab{position:absolute;left:-6%;top:12px;transform:translateX(-40%);color:#fff;border-radius:999px;padding:0 8px;font-weight:800;font-size:13px}
+.scell{position:absolute;top:6px;transform:translateX(-50%);min-width:38px;height:42px;border-radius:12px;background:#fff;border:3px solid var(--line);font-family:var(--display);font-weight:800;font-size:clamp(14px,2.4vw,20px);padding:0 3px;color:var(--soft)}
+.scell.on{color:#fff}
+.scell.pop{animation:pop .45s}
+.scell.next{box-shadow:0 0 0 4px var(--star);animation:hint 1.4s infinite}
+.bricks{display:flex;flex-direction:column;align-items:center;gap:0;margin:10px 0}
+.bricks .br{display:flex}
+.bricks .br span{width:74px;height:52px;border:3px solid var(--ink);margin:-1.5px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:24px;background:#FBE3D6}
+.bricks .br span.q{background:#fff;color:var(--soft)}
+.bricks .br span.hot{background:#FFF1B8;box-shadow:inset 0 0 0 4px var(--star)}
+.mini-venn{display:block;margin:6px auto;max-width:420px;width:100%;height:auto}
+.addrow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font-family:var(--display);font-weight:800;font-size:clamp(22px,3.6vw,32px);margin:8px 0}
+.addrow .chip{background:#fff;border:3px solid var(--line);border-radius:14px;padding:2px 14px}
+@media (max-width:600px){.pic{width:64px}.pics.spider .pic{width:76px}.pics.domino .pic{width:46px}.bricks .br span{width:58px;height:44px;font-size:20px}.scell{min-width:30px;height:36px}}
+.pend{opacity:0;animation:pendin .6s forwards}
+.pend.now{opacity:1;animation:none}
+@keyframes pendin{to{opacity:1}}
+</style>
+<style>
+/* Watermark (website copy only) */
+.book::after{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;opacity:.18;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200'%3E%3Ctext x='20' y='120' transform='rotate(-24 180 100)' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%231D2B4F'%3E%C2%A9 Teacher Dima Abuhaifa%3C/text%3E%3C/svg%3E");background-size:360px 200px}
+body::after{content:"";position:fixed;inset:0;z-index:40;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200'%3E%3Ctext x='20' y='120' transform='rotate(-24 180 100)' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%231D2B4F'%3E%C2%A9 Teacher Dima Abuhaifa%3C/text%3E%3C/svg%3E");background-size:360px 200px}
+@media print{body::after{display:none}}
+.wmark{display:table;margin:-40px auto 24px;background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:800;font-size:13px;color:var(--soft)}
+@media print{.wmark{margin:10px auto}}
+</style>
+</head><body>
+<div class="wrap" id="app"></div>
+<div class="wmark">© Teacher Dima Abuhaifa</div>
+<script>
+(function(){
+"use strict";
+/* Grade 2 · Unit 5.2 Connecting 2 ×, 4 × and 8 × · Doubling Spiders
+   Colour code everywhere: groups of 2 = blue, groups of 4 = green, groups of 8 = purple. */
+var GAME={
+  store:'doublingSpiders.v1',who:'Webby',
+  certTitle:'Super doubling, spider friend!',bonusTitle:'⭐ Bonus for super spiders',
+  tag:'Grade 2 · Lesson 5.2 · Multiplication and division · by Teacher Dima Abuhaifa',
+  titleHtml:'Doubling <span style="color:#7A4CE0">Spiders</span>',
+  sub:'Double the 2 times table to get 4, double again to get 8. Real book pages, growing groups and spider legs. Answers written right into the book.',
+  lessons:['d1','d2'],extra:['hw'],
+  pages:{lb:['lb77','lb78','lb79','lb80','lb81'],wb:['wb65','wb66','wb67','wb68']},
+  words:[['double','Make it two times as big. Double 2 is 4. Double 4 is 8.'],
+    ['halve','Split into two equal parts. Half of 8 is 4. Half of 4 is 2.'],
+    ['group size','How many are in each group. 4 × 6 = 24 means groups of 4, and 6 groups.'],
+    ['product','The answer to a multiplication. In 4 × 6 = 24, the product is 24.'],
+    ['multiple','A number you land on when you count in equal jumps. 8, 16, 24 are multiples of 8.'],
+    ['odd','A number that ends in 1, 3, 5, 7 or 9. One is left over when you make pairs.'],
+    ['even','A number that ends in 0, 2, 4, 6 or 8. Everything makes pairs.'],
+    ['sequence','Numbers in order that follow a rule: 5, 9, 13, 17 ...'],
+    ['term','One number in a sequence. 13 is a term.'],
+    ['term-to-term rule','How to get from one term to the next: add 4.']]
+};
+/* Webby the spider: 8 legs, so the 8 times table is easy for Webby! */
+function mascot(cls,mood){
+  var mouth=mood==='wow'?'<ellipse cx="50" cy="66" rx="7" ry="8" fill="#1D2B4F"/>':'<path d="M38 62 Q50 74 62 62" stroke="#1D2B4F" stroke-width="5" fill="none" stroke-linecap="round"/>';
+  var legs='';[[-1],[1]].forEach(function(s){s=s[0];for(var i=0;i<4;i++){var y=44+i*10;legs+='<path d="M'+(50+s*22)+' '+y+' Q'+(50+s*40)+' '+(y-16+i*6)+' '+(50+s*48)+' '+(y+6+i*4)+'" stroke="#1D2B4F" stroke-width="5" fill="none" stroke-linecap="round"/>'}});
+  return h('div',{class:'mascot '+(cls||''),'aria-hidden':'true',html:'<svg viewBox="0 0 100 100" width="100%" height="100%">'+legs+
+    '<circle cx="50" cy="56" r="30" fill="#7A4CE0" stroke="#1D2B4F" stroke-width="4"/>'+
+    '<path d="M50 4 L50 26" stroke="#9AA8C4" stroke-width="2"/>'+
+    '<circle cx="39" cy="50" r="9" fill="#fff"/><circle cx="61" cy="50" r="9" fill="#fff"/><circle cx="41" cy="51" r="4.5" fill="#1D2B4F"/><circle cx="63" cy="51" r="4.5" fill="#1D2B4F"/>'+
+    '<circle cx="30" cy="63" r="5" fill="#FF9FA8" opacity=".8"/><circle cx="70" cy="63" r="5" fill="#FF9FA8" opacity=".8"/>'+mouth+
+    '<text x="62" y="34" font-size="13" fill="#FFC21A">★</text></svg>'});
+}
+
+var app=document.getElementById('app');
+var IMG=window.MM_IMG_BASE||'img/';
+var isOdd=function(n){return n%2===1};
+
+/* ---------- saved progress (optional, this device only) ---------- */
+var STORE=GAME.store;
+var SAVE={};try{SAVE=JSON.parse(localStorage.getItem(STORE)||'{}')||{}}catch(e){SAVE={}}
+SAVE.done=SAVE.done||{};SAVE.stars=SAVE.stars||{};SAVE.dyn=SAVE.dyn||{};
+function persist(){try{localStorage.setItem(STORE,JSON.stringify(SAVE))}catch(e){}}
+
+/* ---------- sound + voice ---------- */
+var muted=!!SAVE.muted,ac=null;
+function tone(freqs,dur,type){
+  if(muted)return;
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    freqs.forEach(function(f,i){var o=ac.createOscillator(),g=ac.createGain();o.type=type||'triangle';o.frequency.value=f;var t=ac.currentTime+i*dur;
+      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.16,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+dur+.02)});
+  }catch(e){}
+}
+var sGood=function(){tone([523,659,784],.1)},sBad=function(){tone([300,220],.15,'sine')},sWin=function(){tone([523,659,784,1047,784,1047,1319],.11)},sPop=function(){tone([660,880],.06)},sWrite=function(){tone([1200,1500,1800],.05,'sine')},sMagic=function(){tone([784,988,1175,1568],.07,'sine')};
+var canSpeak='speechSynthesis' in window;
+function speak(t){if(!canSpeak)return;try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t.replace(/<[^>]+>/g,'').replace(/×/g,' times ').replace(/÷/g,' divided by '));u.rate=.85;u.lang='en-GB';speechSynthesis.speak(u)}catch(e){}}
+
+/* ---------- helpers ---------- */
+function h(tag,attrs,kids){
+  var el=document.createElement(tag);
+  if(attrs)for(var k in attrs){var v=attrs[k];if(v==null)continue;
+    if(k==='class')el.className=v;else if(k==='html')el.innerHTML=v;else if(k.slice(0,2)==='on')el.addEventListener(k.slice(2),v);else if(k==='style')el.style.cssText=v;else el.setAttribute(k,v)}
+  (kids||[]).forEach(function(c){if(c==null)return;el.appendChild(typeof c==='string'?document.createTextNode(c):c)});
+  return el;
+}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function starStr(n){var s='';for(var i=0;i<3;i++)s+='<span class="'+(i<n?'star-on':'star-off')+'">★</span>';return s}
+function later(fn,ms){return setTimeout(fn,ms)}
+function each(list,fn){Array.prototype.forEach.call(list,fn)}
+var KC={2:'var(--b2)',5:'var(--b5)',10:'var(--b10)'},KCI={2:'c2',5:'c5',10:'c10'};
+function kw(k){return '<span class="'+KCI[k]+'">'+k+'</span>'}
+function onesU(n,k){var s=String(n);return s.slice(0,-1)+'<u style="--uc:'+(KC[k]||'var(--b10)')+'">'+s.slice(-1)+'</u>'}
+function confetti(n){
+  var c=h('div',{class:'confetti'});var cols=['#FF7A3D','#2F7BF5','#FFC21A','#1FA563','#7A4CE0','#E0559B'];
+  for(var i=0;i<(n||70);i++){var p=h('i');p.style.left=Math.random()*100+'%';p.style.background=cols[i%6];p.style.animationDelay=Math.random()*.7+'s';p.style.animationDuration=(1.4+Math.random())+'s';if(i%3===0)p.style.borderRadius='50%';c.appendChild(p)}
+  document.body.appendChild(c);later(function(){c.remove()},3200);
+}
+function sparkleAt(el,n){
+  var r=el.getBoundingClientRect();
+  for(var i=0;i<(n||7);i++){var s=h('span',{class:'spark'},['✨']);s.style.position='fixed';s.style.left=(r.left+r.width/2-10)+'px';s.style.top=(r.top+r.height/2-12)+'px';
+    var ang=Math.random()*Math.PI*2,rr=30+Math.random()*40;s.style.setProperty('--dx',Math.cos(ang)*rr+'px');s.style.setProperty('--dy',Math.sin(ang)*rr+'px');document.body.appendChild(s);(function(s){later(function(){s.remove()},1000)})(s)}
+}
+
+/* ---------- the guide ---------- */
+function guide(text,mood){
+  var g=h('div',{class:'guide'});g.appendChild(mascot('',mood));
+  var s=h('div',{class:'say'});
+  if(canSpeak){s.appendChild(h('button',{class:'spk','aria-label':'Read to me',onclick:function(){speak(text)}},['🔊']))}
+  s.appendChild(h('span',{class:'nm'},[GAME.who+' says']));
+  s.appendChild(h('span',{html:text}));
+  g.appendChild(s);return g;
+}
+/* ---------- feedback + choices ---------- */
+function feedback(host,kind,html,viz){
+  var old=host.querySelector(':scope > .fb');if(old)old.remove();
+  var f=h('div',{class:'fb '+kind,role:'status'});
+  f.innerHTML='<span class="face" aria-hidden="true">'+(kind==='good'?'⭐':kind==='bad'?'🤔':'💡')+'</span><div class="msg">'+html+'</div>';
+  if(viz){var v=h('div',{class:'viz'});v.appendChild(viz);f.appendChild(v)}
+  host.appendChild(f);later(function(){f.scrollIntoView({behavior:'smooth',block:'nearest'})},80);
+  return f;
+}
+function choiceQ(box,api,opts,onRight,cfg){
+  cfg=cfg||{};var wrap=h('div',{class:'choices'+(cfg.col?' col':'')}),solved=false;
+  opts.forEach(function(o){
+    var b=h('button',{class:(cfg.cls?cfg.cls(o):'opt'),html:o.html||o.label});
+    b.addEventListener('click',function(){
+      if(solved)return;
+      if(o.ok){solved=true;b.classList.add('right','sel');sGood();each(wrap.children,function(x){if(x!==b)x.disabled=true});onRight(o,b)}
+      else{api.miss();sBad();b.classList.add('wrongpick');b.disabled=true;feedback(box,'bad',o.why||cfg.wrongMsg||'Not quite. Look at the picture again!',o.viz?o.viz():null)}
+    });
+    wrap.appendChild(b);
+  });
+  box.appendChild(wrap);return wrap;
+}
+function pickMany(area,api,opts,need,onDone){
+  var wrap=h('div',{class:'choices'}),got=0;
+  opts.forEach(function(o){var b=h('button',{class:'opt',html:o.label});b.onclick=function(){
+    if(b.disabled)return;b.disabled=true;
+    if(o.ok){b.classList.add('right');sGood();got++;if(o.onPick)o.onPick();if(got===need){each(wrap.children,function(x){x.disabled=true});onDone()}}
+    else{b.classList.add('wrongpick');sBad();api.miss();feedback(area,'bad',o.why)}};wrap.appendChild(b)});
+  area.appendChild(wrap);return wrap;
+}
+function nextBtn(host,label,fn){var r=h('div',{class:'next-row'},[h('button',{class:'big go',onclick:function(){r.remove();fn()}},[label||'Next →'])]);host.appendChild(r);later(function(){r.scrollIntoView({behavior:'smooth',block:'nearest'})},200);return r}
+
+/* BookView: a (cropped) real book page. Answers are written into it in handwriting. */
+var svgId=0;
+function BookView(key,opts){
+  opts=opts||{};var P=PAGES[key];var y0=opts.crop?opts.crop[0]:0,y1=opts.crop?Math.min(opts.crop[1],P.h):P.h;
+  var x0=opts.cx?opts.cx[0]:0,x1=opts.cx?opts.cx[1]:P.w,VW=x1-x0;
+  var wrap=h('div',{class:'bookwrap '+P.book});var el=h('div',{class:'book '+P.book});el.style.aspectRatio=VW+' / '+(y1-y0);
+  var sheet=h('div',{class:'sheet'});sheet.style.top=(-y0/(y1-y0)*100)+'%';sheet.style.height=(P.h/(y1-y0)*100)+'%';sheet.style.left=(-x0/VW*100)+'%';sheet.style.width=(P.w/VW*100)+'%';
+  sheet.appendChild(h('img',{src:IMG+key+'.jpg',alt:BOOKNAME[P.book]+' page '+P.n,draggable:'false'}));
+  var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','lines');svg.setAttribute('viewBox','0 0 '+P.w+' '+P.h);svg.setAttribute('preserveAspectRatio','none');
+  var mid='ah'+(++svgId);svg.innerHTML='<defs><marker id="'+mid+'" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#D81B60"/></marker></defs>';
+  sheet.appendChild(svg);el.appendChild(sheet);
+  wrap.appendChild(h('div',{class:'label'},[BOOKNAME[P.book]+' · page '+P.n]));wrap.appendChild(el);
+  function pos(node,x,y,w,hh){node.style.left=(x/P.w*100)+'%';node.style.top=(y/P.h*100)+'%';node.style.width=(w/P.w*100)+'%';node.style.height=(hh/P.h*100)+'%';return node}
+  var api={el:wrap,book:el,sheet:sheet,P:P,written:{}};
+  api.toPage=function(cx,cy){var r=sheet.getBoundingClientRect();return [(cx-r.left)/r.width*P.w,(cy-r.top)/r.height*P.h]};
+  api.put=function(x,y,w,hh,text,align,fontPx,shown){
+    var n=pos(h('div',{class:'hw '+(align==='c'?'c':'')+(shown?' shown':'')},[text]),x,y,w,hh);
+    n.style.setProperty('--fs',(fontPx/VW*100).toFixed(3));sheet.appendChild(n);return n};
+  api.write=function(id,delay,text){
+    var a=ANS[id];if(!a||a[0]!==key||api.written[id])return;api.written[id]=true;
+    if(text!=null){SAVE.dyn[id]=String(text);persist()}
+    var t=text!=null?String(text):(SAVE.dyn[id]||a[5]);
+    var n=api.put(a[1],a[2],a[3],a[4],t,a[6],a[7],false);
+    later(function(){n.classList.add('go');sWrite();later(function(){api.sparkle(a[1]+(a[6]==='c'?a[3]/2:Math.min(a[3],a[7]*t.length*.42)),a[2]+a[4]/2)},700)},delay||0);
+    return n;
+  };
+  api.show=function(id){var a=ANS[id];if(!a||a[0]!==key||api.written[id])return;api.written[id]=true;api.put(a[1],a[2],a[3],a[4],SAVE.dyn[id]||a[5],a[6],a[7],true)};
+  api.sparkle=function(x,y){for(var i=0;i<7;i++){var s=h('span',{class:'spark'},['✨']);s.style.left=(x/P.w*100)+'%';s.style.top=(y/P.h*100)+'%';var ang=Math.random()*Math.PI*2,r=30+Math.random()*40;s.style.setProperty('--dx',Math.cos(ang)*r+'px');s.style.setProperty('--dy',Math.sin(ang)*r+'px');sheet.appendChild(s);(function(s){later(function(){s.remove()},1000)})(s)}};
+  api.hot=function(x,y,w,hh,label,fn,hint){var b=pos(h('button',{class:'hot'+(hint===false?'':' hint'),'aria-label':label}),x,y,w,hh);b.onclick=fn;sheet.appendChild(b);return b};
+  api.fill=function(x,y,w,hh,col,now){var f=pos(h('div',{class:'cfill'+(now?' now':'')}),x,y,w,hh);f.style.background=col||'rgba(122,76,224,.45)';sheet.insertBefore(f,svg);if(!now){sPop()}return f};
+  api.place=function(x,y,w,hh,node){pos(node,x,y,w,hh);node.style.position='absolute';node.style.zIndex=3;sheet.appendChild(node);return node};
+  api.glow=function(x,y,w,hh){var g=pos(h('div',{class:'rowglow'}),x,y,w,hh);sheet.appendChild(g);return g};
+  api.marker=function(x,y,w,hh,delay){var m=pos(h('div',{class:'marker'}),x,y,w,hh);sheet.insertBefore(m,svg);later(function(){m.classList.add('on')},delay||200);return m};
+  function ns(t){return document.createElementNS('http://www.w3.org/2000/svg',t)}
+  api.line=function(x1,y1,x2,y2,arrow,now,bad){var l=ns('path');l.setAttribute('d','M'+x1+' '+y1+' L'+x2+' '+y2);l.setAttribute('pathLength','1');l.setAttribute('class','ink'+(now?' now':'')+(bad?' bad':''));if(arrow)l.setAttribute('marker-end','url(#'+mid+')');svg.appendChild(l);return l};
+  api.ring=function(r,now){var e=ns('ellipse');e.setAttribute('cx',r[0]);e.setAttribute('cy',r[1]);e.setAttribute('rx',r[2]);e.setAttribute('ry',r[3]);e.setAttribute('pathLength','1');e.setAttribute('class','ink'+(now?' now':''));svg.appendChild(e);if(!now){sWrite();later(function(){api.sparkle(r[0]+r[2],r[1]-r[3])},500)}return e};
+  api.flyTo=function(fromEl,id,text,cb){/* a number flies from a button into its place on the page */
+    var a=ANS[id];var r=fromEl.getBoundingClientRect(),sr=sheet.getBoundingClientRect();
+    var f=h('div',{class:'flyer'},[String(text)]);f.style.left=(r.left+r.width/2-16)+'px';f.style.top=(r.top+r.height/2-20)+'px';document.body.appendChild(f);
+    var tx=sr.left+(a[1]+a[3]/2)/P.w*sr.width-16,ty=sr.top+(a[2]+a[4]/2)/P.h*sr.height-20;
+    requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.left=tx+'px';f.style.top=ty+'px';f.style.transform='scale(.8)'})});
+    later(function(){f.remove();api.write(id,0,text);if(cb)cb()},820);
+  };
+  (opts.show||[]).forEach(api.show);
+  return api;
+}
+/* fill a page with its full answer key (for "Copy to my book") */
+function fillPage(v,key){
+  Object.keys(ANS).forEach(function(id){if(ANS[id][0]===key)v.show(id)});
+  (RINGS[key]||[]).forEach(function(r){v.ring(r,true)});
+  (PENLINES[key]||[]).forEach(function(l){v.line(l[0],l[1],l[2],l[3],l[4],true)});
+  (FILLS[key]||[]).forEach(function(f){v.fill(f[0],f[1],f[2],f[3],f[4],true)});
+  if(DRAWS[key])DRAWS[key](v,true);
+}
+function zoomPage(key){
+  var m=h('div',{class:'modal',role:'dialog','aria-modal':'true'});var inner=h('div',{class:'inner'});
+  inner.appendChild(h('div',{class:'closeb'},[h('button',{class:'big plain small',onclick:function(){m.remove()}},['✕ Close'])]));
+  var v=BookView(key);fillPage(v,key);inner.appendChild(v.el);m.appendChild(inner);document.body.appendChild(m);
+}
+/* Hundred square: count in 2s, 5s and 10s and watch the pattern appear */
+function HundredSquare(){
+  var g=h('div',{class:'hs'}),cells=[];
+  for(var n=1;n<=100;n++){var b=h('button',{class:'hc','aria-label':String(n)},[String(n)]);cells[n]=b;g.appendChild(b)}
+  return {el:g,cells:cells,clear:function(){for(var n=1;n<=100;n++)cells[n].className='hc'}};
+}
+/* little dot picture: 2 rows, so pairs are easy to see; a lonely dot glows */
+function sdots(n,s,color){
+  var g=h('span',{class:'sdots',style:'--s:'+(s||16)+'px','aria-hidden':'true'});
+  for(var i=0;i<n;i++){var b=h('b');b.style.background=color||'var(--b2)';if(isOdd(n)&&i===n-1)b.className='lone';g.appendChild(b)}
+  return g;
+}
+
+/* Array of stars (or wheels). It can turn, make groups and split apart. */
+var STAR='<svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.1.8-5.3 4.9 1.5 7.1L12 17.6 5.6 21.2l1.5-7.1L1.8 9.2l7.1-.8z" fill="#F5B731" stroke="#3B3B3B" stroke-width="1.3" stroke-linejoin="round"/></svg>';
+var COUNTER='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.6" fill="#D9A05B" stroke="#8A5A2B" stroke-width="1.2"/><path d="M12 3.2c3.6 0 7.4 2.2 8.2 6.2.5 2.6-1 3.4-1.9 5.1-.8 1.6-1.4 4.2-6.3 4.2s-5.7-2.4-6.6-4.1C4.5 13 3 12.2 3.7 9.6 4.6 5.6 8.4 3.2 12 3.2z" fill="#FF8FC1"/><circle cx="12" cy="12" r="3.3" fill="#fff" stroke="#8A5A2B" stroke-width="1.1"/><g stroke-width="1.4" stroke-linecap="round"><path d="M7 8.5l1.2-.7" stroke="#2F7BF5"/><path d="M15.5 6.6l1.2.6" stroke="#FFC21A"/><path d="M17.4 11.5l.3 1.3" stroke="#1FA563"/><path d="M8.4 15.6l1.1.8" stroke="#7A4CE0"/><path d="M11.6 6.2l.2 1.2" stroke="#fff"/><path d="M14.2 16.2l1.2-.5" stroke="#2F7BF5"/><path d="M6.2 11.8l.4 1.2" stroke="#FFC21A"/></g></svg>';
+var SMILE='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="#F7B52C" stroke="#7A4A0E" stroke-width="1.4"/><circle cx="9" cy="9.5" r="1.3" fill="#3B2A10"/><circle cx="15" cy="9.5" r="1.3" fill="#3B2A10"/><path d="M7 13.5Q12 19 17 13.5" stroke="#3B2A10" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+var WHEEL='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="#222"/><circle cx="12" cy="12" r="7" fill="#C9CED6"/><g stroke="#666" stroke-width="1.6"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></g><circle cx="12" cy="12" r="2.2" fill="#333"/></svg>';
+var ITEMS={star:STAR,donut:COUNTER,wheel:WHEEL,smile:SMILE};
+function ArrayView(R,C,opts){
+  opts=opts||{};
+  var el=h('div',{class:'arr'}),items=[],grps=[];
+  var st={turn:false,split:null,gk:.7};
+  for(var i=0;i<R*C;i++){var it=h('div',{class:'it',html:ITEMS[opts.item||'star']||opts.item});items.push(it);el.appendChild(it)}
+  var cap=h('div',{class:'arrcap'});
+  function dims(){return st.turn?[C,R]:[R,C]}
+  function rc(i){var r=Math.floor(i/C),c=i%C;return st.turn?[c,r]:[r,c]}
+  var geo={};
+  function layout(){
+    var d=dims(),rows=d[0],cols=d[1],w=el.clientWidth||300;
+    var gx=st.split==='cols'?1:0,gy=st.split==='rows'?1:0;
+    var s=Math.max(16,Math.min(opts.max||52,Math.floor((w-24)/(cols+gx*(cols-1)*.6)/1.18)));
+    var step=s*1.18,gap=s*st.gk;
+    var totW=cols*step+gx*(cols-1)*gap,totH=rows*step+gy*(rows-1)*gap;
+    var x0=Math.max(8,(w-totW)/2),y0=18;
+    geo={s:s,step:step,gap:gap,x0:x0,y0:y0,rows:rows,cols:cols,gx:gx,gy:gy};
+    el.style.height=(y0+totH+26)+'px';
+    items.forEach(function(it,i){var p=rc(i);it.style.width=it.style.height=s+'px';it.style.left=(x0+p[1]*step+gx*p[1]*gap)+'px';it.style.top=(y0+p[0]*step+gy*p[0]*gap)+'px'});
+    grps.forEach(function(g){placeG(g)});
+  }
+  function placeG(g){
+    var G=geo,pad=6;
+    if(g.mode==='rows'){var y=G.y0+g.k*G.step+G.gy*g.k*G.gap;g.el.style.left=(G.x0-pad)+'px';g.el.style.top=(y-pad)+'px';g.el.style.width=(G.cols*G.step-(G.step-G.s)+2*pad)+'px';g.el.style.height=(G.s+2*pad)+'px'}
+    else{var x=G.x0+g.k*G.step+G.gx*g.k*G.gap;g.el.style.left=(x-pad)+'px';g.el.style.top=(G.y0-pad)+'px';g.el.style.width=(G.s+2*pad)+'px';g.el.style.height=(G.rows*G.step-(G.step-G.s)+2*pad)+'px'}
+  }
+  function clearG(){grps.forEach(function(g){g.el.remove()});grps=[];items.forEach(function(it){it.classList.remove('lit')})}
+  var timers=[];function T(fn,ms){timers.push(later(fn,ms))}
+  function stop(){timers.forEach(clearTimeout);timers=[]}
+  requestAnimationFrame(layout);
+  if(window.ResizeObserver)new ResizeObserver(function(){layout()}).observe(el);
+  var api={el:el,cap:cap,R:R,C:C};
+  api.reset=function(){stop();clearG();st.split=null;layout();cap.innerHTML=''};
+  /* show groups of `size`, counting in steps: 5, 10, 15 ... ; split=true pulls the groups apart (sharing) */
+  api.groups=function(size,split,label,cb){
+    stop();clearG();var d=dims();
+    var mode=size===d[1]?'rows':'cols',count=mode==='rows'?d[0]:d[1];
+    st.split=mode;st.gk=split?.7:.32;layout();
+    cap.innerHTML='';
+    for(var k=0;k<count;k++)(function(k){T(function(){
+      var g={mode:mode,k:k,el:h('div',{class:'grp '+mode,style:'--gc:'+(split?'var(--b5)':'var(--b2)')})};
+      g.el.appendChild(h('b',null,[split?String(k+1):String((k+1)*size)]));
+      el.appendChild(g.el);grps.push(g);placeG(g);sPop();
+      items.forEach(function(it,i){var p=rc(i);if((mode==='rows'?p[0]:p[1])===k){it.classList.add('lit');later(function(){it.classList.remove('lit')},350)}});
+      if(k===count-1)T(function(){cap.innerHTML=label||'';sGood();if(cb)cb()},500);
+    },350+k*420)})(k);
+  };
+  api.turn=function(cb){stop();clearG();st.turn=!st.turn;st.split=null;sMagic();layout();cap.innerHTML='';T(function(){var d=dims();cap.innerHTML=d[0]+' rows of '+d[1]+' &nbsp;·&nbsp; still '+(R*C)+'!';if(cb)cb()},800)};
+  api.dims=dims;
+  return api;
+}
+/* show a fact on an array: a × b = p (groups of a), p ÷ a = b (share into groups of a) */
+function factOnArray(arr,f,cb){
+  var d=arr.dims();
+  if(f.op==='×'){var size=(f.a===d[1]||f.a===d[0])?f.a:f.b,n=arr.R*arr.C/size;arr.groups(size,false,'<span class="c2">'+n+' groups of '+size+'</span> = '+(n*size)+' &nbsp;→&nbsp; '+f.txt,cb)}
+  else{var sz=f.b;var cnt=f.a/f.b;arr.groups(sz,true,'<span class="c5">'+f.a+' shared into groups of '+sz+' → '+cnt+' groups</span> &nbsp;→&nbsp; '+f.txt,cb)}
+}
+
+/* fact family triangle */
+function triangle(a,b,c){
+  return h('div',{html:'<svg class="tri" viewBox="0 0 300 250"><path d="M150 18 L282 228 L18 228 Z" fill="#FFF8E1" stroke="#1D2B4F" stroke-width="6" stroke-linejoin="round"/>'+
+    '<line x1="70" y1="170" x2="230" y2="170" stroke="#1D2B4F" stroke-width="3" stroke-dasharray="6 6"/><text x="150" y="205" text-anchor="middle" font-size="28" font-weight="800" fill="#1D2B4F" font-family="Baloo 2,system-ui">× ÷</text>'+
+    '<circle cx="150" cy="70" r="42" fill="#7A4CE0"/><text x="150" y="83" text-anchor="middle" font-size="38" font-weight="800" fill="#fff" font-family="Baloo 2,system-ui">'+c+'</text>'+
+    '<circle cx="62" cy="200" r="36" fill="#2F7BF5"/><text x="62" y="212" text-anchor="middle" font-size="34" font-weight="800" fill="#fff" font-family="Baloo 2,system-ui">'+a+'</text>'+
+    '<circle cx="238" cy="200" r="36" fill="#FF7A3D"/><text x="238" y="212" text-anchor="middle" font-size="34" font-weight="800" fill="#fff" font-family="Baloo 2,system-ui">'+b+'</text></svg>'});
+}
+function familyOf(a,b){var c=a*b,L=[[a+' × '+b+' = '+c,'m'],[c+' = '+a+' × '+b,'m'],[c+' ÷ '+a+' = '+b,'d'],[b+' = '+c+' ÷ '+a,'d']];
+  if(a!==b)L=[[a+' × '+b+' = '+c,'m'],[b+' × '+a+' = '+c,'m'],[c+' = '+a+' × '+b,'m'],[c+' = '+b+' × '+a,'m'],[c+' ÷ '+a+' = '+b,'d'],[c+' ÷ '+b+' = '+a,'d'],[b+' = '+c+' ÷ '+a,'d'],[a+' = '+c+' ÷ '+b,'d']];
+  return L}
+function factsGrid(a,b,stagger){var g=h('div',{class:'facts'});familyOf(a,b).forEach(function(f,i){var d=h('div',{class:f[1]},[f[0]]);if(stagger)d.style.animationDelay=(i*.35)+'s';g.appendChild(d)});return g}
+
+/* base ten blocks: x10 makes every cube a rod and every rod a flat */
+function BaseTen(n){
+  var w=h('div'),stage=h('div',{class:'b10stage'});w.appendChild(stage);
+  var t=Math.floor(n/10),o=n%10,done=false;
+  var g1=h('div',{class:'b10grp'}),b1=h('div',{class:'b10blocks'}),l1=h('div',{class:'b10lbl'});g1.appendChild(b1);g1.appendChild(l1);
+  var g2=h('div',{class:'b10grp'}),b2=h('div',{class:'b10blocks'}),l2=h('div',{class:'b10lbl'});g2.appendChild(b2);g2.appendChild(l2);
+  var rods=[],cubes=[];
+  for(var i=0;i<t;i++){var r=h('div',{class:'blk rod'});rods.push(r);b1.appendChild(r)}
+  for(var j=0;j<o;j++){var c=h('div',{class:'blk'});cubes.push(c);b2.appendChild(c)}
+  l1.textContent=t+' ten'+(t===1?'':'s');l2.textContent=o+' one'+(o===1?'':'s');
+  if(t)stage.appendChild(g1);if(o||!t)stage.appendChild(g2);
+  var cap=h('div',{class:'eqline'},[String(n)]);w.appendChild(cap);
+  return {el:w,go:function(cb){
+    if(done){if(cb)cb();return}done=true;sMagic();
+    rods.forEach(function(r,i){later(function(){r.classList.add('flat')},i*120)});
+    cubes.forEach(function(c,i){later(function(){c.classList.add('rod')},300+i*120)});
+    later(function(){l1.textContent=t+' hundred'+(t===1?'':'s');l2.textContent=o+' ten'+(o===1?'':'s');cap.innerHTML=n+' × 10 = <span class="c10">'+(n*10)+'</span>';sGood();if(cb)cb()},1300+Math.max(t,o)*120);
+  }};
+}
+/* place value chart: every digit slides one place to the left, 0 fills the ones */
+function PVSlide(n){
+  var w=h('div',{class:'pv'});w.innerHTML='<div class="hd"><div>100s</div><div>10s</div><div>1s</div></div>';
+  var rw=h('div',{class:'rw'});var cells=[h('div'),h('div'),h('div')];cells.forEach(function(c){rw.appendChild(c)});w.appendChild(rw);
+  var s=String(n),digs=[];
+  for(var i=0;i<s.length;i++){var col=3-s.length+i;var d=h('div',{class:'dg'},[s[i]]);cells[col].appendChild(d);digs.push(d)}
+  var cap=h('div',{class:'eqline',style:'margin-top:6px'},[n+' × 10 = ?']);
+  var box=h('div');box.appendChild(w);box.appendChild(cap);
+  var done=false;
+  return {el:box,go:function(cb){
+    if(done){if(cb)cb();return}done=true;sMagic();
+    digs.forEach(function(d){d.classList.add('slide','trail')});
+    later(function(){var z=h('div',{class:'dg zero'},['0']);cells[2].appendChild(z);sPop();cap.innerHTML=n+' × 10 = <span class="c10">'+(n*10)+'</span>';sparkleAt(cells[2]);if(cb)cb()},1050);
+  }};
+}
+/* pencil boxes of 10 that bundle into crates of 100 */
+function PencilBoxes(){
+  var w=h('div'),area=h('div',{class:'pboxes'}),count=h('div',{class:'count'});w.appendChild(area);w.appendChild(count);var n=0;
+  function draw(bundled){area.innerHTML='';var crates=bundled?Math.floor(n/10):0,left=n-crates*10;
+    for(var c=0;c<crates;c++){var cr=h('div',{class:'crate'});cr.style.animationDelay=(c*.2)+'s';for(var k=0;k<10;k++)cr.appendChild(h('span',{class:'pbox'}));cr.appendChild(h('b',null,['100']));area.appendChild(cr)}
+    for(var i=0;i<left;i++){var b=h('span',{class:'pbox'});if(!bundled&&i===left-1)b.style.animationDelay='0s';else b.style.animation='none';area.appendChild(b)}
+    count.innerHTML=bundled&&crates?crates+' hundred'+(crates>1?'s':'')+' + '+(left*10)+' = <span class="c10">'+(n*10)+'</span> pencils':n+' box'+(n===1?'':'es')+' = <span class="c10">'+(n*10)+'</span> pencils'}
+  return {el:w,add:function(){n++;sPop();draw(false);return n},set:function(k,b){n=k;draw(!!b)},bundle:function(){sMagic();draw(true)},get n(){return n}};
+}
+/* number line with a hopping frog */
+function NumberLine(min,max,opts){
+  opts=opts||{};var w=h('div',{class:'nl'});var span=max-min;
+  var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 1000 150');svg.setAttribute('preserveAspectRatio','none');
+  svg.innerHTML='<line x1="0" y1="92" x2="1000" y2="92" stroke="#1D2B4F" stroke-width="4" vector-effect="non-scaling-stroke"/>';w.appendChild(svg);
+  function X(v){return 2+(v-min)/span*96}
+  var tks={};
+  for(var v=min;v<=max;v++){if(opts.only&&opts.only.indexOf(v)<0)continue;
+    var t=document.createElementNS('http://www.w3.org/2000/svg','line');t.setAttribute('x1',X(v)*10);t.setAttribute('x2',X(v)*10);t.setAttribute('y1',82);t.setAttribute('y2',102);t.setAttribute('stroke','#1D2B4F');t.setAttribute('stroke-width','3');t.setAttribute('vector-effect','non-scaling-stroke');svg.appendChild(t);
+    if(opts.labels&&opts.labels.indexOf(v)<0)continue;
+    var b=h('button',{class:'tk'},[String(v)]);b.style.left=X(v)+'%';w.appendChild(b);tks[v]=b}
+  var frog=h('div',{class:'frog'},[opts.hopper||'🐸']);w.appendChild(frog);var at=opts.start!=null?opts.start:min;frog.style.left=X(at)+'%';
+  return {el:w,tks:tks,X:X,hop:function(to,label,cb){
+    var from=at;at=to;var p=document.createElementNS('http://www.w3.org/2000/svg','path');var x1=X(from)*10,x2=X(to)*10,mx=(x1+x2)/2;
+    p.setAttribute('d','M'+x1+' 84 Q'+mx+' 10 '+x2+' 84');p.setAttribute('fill','none');p.setAttribute('stroke','#FF7A3D');p.setAttribute('stroke-width','4');p.setAttribute('vector-effect','non-scaling-stroke');p.setAttribute('pathLength','1');p.style.strokeDasharray='1';p.style.strokeDashoffset='1';p.style.transition='stroke-dashoffset .6s';svg.appendChild(p);
+    requestAnimationFrame(function(){p.style.strokeDashoffset='0'});
+    if(label){var jl=h('div',{class:'jl'},[label]);jl.style.left=((X(from)+X(to))/2)+'%';w.appendChild(jl)}
+    var t0=null;function step(ts){if(!t0)t0=ts;var k=Math.min(1,(ts-t0)/600);var x=X(from)+(X(to)-X(from))*k;frog.style.left=x+'%';frog.style.top=(44-Math.sin(k*Math.PI)*40)+'px';if(k<1)requestAnimationFrame(step);else{sPop();if(cb)cb()}}
+    requestAnimationFrame(step);
+  }};
+}
+/* the x10 machine */
+function Machine(){
+  var w=h('div',{class:'mach'}),inn=h('div',{class:'chipn'},['?']),box=h('div',{class:'box',html:'<span>× 10</span>'}),out=h('div',{class:'chipn out'},['?']);
+  w.appendChild(inn);w.appendChild(h('span',{style:'font-size:28px'},['➜']));w.appendChild(box);w.appendChild(h('span',{style:'font-size:28px'},['➜']));w.appendChild(out);
+  return {el:w,load:function(n){inn.classList.remove('in-go');inn.textContent=String(n);out.textContent='?'},
+    run:function(n,cb){inn.classList.add('in-go');box.classList.add('work');sMagic();later(function(){box.classList.remove('work');out.textContent=String(n*10);out.animate&&out.animate([{transform:'scale(.3)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:450});sparkleAt(out);if(cb)cb()},800)}};
+}
+
+/* =====================================================================
+   LESSON ENGINE
+   ===================================================================== */
+var E5=[{k:'Warm up',c:'var(--e1)'},{k:'Discover',c:'var(--e2)'},{k:'Learn the rule',c:'var(--e3)'},{k:'Practise',c:'var(--e4)'},{k:'Check',c:'var(--e5)'}];
+function schoolLogo(){return h('img',{class:'schoollogo',src:'img/insightia-logo.png',alt:'Insightia International Academy'})}
+function topBar(back){
+  var b=h('div',{class:'bar noprint'});
+  if(back)b.appendChild(h('button',{class:'pill',onclick:home},['← Lesson map']));
+  else if(window.MM_STANDALONE)b.appendChild(h('a',{class:'pill',href:'../',style:'text-decoration:none'},['← Grade 2 games']));
+  b.appendChild(h('div',{class:'grow'}));
+  b.appendChild(h('button',{class:'pill',onclick:function(){answerBook()}},['📖 Copy to my book']));
+  b.appendChild(h('button',{class:'pill',onclick:wordBank},['Word bank']));
+  var m=h('button',{class:'pill'},[muted?'🔇 Sound':'🔊 Sound']);
+  m.onclick=function(){muted=!muted;SAVE.muted=muted;persist();m.textContent=muted?'🔇 Sound':'🔊 Sound'};
+  b.appendChild(m);return b;
+}
+function runLesson(id,start){
+  var L=LESSONS[id],i=start||0,mistakes=0;
+  app.innerHTML='';app.appendChild(topBar(true));
+  var head=h('div',{class:'lesson-head'});
+  head.appendChild(mascot());
+  head.appendChild(h('div',{style:'flex:1;min-width:200px'},[h('div',{class:'today',html:L.when}),h('h2',null,[L.title]),h('div',{class:'today',html:'Today I can: <b>'+L.goal+'</b>'})]));
+  head.appendChild(schoolLogo());
+  app.appendChild(head);
+  var stepper=h('div',{class:'stepper'});app.appendChild(stepper);
+  var card=h('section',{class:'card'});app.appendChild(card);
+  function drawStepper(){
+    stepper.innerHTML='';
+    L.stations.forEach(function(s,k){
+      var ec=s.c||E5[k%5].c;
+      var b=h('button',{class:'step'+(k===i?' now':'')+(SAVE.done[id+k]?' done':''),style:'--ec:'+ec,onclick:function(){i=k;show()}});
+      b.innerHTML='<span class="n"><span>'+(s.short||k+1)+'</span></span><span class="t">'+s.name+'</span>';
+      stepper.appendChild(b);
+    });
+  }
+  function show(){
+    drawStepper();card.innerHTML='';window.scrollTo({top:0,behavior:'smooth'});
+    var s=L.stations[i],ec=s.c||E5[i%5].c;card.style.borderColor=ec;
+    var t=h('div',{class:'estage-title'});t.innerHTML='<span class="badge" style="--ec:'+ec+'">'+s.name+'</span>'+(s.src?'<span class="today">'+s.src+'</span>':'');
+    card.appendChild(t);
+    var stage=h('div');card.appendChild(stage);
+    var finished=false;
+    var api={
+      miss:function(){mistakes++},
+      done:function(msg){
+        if(finished)return;finished=true;SAVE.done[id+i]=true;persist();drawStepper();sGood();
+        var r=h('div',{class:'next-row'});
+        if(msg)feedback(stage,'good',msg);
+        var last=i===L.stations.length-1;
+        r.appendChild(h('button',{class:'big go',onclick:function(){if(last)certificate(id,mistakes);else{i++;show()}}},[last?'Finish 🏆':'Next: '+L.stations[i+1].name+' →']));
+        stage.appendChild(r);later(function(){r.scrollIntoView({behavior:'smooth',block:'nearest'})},300);
+      }
+    };
+    s.render(stage,api);
+  }
+  show();
+}
+function certificate(id,mistakes){
+  var L=LESSONS[id];var s=mistakes===0?3:mistakes<=3?2:1;
+  if(!SAVE.stars[id]||SAVE.stars[id]<s){SAVE.stars[id]=s;persist()}
+  app.innerHTML='';app.appendChild(topBar(true));
+  var c=h('section',{class:'card cert'});
+  c.appendChild(h('div',{class:'row center'},[mascot('huge','wow')]));
+  c.appendChild(h('h2',{style:'font-size:clamp(32px,5vw,48px)'},[GAME.certTitle]));
+  c.appendChild(h('div',{class:'bigstars',html:starStr(s)}));
+  var lw=h('div',{class:'lwicd'});lw.innerHTML='<div class="t">Look what I can do!</div><div class="bdy"><div class="box"><span>✓</span></div><div>'+L.lookWhat+'</div></div>';c.appendChild(lw);
+  c.appendChild(h('p',{class:'task'},['Now copy the answers into your book.']));
+  var r=h('div',{class:'row center',style:'margin-top:10px'});
+  r.appendChild(h('button',{class:'big magic',onclick:function(){answerBook(L.copy)}},['📖 Copy to my book']));
+  r.appendChild(h('button',{class:'big go',onclick:home},['Lesson map']));
+  c.appendChild(r);app.appendChild(c);sWin();confetti(120);later(function(){confetti(60)},900);
+}
+/* one book question after another, with Q chips */
+function questionRun(st,api,Q,names,doneMsg){
+  var k=0,bar=h('div',{class:'qbar'}),area=h('div');st.appendChild(bar);st.appendChild(area);
+  function drawBar(){bar.innerHTML='';Q.forEach(function(_,j){bar.appendChild(h('span',{class:'qchip',style:'background:'+(j<k?'var(--good)':j===k?'var(--e4)':'#C9D8EE')},[names[j]]))})}
+  function next(){k++;if(k<Q.length)go();else api.done(doneMsg)}
+  function go(){drawBar();area.innerHTML='';Q[k](area,api,function(){nextBtn(area,k<Q.length-1?'Next question →':'Finish ✓',function(){next();window.scrollTo({top:0,behavior:'smooth'})})})}
+  go();
+}
+function whoSays(host,who,col,say){var w=h('div',{class:'guide'});w.innerHTML='<div class="mascot" style="animation:none;display:grid;place-items:center;border-radius:50%;background:'+col+';color:#fff;font-family:var(--display);font-weight:800;font-size:34px;border:4px solid #fff;box-shadow:0 0 0 3px var(--line)">'+who[0]+'</div><div class="say"><span class="nm">'+who+' says</span>'+say+'</div>';host.appendChild(w);return w}
+
+/* ---------- shared book tasks ---------- */
+/* ring the multiples of k on the page */
+function ringTask(a,api,bk,M,k,done){
+  var lens=h('div',{class:'panel',style:'text-align:center'});lens.innerHTML='<div class="ttl">👆 Tap a number in the book</div>';a.appendChild(lens);
+  var need=Object.keys(M.yes).length,got=0,tiles={},tr=h('div',{class:'tiles'});
+  var order=Object.keys(M.yes).map(function(n){return [n,M.yes[n]]}).concat(Object.keys(M.no).map(function(n){return [n,M.no[n]]})).sort(function(p,q){return Math.abs(p[1][1]-q[1][1])>20?p[1][1]-q[1][1]:p[1][0]-q[1][0]});
+  order.forEach(function(o){var t=h('button',{class:'big plain small',style:'min-width:64px'},[o[0]]);tiles[o[0]]=t;tr.appendChild(t)});
+  a.insertBefore(h('p',{class:'sub',style:'text-align:center;font-weight:800'},['Tap the number in the book, or here:']),lens);a.insertBefore(tr,lens);
+  function why(n,ok){var d=n%10;lens.innerHTML='';if(M.why){lens.appendChild(h('div',{class:'eqline',html:String(n)}));lens.appendChild(h('div',{style:'font-weight:800',html:M.why(n,ok)}));return}
+    lens.appendChild(h('div',{class:'eqline',html:'<span class="strip"><span>'+onesU(n,k)+'</span></span>'}));
+    var msg=k===2?(ok?'The ones digit is <b>'+d+'</b>. '+d+' makes pairs, so '+n+' is a multiple of 2.':'The ones digit is <b>'+d+'</b>. 1 is left over, so '+n+' is not a multiple of 2.')
+      :(ok?n+' ends in <b>'+d+'</b>. Multiples of 5 end in 0 or 5.':n+' ends in <b>'+d+'</b>, not 0 or 5. Not a multiple of 5.');
+    lens.appendChild(h('div',{style:'font-weight:800',html:msg}));
+    if(k===2&&d)lens.appendChild(h('div',{style:'margin-top:6px'},[sdots(d,18,ok?'var(--b2)':'var(--b5)')]));
+  }
+  Object.keys(M.yes).forEach(function(n){var b=M.yes[n],done1=false;var fn=function(){if(done1)return;done1=true;tiles[n].classList.add('right');tiles[n].style.background='var(--good-soft)';tiles[n].disabled=true;bk.ring(ringOf(b));sPop();why(+n,true);got++;if(got===need){feedback(a,'good','<b>You found them all!</b>');done()}};
+    bk.hot(b[0]-10,b[1]-8,b[2]+20,b[3]+16,n,fn,false);tiles[n].onclick=fn});
+  Object.keys(M.no).forEach(function(n){var b=M.no[n];var fn=function(){api.miss();sBad();hb.classList.remove('badtap');void hb.offsetWidth;hb.classList.add('badtap');why(+n,false)};var hb=bk.hot(b[0]-10,b[1]-8,b[2]+20,b[3]+16,n,fn,false);tiles[n].onclick=fn});
+}
+/* sort numbers into a Venn diagram on the page */
+function vennTask(a,api,bk,key,nums,fromList,done){
+  var V=VENN[key],picked=null,left=nums.length,chips={};
+  var info=h('div',{class:'panel',style:'text-align:center'});
+  function explain(n){var d=n%10;
+    if(key==='lb74')return d===0?n+' ends in 0: a multiple of 5 <b>and</b> 10. It goes in the <b>overlap</b>.':d===5?n+' ends in 5: a multiple of 5 but not 10. Only the <b>5 circle</b>.':n+' ends in '+d+': not a multiple of 5 or 10. It goes <b>outside</b>.';
+    var two=n%2===0,five=n%5===0;return n+' ends in '+d+'. '+(two?'Even, so a multiple of 2. ':'Odd, so not a multiple of 2. ')+(five?'It ends in '+d+', so a multiple of 5.':'It does not end in 0 or 5, so not a multiple of 5.')+' → '+(two&&five?'<b>overlap</b>':two?'<b>2 circle only</b>':five?'<b>5 circle only</b>':'<b>outside</b>');}
+  function setPick(n){picked=n;sPop();info.innerHTML='<div class="eqline">'+n+'</div><div style="font-weight:800">Now tap where '+n+' goes in the Venn diagram.</div>';
+    Object.keys(chips).forEach(function(k){chips[k].style.outline=+k===n?'5px solid var(--star)':'';if(pg[k])pg[k].classList.toggle('picked',+k===n)})}
+  var tr=h('div',{class:'tiles'}),pg={};
+  nums.forEach(function(n){chips[n]=h('button',{class:'tile'},[String(n)]);chips[n].onclick=function(){setPick(n)};tr.appendChild(chips[n]);
+    if(fromList){var L=V.list[n];pg[n]=bk.hot(L[0]-6,L[1]-4,L[2]+12,L[3]+8,String(n),function(){if(!chips[n].disabled)setPick(n)},false)}});
+  a.appendChild(tr);
+  info.innerHTML='<div class="ttl">👆 Tap a number first'+(fromList?' (in the list or below)':'')+'</div>';a.appendChild(info);
+  var A=V.area;
+  var area=bk.hot(A[0],A[1],A[2],A[3],'Venn diagram',function(e){
+    if(picked==null){feedback(a,'info','First tap a number.');return}
+    var p=bk.toPage(e.clientX,e.clientY),dl=Math.hypot(p[0]-V.L[0],p[1]-V.L[1])<V.L[2],dr=Math.hypot(p[0]-V.R[0],p[1]-V.R[1])<V.R[2];
+    var reg=dl&&dr?'B':dl?'L':dr?'R':'O',n=picked;
+    if(reg===V.rule(n)){picked=null;sGood();var c=chips[n];c.style.outline='';c.classList.add('used');c.disabled=true;if(pg[n]){pg[n].classList.remove('picked');pg[n].classList.add('used')}bk.write('v'+key+'_'+n);left--;
+      feedback(a,'good','<b>Yes!</b> '+explain(n));info.innerHTML='<div class="ttl">'+(left?'👆 Tap the next number':'All sorted! ✨')+'</div>';if(!left)done()}
+    else{api.miss();sBad();feedback(a,'bad','Not there. '+explain(n))}
+  },false);
+  area.classList.add('area');
+}
+/* fact family boxes on the page, built with number tiles; the array shows each fact */
+function factBoxes(a,api,bk,f,arr,done){
+  var F=FF[f],row=0,fill=[],nodes=[],usedKeys={},glow=null,busy=false;
+  var tray=h('div',{class:'tiles'}),status=h('div',{class:'task',style:'text-align:center'});
+  a.appendChild(status);a.appendChild(tray);
+  var big=Math.max.apply(null,F.nums),sm=F.nums.filter(function(x){return x!==big});
+  var tiles=F.nums.concat([sm[0]+sm[1]]);
+  var tileEls={};
+  tiles.forEach(function(n,ti){var t=h('button',{class:'tile'+(ti===3?' alt':'')},[String(n)]);tileEls[n]=t;t.onclick=function(){
+    if(busy||fill.length>=3)return;
+    if(ti===3){api.miss();sBad();feedback(a,'bad',n+' is '+sm[0]+' + '+sm[1]+'. That is adding! Count the array: it has <b>'+big+'</b>.');return}
+    var b=ffBox(f,row,fill.length);fill.push(n);nodes.push(bk.put(b[0],b[1],b[2],b[3],String(n),'c',F.font,true));sPop();t.classList.add('used');
+    if(fill.length===3)later(check,250)};tray.appendChild(t)});
+  var clr=h('button',{class:'big plain small'},['Clear the boxes']);clr.onclick=function(){if(!busy)resetRow()};a.appendChild(h('div',{class:'row center'},[clr]));
+  function resetRow(){nodes.forEach(function(n){n.remove()});nodes=[];fill=[];each(tray.children,function(t){t.classList.remove('used')})}
+  function signs(){var fm=FORMS[row];return fm==='m'?['×','=']:fm==='mr'?['=','×']:fm==='d'?['÷','=']:['=','÷']}
+  function startRow(){
+    if(glow)glow.remove();
+    if(row>=8){status.innerHTML='All 8 facts! ✨';tray.remove();clr.remove();done();return}
+    var b0=ffBox(f,row,0),b2=ffBox(f,row,2);glow=bk.glow(b0[0]-4,b0[1]-4,b2[0]+b2[2]-b0[0]+8,b0[3]+8);
+    var s=signs();status.innerHTML='Fact '+(row+1)+' of 8: &nbsp;<span style="font-family:var(--display);font-size:28px">□ '+s[0]+' □ '+s[1]+' □</span>';
+  }
+  function check(){
+    var p=fill[0],q=fill[1],r=fill[2],fm=FORMS[row],ok=fm==='m'?p*q===r:fm==='mr'?p===q*r:fm==='d'?p/q===r:p===q/r;
+    var key=fm+fill.join(',');
+    if(!ok){api.miss();sBad();
+      var msg=fm==='d'||fm==='dr'?'When we divide, we start with the biggest number, <b>'+big+'</b>: '+big+' ÷ '+sm[0]+' = '+sm[1]+'.':'Look at the array: '+sm[0]+' × '+sm[1]+' makes <b>'+big+'</b> altogether.';
+      if(fm==='mr'||fm==='dr')msg+=' The = sign is like a balance: both sides must be the same.';
+      feedback(a,'bad',msg);later(resetRow,900);return}
+    if(usedKeys[key]){api.miss();sBad();feedback(a,'bad','You already wrote that one! Swap the two numbers around.');later(resetRow,900);return}
+    usedKeys[key]=1;busy=true;nodes.forEach(function(n){n.remove()});nodes=[];
+    fill.forEach(function(v,k){bk.write(f+'_'+row+'_'+k,k*180,v)});
+    var txt=fm==='m'?p+' × '+q+' = '+r:fm==='mr'?p+' = '+q+' × '+r:fm==='d'?p+' ÷ '+q+' = '+r:p+' = '+q+' ÷ '+r;
+    var fact=fm==='m'?{op:'×',a:p,b:q}:fm==='mr'?{op:'×',a:q,b:r}:fm==='d'?{op:'÷',a:p,b:q}:{op:'÷',a:q,b:r};fact.txt=txt;
+    var fb=a.querySelector(':scope > .fb');if(fb)fb.remove();
+    if(arr){arr.el.scrollIntoView({behavior:'smooth',block:'nearest'});factOnArray(arr,fact,function(){fill=[];each(tray.children,function(t){t.classList.remove('used')});busy=false;row++;startRow()})}
+    else later(function(){fill=[];each(tray.children,function(t){t.classList.remove('used')});busy=false;row++;startRow()},700);
+  }
+  startRow();
+}
+/* optional extra question; mistakes here do not count */
+function bonus(host,q,opts,good){
+  var p=h('div',{class:'panel',style:'margin-top:14px;border:3px dashed var(--gold)'});
+  p.appendChild(h('div',{class:'pagehead'},[GAME.bonusTitle]));p.appendChild(h('p',{class:'task',html:q}));
+  choiceQ(p,{miss:function(){}},shuffle(opts),function(){feedback(p,'good',good);confetti(40)},{cls:function(){return 'big plain'}});
+  host.appendChild(p);
+}
+function home(){
+  app.innerHTML='';app.appendChild(topBar(false));
+  var hero=h('section',{class:'hero'});
+  var sp=h('div',{class:'sparkles','aria-hidden':'true'});[[8,12],[22,78],[55,8],[70,85],[88,30],[94,70],[40,90]].forEach(function(p,i){var s=h('i',null,[i%2?'✦':'★']);s.style.left=p[0]+'%';s.style.top=p[1]+'%';s.style.color=['#FFC21A','#7A4CE0','#E0559B','#2F7BF5'][i%4];s.style.animationDelay=(i*.3)+'s';sp.appendChild(s)});hero.appendChild(sp);
+  hero.appendChild(mascot('huge'));
+  hero.appendChild(h('div',null,[
+    h('div',{class:'tag'},[GAME.tag]),
+    h('h1',{html:GAME.titleHtml}),
+    h('p',{class:'sub',style:'font-size:18px;margin-top:6px'},[GAME.sub])]));
+  hero.appendChild(schoolLogo());
+  app.appendChild(hero);
+  var days=h('div',{class:'days'});
+  GAME.lessons.forEach(function(id){
+    var L=LESSONS[id];var b=h('button',{class:'day',style:'--c:'+L.color,onclick:function(){runLesson(id)}});
+    var path=h('div',{class:'epath'});L.stations.forEach(function(s,k){path.appendChild(h('span',{class:'echip'+(SAVE.done[id+k]?' done':''),style:'--ec:'+(s.c||E5[k%5].c),html:'<b>'+(s.short||k+1)+'</b>'+s.name}))});
+    b.appendChild(h('div',{class:'when'},[L.card||L.when]));
+    b.appendChild(h('h2',null,[L.title]));
+    b.appendChild(h('div',{class:'goal',html:'Today I can: '+L.goal}));
+    b.appendChild(path);
+    b.appendChild(h('div',{class:'daystars',html:starStr(SAVE.stars[id]||0)}));
+    days.appendChild(b);
+  });
+  app.appendChild(days);
+  var more=h('div',{class:'mini-cards'});
+  (GAME.extra||[]).forEach(function(id){var L=LESSONS[id];var hb=h('button',{class:'day',style:'--c:'+L.color,onclick:function(){runLesson(id)}});
+    hb.innerHTML='<div class="when">'+L.card+'</div><h2 style="font-size:22px">'+L.title+'</h2><div class="daystars">'+starStr(SAVE.stars[id]||0)+'</div>';more.appendChild(hb)});
+  var cb=h('button',{class:'day',style:'--c:var(--pen)',onclick:function(){answerBook()}});
+  cb.innerHTML='<div class="when">📖 Copy to my book</div><h2 style="font-size:22px">See every page with the answers written in</h2><div class="sub">'+(GAME.pages.wb?'One book at a time':'Learner’s Book pages')+'</div>';more.appendChild(cb);
+  app.appendChild(more);
+  if(GAME.homeExtra)GAME.homeExtra(app);
+}
+function answerBook(which){
+  app.innerHTML='';app.appendChild(topBar(true));
+  var c=h('section',{class:'card'});
+  c.appendChild(h('h2',{style:'font-size:clamp(26px,4vw,36px)'},['📖 Copy to my book']));
+  var books=Object.keys(GAME.pages);
+  c.appendChild(guide(books.length>1?'Here are your book pages with the answers written in. Copy one book first. Then do the other book.':'Here are your book pages with the answers written in. Copy them into your book.'));
+  var tabs=h('div',{class:'booktabs noprint'}),list=h('div');var cur=which&&GAME.pages[which]?which:books[0];
+  function draw(){
+    tabs.innerHTML='';if(books.length>1)books.forEach(function(bk,k){tabs.appendChild(h('button',{class:bk+(cur===bk?' on':''),onclick:function(){cur=bk;draw()}},[(k+1)+'. '+BOOKNAME[bk]]))});
+    list.innerHTML='';
+    GAME.pages[cur].forEach(function(k){
+      list.appendChild(h('div',{class:'row'},[h('div',{class:'pagehead',style:'flex:1'},[BOOKNAME[cur]+' · page '+PAGES[k].n]),h('button',{class:'big plain small noprint',onclick:function(){zoomPage(k)}},['🔍 Bigger'])]));
+      var v=BookView(k);fillPage(v,k);list.appendChild(v.el);
+    });
+    if(books.length>1){var other=books[(books.indexOf(cur)+1)%books.length];
+      list.appendChild(h('div',{class:'row center noprint',style:'margin-top:16px'},[h('button',{class:'big go',onclick:function(){cur=other;draw();window.scrollTo(0,0)}},['Now the '+BOOKNAME[other]+' →'])]))}
+    if(window.MM_STANDALONE)list.appendChild(h('div',{class:'row center noprint',style:'margin-top:10px'},[h('button',{class:'big plain',onclick:function(){window.print()}},['🖨 Print these pages'])]));
+  }
+  c.appendChild(tabs);c.appendChild(list);app.appendChild(c);draw();window.scrollTo(0,0);
+}
+function wordBank(){
+  var m=h('div',{class:'modal',role:'dialog','aria-modal':'true'}),inner=h('div',{class:'inner card',style:'max-width:720px'});
+  inner.appendChild(h('div',{class:'closeb'},[h('button',{class:'big plain small',onclick:function(){m.remove()}},['✕ Close'])]));
+  inner.appendChild(h('h2',null,['Word bank']));
+  GAME.words.forEach(function(w){
+    var d=h('div',{class:'panel',style:'margin:8px 0'});d.appendChild(h('div',{class:'row'},[h('b',{style:'font-family:var(--display);font-size:26px'},[w[0]]),canSpeak?h('button',{class:'big plain small',onclick:function(){speak(w[0]+'. '+w[1])}},['🔊']):null]));
+    d.appendChild(h('div',{style:'font-weight:700'},[w[1]]));inner.appendChild(d)});
+  m.appendChild(inner);m.addEventListener('click',function(e){if(e.target===m)m.remove()});document.body.appendChild(m);
+}
+
+/* =====================================================================
+   MORE MODELS for Unit 5: equal groups that double, picture counters,
+   dominoes, counting stick, and book tasks (fact tables, hops, colouring)
+   ===================================================================== */
+var BOOKNAME={lb:"Learner's Book",wb:'Workbook'};
+var TCOL={1:'#5B6B8F',2:'#2F7BF5',3:'#FF7A3D',4:'#1FA563',5:'#F4B400',6:'#E0559B',7:'#8A5A2B',8:'#7A4CE0',9:'#16A3A3',10:'#5B6B8F'};
+function tc(k,t){return '<b class="tcol" style="color:'+(TCOL[k]||'var(--ink)')+'">'+(t==null?k:t)+'</b>'}
+
+/* Equal groups: every group is one row of dots. Groups can double, halve, or join together. */
+function GroupsView(n,size,opts){
+  opts=opts||{};
+  var el=h('div',{class:'gv'}),cap=h('div',{class:'arrcap'}),rows=[];
+  var st={n:n,size:size,max:opts.max||Math.max(size,8)};
+  function fit(){var w=el.clientWidth||320;var d=Math.max(9,Math.min(opts.dot||26,Math.floor((w-78)/(st.max*1.32))));el.style.setProperty('--d',d+'px')}
+  function dot(col,isNew,delay){var d=h('i');d.style.background=col;if(isNew){d.className='new';d.style.animationDelay=(delay||0)+'s'}return d}
+  function addRow(anim){
+    var row=h('div',{class:'gvrow'+(anim?' pop':'')}),dots=h('div',{class:'gvdots'}),tot=h('b',{class:'gvtot'});
+    for(var k=0;k<st.size;k++)dots.appendChild(dot(TCOL[opts.color||st.size]||'#2F7BF5'));
+    row.appendChild(dots);row.appendChild(tot);el.appendChild(row);rows.push({row:row,dots:dots,tot:tot});
+  }
+  for(var r=0;r<n;r++)addRow(false);
+  requestAnimationFrame(fit);if(window.ResizeObserver)new ResizeObserver(fit).observe(el);
+  var api={el:el,cap:cap,get n(){return st.n},get size(){return st.size}};
+  api.hideTotals=function(){rows.forEach(function(r){r.tot.textContent='';r.tot.classList.remove('on')})};
+  /* count the groups: size, 2 × size, 3 × size ... */
+  api.count=function(cb,label){api.hideTotals();
+    if(!rows.length){if(label!==false)cap.innerHTML=label||('0 groups = <b>0</b>');if(cb)later(cb,300);return}
+    rows.forEach(function(r,k){later(function(){r.tot.textContent=String((k+1)*st.size);r.tot.classList.add('on');r.row.classList.add('lit');sPop();later(function(){r.row.classList.remove('lit')},300);
+      if(k===rows.length-1)later(function(){if(label!==false)cap.innerHTML=label||(st.n+' groups of '+tc(st.size)+' = <b>'+(st.n*st.size)+'</b>');if(cb)cb()},450)},250+k*380)})};
+  /* every group gets bigger: new dots pop in, in a new colour */
+  api.grow=function(to,cb,col){var add=to-st.size;st.size=to;st.max=Math.max(st.max,to);fit();api.hideTotals();sMagic();
+    rows.forEach(function(r,k){for(var j=0;j<add;j++)r.dots.appendChild(dot(col||TCOL[to]||'#7A4CE0',true,k*.12+j*.05))});
+    later(function(){if(cb)cb()},rows.length*120+add*50+650)};
+  /* every group gets smaller: the extra dots fade away */
+  api.shrink=function(to,cb){var cut=st.size-to;st.size=to;api.hideTotals();sMagic();
+    rows.forEach(function(r,k){var ds=r.dots.children;for(var j=0;j<cut;j++){(function(d,dl){d.style.transitionDelay=dl+'s';d.classList.add('gone');later(function(){d.remove()},700+dl*1000)})(ds[ds.length-1-j],k*.08)}});
+    later(function(){if(cb)cb()},rows.length*80+800)};
+  api.addGroup=function(){st.n++;addRow(true);fit();sPop();return st.n};
+  api.recolor=function(col){rows.forEach(function(r){each(r.dots.children,function(d){d.style.background=col})})};
+  return api;
+}
+
+/* Pictures to count: squares (4 sides), spiders (8 legs), word cards, dominoes */
+function squareSVG(){return '<svg viewBox="0 0 60 60"><rect x="9" y="9" width="42" height="42" fill="#4A63B8"/><g class="parts" stroke-width="6" stroke-linecap="round"><line x1="9" y1="9" x2="51" y2="9"/><line x1="51" y1="9" x2="51" y2="51"/><line x1="51" y1="51" x2="9" y2="51"/><line x1="9" y1="51" x2="9" y2="9"/></g></svg>'}
+function spiderSVG(){var legs='';[[-1,1],[1,1]].forEach(function(sd){for(var i=0;i<4;i++){var y=26+i*7,s=sd[0];legs+='<path d="M'+(40+s*8)+' '+y+' Q'+(40+s*22)+' '+(y-14+i*5)+' '+(40+s*30)+' '+(y+4+i*3)+'"/>'}});
+  return '<svg viewBox="0 0 80 64"><g class="parts" fill="none" stroke-width="3.5" stroke-linecap="round">'+legs+'</g><ellipse cx="40" cy="38" rx="12" ry="14" fill="#2B2B3A"/><circle cx="40" cy="22" r="9" fill="#3B3B4F"/><circle cx="36.5" cy="21" r="3" fill="#fff"/><circle cx="43.5" cy="21" r="3" fill="#fff"/><circle cx="37" cy="21.5" r="1.4" fill="#111"/><circle cx="44" cy="21.5" r="1.4" fill="#111"/></svg>'}
+var PIPS={1:[[1,1]],2:[[0,0],[2,2]],3:[[0,0],[1,1],[2,2]],4:[[0,0],[2,0],[0,2],[2,2]],5:[[0,0],[2,0],[1,1],[0,2],[2,2]],6:[[0,0],[2,0],[0,1],[2,1],[0,2],[2,2]]};
+function dominoSVG(top,bot,col){var s='<svg viewBox="0 0 50 96"><rect x="2" y="2" width="46" height="92" rx="7" fill="#FFF8E7" stroke="#1D2B4F" stroke-width="3"/><line x1="4" y1="48" x2="46" y2="48" stroke="#1D2B4F" stroke-width="2.5"/>';
+  function half(n,y0,c,cls){(PIPS[n]||[]).forEach(function(p){s+='<circle class="'+cls+'" cx="'+(12+p[0]*13)+'" cy="'+(y0+10+p[1]*13)+'" r="5" fill="'+c+'"/>'})}
+  half(top,2,col&&col[0]||'#1D2B4F','pt');half(bot,48,col&&col[1]||'#1D2B4F','pb');return s+'</svg>'}
+function Pics(n,kind,opts){
+  opts=opts||{};var el=h('div',{class:'pics '+kind}),items=[],cap=h('div',{class:'arrcap'});
+  function one(){var p=h('div',{class:'pic'});
+    p.innerHTML=kind==='square'?squareSVG():kind==='spider'?spiderSVG():kind==='domino'?dominoSVG(opts.top,opts.bot,opts.cols):'<span class="word">'+(opts.word||'four')+'</span>';
+    var b=h('b',{class:'pbadge'});p.appendChild(b);el.appendChild(p);items.push(p);return p}
+  for(var i=0;i<n;i++)one();
+  var per=opts.per||(kind==='square'?4:kind==='spider'?8:kind==='domino'?(opts.top+opts.bot):4);
+  var api={el:el,cap:cap,items:items};
+  api.add=function(){var p=one();p.classList.add('pop');sPop();return items.length};
+  /* light up the parts of each picture, then show the running total: 4, 8, 12 ... */
+  api.count=function(cb,label){var t=0;items.forEach(function(p){p.querySelector('.pbadge').classList.remove('on')});
+    function step(k){if(k>=items.length){if(label!==false)cap.innerHTML=label||(items.length+' groups of '+tc(per)+' = <b>'+items.length*per+'</b>');if(cb)cb();return}
+      var p=items[k],parts=p.querySelectorAll('.parts > *');p.classList.add('now');
+      each(parts,function(x,j){later(function(){x.classList.add('lit')},j*(kind==='spider'?70:110))});
+      later(function(){t+=per;var b=p.querySelector('.pbadge');b.textContent=String(t);b.classList.add('on');sPop();p.classList.remove('now');step(k+1)},parts.length*(kind==='spider'?70:110)+260)}
+    step(0)};
+  api.countHalves=function(which,cb){/* dominoes: count the top halves, then the bottom halves */
+    var t=0,n=which==='t'?opts.top:opts.bot;
+    items.forEach(function(p,k){later(function(){each(p.querySelectorAll(which==='t'?'.pt':'.pb'),function(c){c.classList.add('lit')});t+=n;var b=p.querySelector('.pbadge');b.textContent=String(t);b.classList.add('on');b.style.background=which==='t'?TCOL[opts.top]:TCOL[opts.bot];sPop();
+      if(k===items.length-1)later(function(){if(cb)cb(t)},400)},200+k*420)})};
+  return api;
+}
+
+/* Counting stick: ten parts. Tap the next mark to count in 3s; more rows can be added under it. */
+function CountingStick(step,opts){
+  opts=opts||{};var el=h('div',{class:'cstick'}),stick=h('div',{class:'stickbar'}),rowsEl=h('div',{class:'stickrows'});
+  for(var i=0;i<10;i++)stick.appendChild(h('span',{style:'background:'+(i%2?'#F4B400':'#E5484D')}));
+  el.appendChild(h('div',{class:'zero'},['0']));el.appendChild(stick);el.appendChild(rowsEl);
+  var rows=[];
+  function addRow(k,col){var r=h('div',{class:'srow'}),cells=[];r.appendChild(h('span',{class:'slab',style:'background:'+col},[k+'s']));
+    for(var i=1;i<=10;i++){var c=h('button',{class:'scell','aria-label':String(i*k)},['?']);c.style.left=(i*10)+'%';r.appendChild(c);cells.push(c)}
+    rowsEl.appendChild(r);var R={k:k,cells:cells,col:col,next:0};rows.push(R);return R}
+  var api={el:el,rows:rows};
+  api.addRow=addRow;
+  api.reveal=function(R,i,anim){var c=R.cells[i];c.textContent=String((i+1)*R.k);c.classList.add('on');c.style.background=R.col;c.style.borderColor=R.col;if(anim!==false){c.classList.add('pop');sPop()}};
+  api.revealAll=function(R,cb,gap){R.cells.forEach(function(c,i){later(function(){api.reveal(R,i)},i*(gap||170))});later(function(){if(cb)cb()},10*(gap||170)+300)};
+  return api;
+}
+
+/* ---------- shared book tasks ---------- */
+/* hop along a number line and write each landing number into the book */
+function hopTask(a,api,bk,cfg,done){
+  var s=cfg.start,st=cfg.step,n=cfg.ids.length,seq=[];for(var i=1;i<=n;i++)seq.push(s+i*st);
+  var mn=cfg.min!=null?cfg.min:Math.max(0,s-(s%10===0?0:s%10)),mx=cfg.max!=null?cfg.max:seq[n-1]+(10-seq[n-1]%10)%10;
+  var labels=[s];for(var v=Math.ceil(mn/10)*10;v<=mx;v+=10)if(labels.indexOf(v)<0&&Math.abs(v-s)>2)labels.push(v);
+  var nl=NumberLine(mn,mx,{labels:labels,start:s,hopper:cfg.hopper});var p=h('div',{class:'panel'});p.appendChild(nl.el);a.appendChild(p);
+  nl.tks[s]&&nl.tks[s].classList.add('start');
+  each(nl.el.querySelectorAll('.tk'),function(t){if(+t.textContent!==s){t.style.background='transparent';t.style.border='0';t.style.color='var(--soft)';t.style.fontSize='14px'}});
+  function chipAt(v){var t=h('button',{class:'tk on'},[String(v)]);t.style.left=nl.X(v)+'%';t.style.background=TCOL[st]||'var(--b5)';t.style.borderColor=TCOL[st]||'var(--b5)';nl.el.appendChild(t)}
+  var k=0,ctl=h('div');a.appendChild(ctl);
+  function hopBtn(){ctl.innerHTML='';if(k>=n){if(done)done(seq);return}
+    var from=k?seq[k-1]:s,to=seq[k];
+    var b=h('button',{class:'big',style:'background:'+(TCOL[st]||'var(--b5)')+';color:#fff'},[(cfg.hopper||'🐸')+' Hop + '+st]);ctl.appendChild(h('div',{class:'row center'},[b]));
+    if(cfg.auto&&k>=cfg.auto){b.remove();go();return}
+    b.onclick=function(){b.parentNode.remove();go()};
+    function go(){nl.hop(to,'+'+st,function(){
+      if(cfg.auto&&k>=cfg.auto){chipAt(to);bk.write(cfg.ids[k]);k++;later(hopBtn,450);return}
+      ctl.appendChild(h('p',{class:'task',style:'text-align:center'},['Where did '+(cfg.who||'the frog')+' land? '+from+' + '+st+' = ?']));
+      var opts=shuffle([to,to+1,to-1].filter(function(x,i,arr){return arr.indexOf(x)===i}));
+      choiceQ(ctl,api,opts.map(function(v){return v===to?{label:String(v),ok:true}:{label:String(v),why:'Count on '+st+' from '+from+'. Use your fingers: '+Array.apply(null,Array(st)).map(function(_,j){return from+j+1}).join(', ')+'.'}}),
+        function(){chipAt(to);bk.write(cfg.ids[k]);k++;later(hopBtn,650)},{cls:function(){return 'big plain'}})})}
+  }
+  later(hopBtn,300);
+  return nl;
+}
+/* colour cells on a number grid in the book */
+function colourTask(a,api,bk,cfg,done){
+  var need=[],got=0,hots={},cnt=0;
+  for(var n=cfg.from;n<=cfg.to;n++){(function(n){var b=cfg.cell(n),ok=cfg.yes(n);if(ok)need.push(n);
+    hots[n]=bk.hot(b[0],b[1],b[2],b[3],String(n),function(){
+      if(hots[n].classList.contains('used'))return;
+      if(ok){hots[n].classList.add('used');hots[n].style.background='transparent';bk.fill(b[0]+3,b[1]+3,b[2]-6,b[3]-6,cfg.col);got++;cnt++;info.innerHTML=cfg.say(n,true,got);
+        if(got===need.length){helpRow.remove();feedback(a,'good',cfg.allDone||'<b>All coloured!</b>');done()}}
+      else{api.miss();sBad();hots[n].classList.remove('badtap');void hots[n].offsetWidth;hots[n].classList.add('badtap');info.innerHTML=cfg.say(n,false,got)}
+    },false)})(n)}
+  var info=h('div',{class:'panel',style:'text-align:center;font-weight:800;font-size:19px'},[cfg.intro||'👆 Tap the numbers in the book.']);a.appendChild(info);
+  var helpRow=h('div',{class:'row center'});
+  var hb=h('button',{class:'big plain small'},['💡 Show me the next one']);hb.onclick=function(){var n=need.filter(function(x){return !hots[x].classList.contains('used')})[0];if(n==null)return;
+    var b=cfg.cell(n);var g=bk.glow(b[0],b[1],b[2],b[3]);later(function(){g.remove()},1800);info.innerHTML=cfg.hint(n)};
+  helpRow.appendChild(hb);a.appendChild(helpRow);
+}
+/* fill in a doubling / halving table in the book, one empty cell at a time, with groups that grow or shrink */
+function factTable(a,api,bk,items,done){
+  var k=0,area=h('div');a.appendChild(area);var glows=[];
+  function clearG(){glows.forEach(function(g){g.remove()});glows=[]}
+  function step(){area.innerHTML='';clearG();if(k>=items.length){done();return}
+    var it=items[k];var A=ANS[it.from],B=ANS[it.id];
+    if(A)glows.push(bk.glow(A[1],A[2],A[3],A[4]));else if(it.fromCell)glows.push(bk.glow(it.fromCell[0],it.fromCell[1],it.fromCell[2],it.fromCell[3]));
+    glows.push(bk.glow(B[1],B[2],B[3],B[4]));
+    var dbl=it.to>it.size;
+    area.appendChild(h('p',{class:'task',style:'text-align:center',html:'Empty box '+(k+1)+' of '+items.length+': &nbsp;'+tc(it.size,it.size+' × '+it.n+' = '+it.size*it.n)+' &nbsp;'+(dbl?'<span class="dbl">double →</span>':'<span class="hlv">← halve</span>')+' &nbsp;?'}));
+    var g=GroupsView(it.n,it.size,{max:Math.max(it.size,it.to)});var p=h('div',{class:'panel'});p.appendChild(g.el);p.appendChild(g.cap);area.appendChild(p);
+    g.cap.innerHTML=it.n+' groups of '+tc(it.size)+' = <b>'+it.size*it.n+'</b>';
+    var b=h('button',{class:'big '+(dbl?'go':'magic')},[dbl?'✨ Double every group':'✂️ Halve every group']);area.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.parentNode.remove();(dbl?g.grow:g.shrink)(it.to,function(){
+      g.count(function(){
+        area.appendChild(h('p',{class:'task',style:'text-align:center'},['Which fact goes in the empty box?']));
+        var P=it.to*it.n,opts=[{label:it.to+' × '+it.n+' = '+P,ok:true},{label:it.to+' × '+it.n+' = '+it.size*it.n,why:'The groups changed size, so the product changes too! Count the dots: '+P+'.'},{label:it.size+' × '+(dbl?it.n*2:it.n)+' = '+(dbl?P:it.size*it.n),why:'The number of groups does <b>not</b> change. There are still '+it.n+' groups.'}];
+        choiceQ(area,api,shuffle(opts),function(){bk.write(it.id);feedback(area,'good',(dbl?'Double '+it.size+' is '+it.to+', and double '+it.size*it.n+' is '+P+'.':'Half of '+it.size+' is '+it.to+', and half of '+it.size*it.n+' is '+P+'.')+' The number of groups stays '+it.n+'.');
+          nextBtn(area,k<items.length-1?'Next empty box →':'Finish ✓',function(){k++;step()})},{col:true});
+      },it.n+' groups of '+tc(it.to)+' = <b>'+it.to*it.n+'</b>')})};
+  }
+  step();
+}
+/* choose the best sentence, then it is written on the book's lines */
+function describeTask(a,api,bk,q,opts,ids,done){
+  a.appendChild(h('p',{class:'task'},[q]));
+  choiceQ(a,api,shuffle(opts),function(){ids.forEach(function(id,i){bk.write(id,i*900)});later(done,ids.length*900+300)},{col:true});
+}
+/* small odd/even picture: pairs of dots, a lonely dot glows when the number is odd */
+function oddEvenPic(n){var w=h('span',{style:'display:inline-flex;flex-direction:column;align-items:center;margin:4px 8px;font-weight:800'});w.appendChild(sdots(n,14,isOdd(n)?'var(--b5)':'var(--b2)'));w.appendChild(h('span',null,[n+(isOdd(n)?' odd':' even')]));return w}
+/* a short quiz: several rounds of choices; only the first try of each round counts for the score */
+function mcQuiz(host,api,rounds,cb){
+  var k=0,score=0,area=h('div');host.appendChild(area);
+  function round(){area.innerHTML='';if(k>=rounds.length){area.appendChild(h('div',{class:'bigstate'},['Score: '+score+' / '+rounds.length]));cb(score);return}
+    var R=rounds[k];area.appendChild(h('div',{class:'today',style:'text-align:center'},['Question '+(k+1)+' of '+rounds.length]));
+    if(R.q)area.appendChild(h('div',{class:'bigstate',html:R.q}));if(R.viz)area.appendChild(R.viz());
+    var first=true;
+    choiceQ(area,{miss:function(){if(first){first=false;api.miss()}}},shuffle(R.opts),function(){if(first)score++;if(R.after)R.after(area);feedback(area,'good',R.good||'<b>Yes!</b>');nextBtn(area,'Next →',function(){k++;round()})},{cls:function(){return R.col?'opt':'big plain'},col:R.col});
+  }
+  round();
+}
+/* =====================================================================
+   SMALL HELPERS FOR THIS GAME
+   ===================================================================== */
+/* fill □ × □ = □ in the book with number tiles (either order of the first two numbers is fine) */
+function tilesFact(a,api,bk,ids,ans,tiles,done){
+  var fill=[],nodes=[],g=null,status=h('p',{class:'task',style:'text-align:center',html:'Tap the tiles to fill the boxes: &nbsp;<span style="font-family:var(--display);font-size:28px">□ × □ = □</span>'}),tray=h('div',{class:'tiles'});
+  a.appendChild(status);a.appendChild(tray);
+  function glow(){if(g)g.remove();g=null;var Q=ANS[ids[fill.length]];if(Q)g=bk.glow(Q[1],Q[2],Q[3],Q[4])}
+  shuffle(tiles).forEach(function(n){var t=h('button',{class:'tile'},[String(n)]);t.onclick=function(){
+    if(fill.length>=3||t.classList.contains('used'))return;var Q=ANS[ids[fill.length]];nodes.push(bk.put(Q[1],Q[2],Q[3],Q[4],String(n),'c',Q[7],true));fill.push(n);t.classList.add('used');sPop();
+    if(fill.length<3)glow();else{if(g)g.remove();later(check,250)}};tray.appendChild(t)});
+  glow();
+  function reset(){nodes.forEach(function(n){n.remove()});nodes=[];fill=[];each(tray.children,function(t){t.classList.remove('used')});glow()}
+  function check(){
+    var ok=fill[0]*fill[1]===fill[2]&&((fill[0]===ans[0]&&fill[1]===ans[1])||(fill[0]===ans[1]&&fill[1]===ans[0]));
+    if(!ok){api.miss();sBad();feedback(a,'bad',fill[0]*fill[1]!==fill[2]?fill[0]+' × '+fill[1]+' is not '+fill[2]+'. Look at the picture and count again!':'Look at the picture again: groups of <b>'+ans[0]+'</b>, and <b>'+ans[1]+'</b> groups.');later(reset,1000);return}
+    nodes.forEach(function(n){n.remove()});ids.forEach(function(id,i){bk.write(id,i*200,fill[i])});tray.remove();status.innerHTML=fill[0]+' × '+fill[1]+' = '+fill[2]+' ✓';
+    var fb=a.querySelector(':scope > .fb');if(fb)fb.remove();later(done,800)}
+}
+function panelOf(){var p=h('div',{class:'panel'});each(arguments,function(x){p.appendChild(x)});return p}
+function factCard(txt,k){return h('div',{class:'m',style:'border-color:'+TCOL[k]},[txt])}
+
+
+/* =====================================================================
+   THE BOOK PAGES (Learner's Book pp. 77–81, Workbook pp. 65–68) and their answer key
+   ===================================================================== */
+var PAGES={
+  lb77:{w:1370,h:770,book:'lb',n:77},lb78:{w:1470,h:1700,book:'lb',n:78},lb79:{w:1470,h:1540,book:'lb',n:79},lb80:{w:1470,h:1600,book:'lb',n:80},lb81:{w:1470,h:900,book:'lb',n:81},
+  wb65:{w:1470,h:1700,book:'wb',n:65},wb66:{w:1470,h:1560,book:'wb',n:66},wb67:{w:1470,h:1630,book:'wb',n:67},wb68:{w:1470,h:530,book:'wb',n:68}
+};
+/* text answers: [page, x, y, w, h, text, align, fontPx] in page pixels */
+var ANS={},RINGS={},PENLINES={},FILLS={},DRAWS={},VENN={},FF={},FORMS=[];
+function A(id,p,x,y,w,hh,t,al,f){ANS[id]=[p,x,y,w,hh,String(t),al||'c',f||46]}
+function row(pre,p,xs,y,s,vals,f){vals.forEach(function(v,i){A(pre+i,p,xs[i],y,s,s,v,'c',f||46)})}
+/* Learner's Book */
+row('lb1_','lb78',[1033,1166,1301],220,86,[4,6,24],52);
+A('we1','lb78',521,850,204,52,'4 × 6 = 24','c',40);A('we2','lb78',137,907,194,51,'2 × 9 = 18','c',40);
+row('lb2_','lb78',[428,546,665,782,901],486,85,[24,28,32,36,40]);
+A('lb2t','lb78',160,603,1230,50,'They are all multiples of 4, so they are all even.','l',38);
+A('lb3_r1','lb79',910,93,375,95,'4 × 7 = 28','c',40);A('lb3_r2','lb79',149,194,375,94,'2 × 3 = 6','c',40);
+A('lb3_r3','lb79',910,294,375,94,'4 × 5 = 20','c',40);A('lb3_r4','lb79',149,394,375,95,'2 × 4 = 8','c',40);
+row('lb4_','lb79',[149,282,416],666,85,[8,5,40],50);
+A('lb5t','lb79',145,1466,1240,50,'They are all multiples of 8, and they are all even.','l',38);
+var X80=[162,392,611,841,1062],W80=[225,216,226,216,224],Y80=[104,216,329,442];
+function c80(r,c){return [X80[c],Y80[r],W80[c],107]}
+[['0_2','4 × 9 = 36'],['0_4','8 × 9 = 72'],['1_0','2 × 5 = 10'],['1_2','4 × 5 = 20'],['2_0','2 × 6 = 12'],['2_4','8 × 6 = 48'],['3_2','4 × 3 = 12'],['3_4','8 × 3 = 24']].forEach(function(e){var rc=e[0].split('_'),b=c80(+rc[0],+rc[1]);A('lb6_'+e[0],'lb80',b[0],b[1],b[2],b[3],e[1],'c',34)});
+row('lb7_','lb80',[203,321,440,558,676],1285,85,[9,13,17,21,25]);
+A('lb7t','lb80',160,1520,1240,50,'They are all odd. They are not multiples of 4.','l',38);
+A('lb8_0','lb81',311,139,86,87,'27');A('lb8_1','lb81',491,139,86,87,'43');
+A('lb8t','lb81',145,374,1240,50,'They are all odd, so they are not multiples of 8.','l',38);
+A('lb8r','lb81',565,457,430,50,'add 8','c',40);
+A('lb9a','lb81',145,684,1240,50,'5, 13, 21, 29, 37. The rule is add 8.','l',38);
+A('lb9b','lb81',145,842,1240,50,'13, 17, 21, 25, 29. The rule is add 4.','l',38);
+/* Workbook */
+row('wb1_','wb65',[605,744,883],401,88,[4,3,12],52);
+for(var i=0;i<10;i++)A('wb2_'+i,'wb65',i<5?160:700,595+(i%5)*62,480,52,'4 × '+(i+1)+' = '+4*(i+1),'l',38);
+A('wb4','wb65',160,1605,900,55,'8 × 6 = 48. There are 48 legs.','l',42);
+row('wbwe_','wb66',[178,289,399,510,622],229,85,[6,10,14,18,22]);
+row('wbwf_','wb66',[217,329,440,550],466,86,[10,14,18,22]);
+row('wb5_','wb66',[217,329,440,551,662],1257,86,[7,11,15,19,23]);
+A('wb5t','wb66',160,1476,1240,50,'They are all odd numbers. They are not multiples of 4.','l',38);
+A('wb6a','wb67',702,93,84,86,'12');A('wb6b','wb67',679,203,85,85,'28');
+row('wb7_','wb67',[225,335,447,558,669],373,86,[44,48,52,56,60]);
+A('wb8a','wb67',160,548,1240,50,'They are all even: 4, 8, 12, 16, 20 ... every other even number.','l',34);
+A('wb8b','wb67',160,635,1240,50,'The ones digits go 4, 8, 2, 6, 0 and the pattern repeats every 20.','l',34);
+A('wb9a','wb67',690,727,86,85,'40');A('wb9b','wb67',679,839,85,85,'72');
+var X67=[162,368,572,778,982],Y67=[1013,1087,1160,1232];
+function c67(r,c){return [X67[c],Y67[r],200,69]}
+[['0_0','2 × 4 = 8'],['0_4','8 × 4 = 32'],['1_2','4 × 2 = 8'],['1_4','8 × 2 = 16'],['2_0','2 × 8 = 16'],['2_2','4 × 8 = 32'],['3_2','4 × 7 = 28'],['3_4','8 × 7 = 56']].forEach(function(e){var rc=e[0].split('_'),b=c67(+rc[0],+rc[1]);A('wb10_'+e[0],'wb67',b[0],b[1],b[2],b[3],e[1],'c',30)});
+row('wb11_','wb68',[279,390,501,613],149,85,[23,31,39,47]);
+A('wb11r','wb68',595,247,780,50,'add 8','c',40);
+A('wb11t','wb68',175,450,1240,50,'They are all odd numbers. They go up in 8s.','l',38);
+/* coloured multiples of 8 */
+var PURPLE='rgba(122,76,224,.42)';
+function c79(n){var k=n-71;return [[149,242,334,427,520,613,706,798,891,984][k%10],[870,963,1056,1149,1242][Math.floor(k/10)],88,88]}
+function c65(n){var k=n-1;return [[162,241,320,399,478,557,636,715,793,873][k%10],[1000,1079,1158,1237,1316][Math.floor(k/10)],75,74]}
+FILLS.lb79=[72,80,88,96,104,112,120].map(function(n){var b=c79(n);return [b[0]+3,b[1]+3,b[2]-6,b[3]-6,PURPLE]});
+FILLS.wb65=[8,16,24,32,40,48].map(function(n){var b=c65(n);return [b[0]+3,b[1]+3,b[2]-6,b[3]-6,PURPLE]});
+
+/* =====================================================================
+   LESSON 1 — Build the 4 and 8 tables (Learner's Book pp. 77–79)
+   ===================================================================== */
+function d1Warm(st,api){
+  st.appendChild(guide('A square has <b>4 sides</b>. Let’s build squares and count all the sides!'));
+  var P=Pics(0,'square');st.appendChild(panelOf(P.el,P.cap));P.cap.innerHTML='Tap the button to add squares.';
+  var area=h('div');st.appendChild(area);
+  var add=h('button',{class:'big b2'},['+ Add a square']);area.appendChild(h('div',{class:'row center'},[add]));
+  add.onclick=function(){var n=P.add();P.cap.innerHTML=n+' square'+(n>1?'s':'');if(n===6){add.parentNode.remove();later(cnt,400)}};
+  function cnt(){var b=h('button',{class:'big go'},['🔢 Count the sides in 4s']);area.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.parentNode.remove();P.count(function(){speak('4, 8, 12, 16, 20, 24');
+      area.appendChild(h('p',{class:'task',style:'text-align:center'},['How many sides altogether?']));
+      choiceQ(area,api,shuffle([{label:'24',ok:true},{label:'6',why:'6 is the number of squares. Each square has 4 sides. Count in 4s!'},{label:'10',why:'That is 6 + 4. Count in 4s: 4, 8, 12, 16, 20, 24.'}]),function(){
+        api.done('<b>24 sides!</b> 6 groups of 4 = 24.<br>We write it '+tc(4,'4 × 6 = 24')+'.<br><small>group size × how many groups = product</small>')},{cls:function(){return 'big plain'}})},'6 groups of '+tc(4)+' sides')}}
+}
+function d1Discover(st,api){
+  st.appendChild(guide('This is the <b>doubling machine</b>! We start with <b>6 groups of 2</b>.'));
+  var g=GroupsView(6,2,{max:8});st.appendChild(panelOf(g.el,g.cap));
+  var area=h('div'),board=h('div',{class:'facts'});st.appendChild(area);st.appendChild(h('p',{class:'task',style:'text-align:center'},['⭐ Our facts:']));st.appendChild(board);
+  g.count(function(){board.appendChild(factCard('2 × 6 = 12',2));step(4,[24,12,14],function(){step(8,[48,24,40],ask)})});
+  function step(to,opts,next){
+    var b=h('button',{class:'big go'},['✨ Double every group']);area.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.parentNode.remove();g.grow(to,function(){g.count(function(){
+      area.appendChild(h('p',{class:'task',style:'text-align:center',html:'Each group has '+tc(to)+' now. How many altogether?'}));
+      choiceQ(area,api,shuffle(opts.map(function(v,i){return i===0?{label:String(v),ok:true}:{label:String(v),why:'Count in '+to+'s along the groups: '+[1,2,3,4,5,6].map(function(k){return k*to}).join(', ')+'.'}})),function(){
+        board.appendChild(factCard(to+' × 6 = '+to*6,to));sparkleAt(board.lastChild);speak(to+' times 6 is '+to*6);area.innerHTML='';next()},{cls:function(){return 'big plain'}});
+    })})};
+  }
+  function ask(){area.appendChild(h('p',{class:'task',style:'text-align:center'},['We doubled two times. What stayed the same?']));
+    choiceQ(area,api,shuffle([{label:'The number of groups: always 6',ok:true},{label:'The group size',why:'The group size changed: 2 → 4 → 8.'},{label:'The product',why:'The product changed: 12 → 24 → 48.'}]),function(){
+      api.done('<b>Double the group size → double the product.</b><br>The number of groups stays the same!<br>'+tc(2,'2 × 6 = 12')+' → '+tc(4,'4 × 6 = 24')+' → '+tc(8,'8 × 6 = 48'))},{col:true});
+  }
+}
+function d1Rule(st,api){
+  st.appendChild(guide('Read the worked example in the book. Let’s fill its empty boxes together!'));
+  var bk=BookView('lb78',{crop:[640,1700]});st.appendChild(bk.el);
+  var area=h('div');st.appendChild(area);
+  factTable(area,api,bk,[{fromCell:[137,850,194,52],id:'we1',size:2,to:4,n:6},{fromCell:[522,907,202,51],id:'we2',size:4,to:2,n:9}],function(){
+    area.appendChild(h('div',{class:'frame',html:'<span class="dbl">double →</span> &nbsp;group size × 2 and product × 2<br><span class="hlv">← halve</span> &nbsp;group size ÷ 2 and product ÷ 2<br><small>The number of groups never changes!</small>'}));
+    area.appendChild(h('p',{class:'task'},['Try it: 4 × 7 = 28. What is 8 × 7?']));
+    choiceQ(area,api,shuffle([{label:'56, because double 28 is 56',ok:true},{label:'28',why:'8 is double 4, so the product doubles too: 28 + 28.'},{label:'32',why:'Double 28: 20 + 20 = 40 and 8 + 8 = 16. 40 + 16 = 56.'}]),function(){api.done('<b>Yes!</b> Double '+tc(4,'4 × 7 = 28')+' to get '+tc(8,'8 × 7 = 56')+'.')},{col:true});
+  });
+}
+function lbQ1(a,api,done){
+  a.appendChild(guide('Count the sides on each square. Which fact from the 4 times table is it?'));
+  var bk=BookView('lb78',{crop:[0,330]});a.appendChild(bk.el);
+  var P=Pics(6,'square');a.appendChild(panelOf(P.el,P.cap));
+  var b=h('button',{class:'big go'},['🔢 Count the sides']);a.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.parentNode.remove();P.count(function(){tilesFact(a,api,bk,['lb1_0','lb1_1','lb1_2'],[4,6],[4,6,24,10],done)},'6 squares, 4 sides each: 6 groups of '+tc(4)+' = <b>24</b>')};
+}
+function lbQ2(a,api,done){
+  a.appendChild(guide('Count on in 4s from 20. Help me hop!'));
+  var bk=BookView('lb78',{crop:[330,690]});a.appendChild(bk.el);
+  hopTask(a,api,bk,{start:20,step:4,ids:['lb2_0','lb2_1','lb2_2','lb2_3','lb2_4'],min:20,max:40,who:'Webby',hopper:'🕷️'},function(){
+    var s=h('div',{class:'panel',style:'text-align:center'});[24,28,32,36,40].forEach(function(n){s.appendChild(oddEvenPic(n))});a.appendChild(s);
+    describeTask(a,api,bk,'Describe the numbers. Use the words multiple, odd and even.',[{label:'They are all multiples of 4, so they are all even.',ok:true},{label:'They are all odd.',why:'Look at the dots: they all make pairs. They are even!'},{label:'They go odd, even, odd, even.',why:'Look at the ones digits: 4, 8, 2, 6, 0. All even!'}],['lb2t'],done)});
+}
+function lbQ3(a,api,done){
+  a.appendChild(guide('Fill the empty boxes. <span class="dbl">double →</span> or <span class="hlv">← halve</span>? Watch the groups!'));
+  var bk=BookView('lb79',{crop:[0,500]});a.appendChild(bk.el);
+  factTable(a,api,bk,[{fromCell:[149,93,375,95],id:'lb3_r1',size:2,to:4,n:7},{fromCell:[910,194,375,94],id:'lb3_r2',size:4,to:2,n:3},{fromCell:[149,294,375,94],id:'lb3_r3',size:2,to:4,n:5},{fromCell:[910,394,375,95],id:'lb3_r4',size:4,to:2,n:4}],done);
+}
+function lbQ4(a,api,done){
+  a.appendChild(guide('Count the legs on each spider. I have 8 legs too!'));
+  var bk=BookView('lb79',{crop:[500,770]});a.appendChild(bk.el);
+  var P=Pics(5,'spider');a.appendChild(panelOf(P.el,P.cap));
+  var b=h('button',{class:'big go'},['🔢 Count the legs in 8s']);a.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.parentNode.remove();P.count(function(){speak('8, 16, 24, 32, 40');tilesFact(a,api,bk,['lb4_0','lb4_1','lb4_2'],[8,5],[8,5,40,13],done)},'5 spiders, 8 legs each: 5 groups of '+tc(8)+' = <b>40</b>')};
+}
+function lbQ5(a,api,done){
+  a.appendChild(guide('Colour all the multiples of <span class="tcol" style="color:#7A4CE0">8</span>. Count on 8 each time!'));
+  var bk=BookView('lb79',{crop:[740,1540]});a.appendChild(bk.el);
+  colourTask(a,api,bk,{from:71,to:120,cell:c79,yes:function(n){return n%8===0},col:PURPLE,
+    intro:'👆 Tap the multiples of 8 in the book. Hint: 8 × 9 = 72.',
+    say:function(n,ok){return ok?'<b>'+n+'</b> ✓ &nbsp;Now add 8 to find the next one!':'<b>'+n+'</b> is not a multiple of 8. '+(isOdd(n)?n+' is odd, and multiples of 8 are always even.':'Start at 72 and count on 8: 72, 80, 88 ...')},
+    hint:function(n){return 'Count on 8: '+(n-8)+' + 8 = <b>'+n+'</b>'},allDone:'<b>72, 80, 88, 96, 104, 112, 120!</b> Every one is even.'},function(){
+    describeTask(a,api,bk,'Describe the numbers you coloured.',[{label:'They are all multiples of 8, and they are all even.',ok:true},{label:'They are all odd.',why:'72, 80, 88 ... end in 2, 0, 8, 6, 4. They are even!'},{label:'They are odd and even.',why:'Look at the ones digits: 2, 0, 8, 6, 4, 2, 0. All even!'}],['lb5t'],done)});
+}
+function d1Practise(st,api){questionRun(st,api,[lbQ1,lbQ2,lbQ3,lbQ4,lbQ5],['Q1','Q2','Q3','Q4','Q5'],'<b>Pages 78 and 79 are finished!</b>')}
+function d1Check(st,api){
+  st.appendChild(guide('Double trouble! Use the fact you know to find the new fact.'));
+  var n1=pick([3,4,6,7]),n2=pick([3,5,6,9]),n3=pick([4,5,7]),g;
+  mcQuiz(st,api,[
+    {q:tc(2,'2 × '+n1+' = '+2*n1)+' &nbsp;<span class="dbl">double →</span>&nbsp; '+tc(4,'4 × '+n1+' = ?'),viz:function(){g=GroupsView(n1,2,{max:4});return panelOf(g.el)},after:function(){g.grow(4)},
+      opts:[{label:String(4*n1),ok:true},{label:String(2*n1),why:'Double the product: '+2*n1+' + '+2*n1+'.'},{label:String(2*n1+2),why:'Double the product: '+2*n1+' + '+2*n1+'.'}],good:'<b>Yes!</b> Double '+2*n1+' is '+4*n1+'.'},
+    {q:tc(4,'4 × '+n2+' = '+4*n2)+' &nbsp;<span class="dbl">double →</span>&nbsp; '+tc(8,'8 × '+n2+' = ?'),viz:function(){g=GroupsView(n2,4,{max:8,dot:20});return panelOf(g.el)},after:function(){g.grow(8)},
+      opts:[{label:String(8*n2),ok:true},{label:String(4*n2),why:'Double the product: '+4*n2+' + '+4*n2+'.'},{label:String(4*n2+4),why:'Double the product: '+4*n2+' + '+4*n2+'.'}],good:'<b>Yes!</b> Double '+4*n2+' is '+8*n2+'.'},
+    {q:tc(8,'8 × '+n3+' = '+8*n3)+' &nbsp;<span class="hlv">← halve</span>&nbsp; '+tc(4,'4 × '+n3+' = ?'),viz:function(){g=GroupsView(n3,8,{max:8,dot:20});return panelOf(g.el)},after:function(){g.shrink(4)},
+      opts:[{label:String(4*n3),ok:true},{label:String(8*n3),why:'Halve the product: half of '+8*n3+'.'},{label:String(16*n3),why:'That is double. We need half!'}],good:'<b>Yes!</b> Half of '+8*n3+' is '+4*n3+'.'},
+    {q:'🕷️🕷️🕷️ How many legs?',opts:[{label:'24',ok:true},{label:'11',why:'That is 3 + 8. Count in 8s: 8, 16, 24.'},{label:'16',why:'That is only 2 spiders. Count in 8s: 8, 16, 24.'}],good:'<b>8 × 3 = 24</b> legs!'}
+  ],function(){bonus(st,'Which number is in the 2, 4 <b>and</b> 8 times tables?',[{label:'16',ok:true},{label:'12',why:'12 is not a multiple of 8.'},{label:'20',why:'20 is not a multiple of 8.'}],'<b>16!</b> 2 × 8, 4 × 4 and 8 × 2 all make 16.');api.done()});
+}
+
+/* =====================================================================
+   LESSON 2 — Count in 4s and 8s from any number (Learner's Book pp. 80–81)
+   ===================================================================== */
+function d2Warm(st,api){
+  st.appendChild(guide('Let’s colour the 4s and the 8s on the 100 square. What do you notice?'));
+  var hs=HundredSquare();each(hs.cells,function(c){if(c)c.disabled=true});
+  st.appendChild(h('div',{class:'legend',html:'<span><i style="background:#DDF6E8;border:2px solid #1FA563"></i>multiple of 4</span><span><i style="background:#7A4CE0"></i>multiple of 8</span>'}));
+  st.appendChild(hs.el);var area=h('div');st.appendChild(area);
+  var b4=h('button',{class:'big',style:'background:#1FA563;color:#fff'},['Count in 4s']);area.appendChild(h('div',{class:'row center'},[b4]));
+  b4.onclick=function(){b4.parentNode.remove();sMagic();var n=4;(function go(){if(n>100){later(eights,300);return}var c=hs.cells[n];c.style.background='#DDF6E8';c.style.borderColor='#1FA563';c.classList.add('pop');n+=4;later(go,90)})()};
+  function eights(){var b8=h('button',{class:'big',style:'background:#7A4CE0;color:#fff'},['Count in 8s']);area.appendChild(h('div',{class:'row center'},[b8]));
+    b8.onclick=function(){b8.parentNode.remove();sMagic();var n=8;(function go(){if(n>100){later(ask,300);return}var c=hs.cells[n];c.style.background='#7A4CE0';c.style.color='#fff';c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop');n+=8;later(go,160)})()}}
+  function ask(){area.appendChild(h('p',{class:'task'},['Look at the purple 8s. Are they also on the 4s?']));
+    choiceQ(area,api,[{label:'Yes, every multiple of 8 is a multiple of 4',ok:true},{label:'No',why:'Look: every purple square was green first! 8 = 4 + 4.'}],function(){api.done('<b>Yes!</b> Every <b>other</b> 4 is an 8. 8 is double 4.<br>And they are all <b>even</b>.')},{col:true});
+  }
+}
+function d2Discover(st,api){
+  st.appendChild(guide('Two frogs count in 4s. One starts at <b>0</b>. One starts at <b>5</b>. Watch!'));
+  var lines=[{s:0,col:'#2F7BF5'},{s:5,col:'#FF7A3D'}],area=h('div');
+  lines.forEach(function(L){L.nl=NumberLine(0,25,{labels:[0,5,10,15,20,25],start:L.s,hopper:L.s?'🐸':'🐰'});L.nl.tks[L.s].classList.add('start');L.row=h('div',{class:'strip',style:'min-height:34px'});st.appendChild(panelOf(L.nl.el,L.row))});
+  st.appendChild(area);
+  function chip(L,v){var t=h('button',{class:'tk on'},[String(v)]);t.style.left=L.nl.X(v)+'%';t.style.background=L.col;t.style.borderColor=L.col;L.nl.el.appendChild(t);L.row.appendChild(h('span',null,[String(v)]))}
+  var k=0;
+  var b=h('button',{class:'big go'},['🐾 Both hop + 4']);area.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){if(k>=5)return;b.disabled=true;var c=0;lines.forEach(function(L){var to=L.s+(k+1)*4;L.nl.hop(to,'+4',function(){chip(L,to);c++;if(c===2){k++;b.disabled=false;if(k===5){b.parentNode.remove();ask()}}})})};
+  function ask(){
+    lines[0].row.insertBefore(h('span',{style:'background:#2F7BF5;color:#fff'},['From 0: ']),lines[0].row.firstChild);lines[1].row.insertBefore(h('span',{style:'background:#FF7A3D;color:#fff'},['From 5: ']),lines[1].row.firstChild);
+    area.appendChild(h('p',{class:'task'},['Start at 5 and add 4. Are the numbers odd or even?']));
+    choiceQ(area,api,[{label:'Odd',ok:true},{label:'Even',why:'Look at 9, 13, 17: they end in 9, 3, 7. One is left over. Odd!'}],function(){
+      area.appendChild(h('div',{class:'panel',style:'text-align:center'},[oddEvenPic(9),oddEvenPic(13),oddEvenPic(17)]));
+      api.done('<b>Yes!</b> From 0 we land on multiples of 4 (even). From 5 we land on <b>odd</b> numbers. They are <b>not</b> multiples of 4.')},{cls:function(){return 'big plain'}});
+  }
+}
+function d2Rule(st,api){
+  st.appendChild(guide('The <b>term-to-term rule</b> tells you what to do to get the next number. Rule: <b>add 4</b>.'));
+  st.appendChild(h('div',{class:'frame',html:'5 &nbsp;<span class="dbl">+4</span>&nbsp; 9 &nbsp;<span class="dbl">+4</span>&nbsp; 13 &nbsp;<span class="dbl">+4</span>&nbsp; 17'}));
+  st.appendChild(h('p',{class:'task'},['Why do the odd numbers stay odd? Look at the dots.']));
+  var p=h('div',{class:'panel',style:'text-align:center'});p.appendChild(h('div',{class:'addrow'},[sdots(5,18,'var(--b5)'),h('span',null,['+']),sdots(4,18,'var(--b2)'),h('span',null,['=']),sdots(9,18,'var(--b5)')]));
+  p.appendChild(h('div',{style:'font-weight:800'},['5 has a lonely dot. 4 makes pairs. The lonely dot is still lonely in 9!']));st.appendChild(p);
+  st.appendChild(h('div',{class:'frame',html:'even + even = <b>even</b> &nbsp;&nbsp;·&nbsp;&nbsp; odd + even = <b>odd</b>'}));
+  st.appendChild(h('p',{class:'task'},['Start at 6. The rule is add 8. Will the numbers be odd or even?']));
+  choiceQ(st,api,[{label:'Even',ok:true},{label:'Odd',why:'6 is even and 8 is even. even + even = even!'}],function(){api.done('<b>Yes!</b> 6, 14, 22, 30 ... all even.')},{cls:function(){return 'big plain'}});
+}
+function lbQ6(a,api,done){
+  a.appendChild(guide('Fill the empty boxes. Sometimes we <b>double</b>, sometimes we <b>halve</b>. The number of groups never changes!'));
+  var bk=BookView('lb80',{crop:[60,600]});a.appendChild(bk.el);
+  factTable(a,api,bk,[{fromCell:c80(0,0),id:'lb6_0_2',size:2,to:4,n:9},{from:'lb6_0_2',id:'lb6_0_4',size:4,to:8,n:9},
+    {fromCell:c80(1,4),id:'lb6_1_2',size:8,to:4,n:5},{from:'lb6_1_2',id:'lb6_1_0',size:4,to:2,n:5},
+    {fromCell:c80(2,2),id:'lb6_2_0',size:4,to:2,n:6},{fromCell:c80(2,2),id:'lb6_2_4',size:4,to:8,n:6},
+    {fromCell:c80(3,0),id:'lb6_3_2',size:2,to:4,n:3},{from:'lb6_3_2',id:'lb6_3_4',size:4,to:8,n:3}],done);
+}
+function lbVenn(a,api,done){
+  a.appendChild(guide('Let’s sort the multiples of 4 and 8 into a Venn diagram!'));
+  var bk=BookView('lb80',{crop:[880,1120]});a.appendChild(bk.el);
+  var svg='<svg class="mini-venn" viewBox="0 0 420 270"><rect x="4" y="4" width="412" height="262" rx="16" fill="#fff" stroke="#C9D8EE" stroke-width="3"/><circle cx="160" cy="140" r="112" fill="#1FA563" fill-opacity=".14" stroke="#1FA563" stroke-width="4"/><circle cx="270" cy="140" r="112" fill="#7A4CE0" fill-opacity=".14" stroke="#7A4CE0" stroke-width="4"/><text x="92" y="26" font-weight="800" font-size="17" fill="#14804B">multiples of 4</text><text x="250" y="26" font-weight="800" font-size="17" fill="#5A33B5">multiples of 8</text><g id="vn" font-family="Baloo 2,system-ui" font-weight="800" font-size="26" text-anchor="middle"></g><text id="vq" x="335" y="150" font-size="44" text-anchor="middle" fill="#9AA8C4"></text></svg>';
+  var p=h('div',{class:'panel',html:svg});a.appendChild(p);var g=p.querySelector('#vn');
+  var spots={4:[95,110],12:[90,165],20:[120,215],28:[130,70],8:[215,95],16:[215,140],24:[215,185],32:[215,230]};
+  var b=h('button',{class:'big go'},['✨ Sort 4, 8, 12 ... 32']);a.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.parentNode.remove();[4,8,12,16,20,24,28,32].forEach(function(n,i){later(function(){var t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',spots[n][0]);t.setAttribute('y',spots[n][1]);t.setAttribute('fill',n%8?'#14804B':'#5A33B5');t.textContent=n;t.style.animation='capin .4s';g.appendChild(t);sPop()},i*350)});
+    later(function(){p.querySelector('#vq').textContent='?';a.appendChild(h('p',{class:'task'},['Which part of the diagram is empty?']));
+      choiceQ(a,api,shuffle([{label:'The “multiples of 8 only” part',ok:true},{label:'The “multiples of 4 only” part',why:'4, 12, 20 and 28 are in that part!'},{label:'The middle part',why:'8, 16, 24 and 32 are in the middle.'}]),function(){
+        a.appendChild(h('p',{class:'task'},['Why is it empty?']));
+        choiceQ(a,api,shuffle([{label:'Every multiple of 8 is also a multiple of 4, because 8 = 4 + 4.',ok:true},{label:'There are no multiples of 8.',why:'8, 16, 24 and 32 are multiples of 8. Where did they go?'},{label:'8 is an odd number.',why:'8 is even: it makes 4 pairs.'}]),function(){feedback(a,'good','<b>Yes!</b> Every 8 is two 4s. So all the 8s live inside the 4s circle too.');done()},{col:true})},{col:true})},3200)};
+}
+function lbQ7(a,api,done){
+  a.appendChild(guide('The rule is <b>add 4</b>. Start at <b>5</b>. Help me hop!'));
+  var bk=BookView('lb80',{crop:[1100,1600]});a.appendChild(bk.el);
+  hopTask(a,api,bk,{start:5,step:4,ids:['lb7_0','lb7_1','lb7_2','lb7_3','lb7_4'],min:5,max:25,who:'Webby',hopper:'🕷️'},function(){
+    var s=h('div',{class:'panel',style:'text-align:center'});[9,13,17,21,25].forEach(function(n){s.appendChild(oddEvenPic(n))});a.appendChild(s);
+    describeTask(a,api,bk,'Describe the numbers. Use the words multiple, odd and even.',[{label:'They are all odd. They are not multiples of 4.',ok:true},{label:'They are all multiples of 4.',why:'Multiples of 4 are even. 9, 13, 17 are odd!'},{label:'They are all even.',why:'Look at the lonely dots: they are odd!'}],['lb7t'],done)});
+}
+function lbQ8(a,api,done){
+  a.appendChild(guide('3, 11, 19 ... What is the jump each time? Watch the frog!'));
+  var bk=BookView('lb81',{crop:[0,560]});a.appendChild(bk.el);
+  var nl=NumberLine(0,45,{labels:[3],start:3});[0,10,20,30,40].forEach(function(v){var t=h('span',{class:'jl',style:'top:126px;color:var(--soft)'},[String(v)]);t.style.left=nl.X(v)+'%';nl.el.appendChild(t)});
+  nl.tks[3].classList.add('start');a.appendChild(panelOf(nl.el));
+  function chip(v,c){var t=h('button',{class:'tk on'},[String(v)]);t.style.left=nl.X(v)+'%';t.style.background=c||'#7A4CE0';t.style.borderColor=c||'#7A4CE0';nl.el.appendChild(t)}
+  var area=h('div');a.appendChild(area);
+  later(function(){nl.hop(11,'+?',function(){chip(11);nl.hop(19,'+?',function(){chip(19);
+    area.appendChild(h('p',{class:'task',style:'text-align:center'},['3 → 11 → 19. What is the term-to-term rule?']));
+    choiceQ(area,api,shuffle([{label:'add 8',ok:true},{label:'add 3',why:'3 + 3 = 6, not 11. Count on from 3 to 11.'},{label:'add 11',why:'3 + 11 = 14, not 11. Count on from 3 to 11: 8 jumps.'}]),function(){bk.write('lb8r');hops()},{cls:function(){return 'big plain'}})})})},500);
+  function hops(){var plan=[{to:27,id:'lb8_0'},{to:35,given:true},{to:43,id:'lb8_1'}],k=0;
+    function nxt(){area.innerHTML='';if(k>=plan.length){desc();return}var P=plan[k],from=P.to-8;
+      var b=h('button',{class:'big',style:'background:#7A4CE0;color:#fff'},['🐸 Hop + 8']);area.appendChild(h('div',{class:'row center'},[b]));
+      b.onclick=function(){b.parentNode.remove();nl.hop(P.to,'+8',function(){if(P.given){chip(P.to,'#9AA8C4');feedback(area,'info','35 is already in the book. Keep going!');k++;later(nxt,1200);return}
+        area.appendChild(h('p',{class:'task',style:'text-align:center'},[from+' + 8 = ?']));
+        choiceQ(area,api,shuffle([{label:String(P.to),ok:true},{label:String(P.to-1),why:'Count on 8 from '+from+'. Tip: + 10, then − 2.'},{label:String(P.to+1),why:'Count on 8 from '+from+'. Tip: + 10, then − 2.'}]),function(){chip(P.to);bk.write(P.id);k++;later(nxt,700)},{cls:function(){return 'big plain'}})})}}
+    nxt()}
+  function desc(){var s=h('div',{class:'panel',style:'text-align:center'});[3,11,19,27,35,43].forEach(function(n){s.appendChild(oddEvenPic(n))});a.appendChild(s);
+    describeTask(a,api,bk,'Describe the numbers. Use the words multiple, odd and even.',[{label:'They are all odd, so they are not multiples of 8.',ok:true},{label:'They are multiples of 8.',why:'Multiples of 8 are even: 8, 16, 24 ... These are odd.'},{label:'They are all even.',why:'3 is odd and 8 is even. odd + even = odd!'}],['lb8t'],done)}
+}
+function lbQ9(a,api,done){
+  a.appendChild(guide('Jamal’s sequence has <b>13</b> and <b>29</b> in it. Try a rule. Does the frog land on 29?'));
+  var bk=BookView('lb81',{crop:[540,900]});a.appendChild(bk.el);
+  var area=h('div'),tries=h('div',{class:'choices'}),found={};a.appendChild(tries);a.appendChild(area);
+  [{r:4,ok:true,id:'lb9b',seq:[13,17,21,25,29]},{r:5},{r:8,ok:true,id:'lb9a',seq:[5,13,21,29,37]}].forEach(function(R){
+    var b=h('button',{class:'big plain'},['Try: add '+R.r]);b.onclick=function(){each(tries.children,function(x){x.disabled=true});run(R,b)};tries.appendChild(b)});
+  function run(R,btn){area.innerHTML='';var nl=NumberLine(0,40,{labels:[13,29],start:13});nl.tks[13].classList.add('start');nl.tks[29].style.background='#FFF1B8';nl.tks[29].style.borderColor='var(--gold)';area.appendChild(panelOf(nl.el));
+    var at=13,list=[13];(function hop(){var to=at+R.r;if(to>32){fin();return}nl.hop(to,'+'+R.r,function(){at=to;list.push(to);var t=h('button',{class:'tk on'},[String(to)]);t.style.left=nl.X(to)+'%';nl.el.appendChild(t);if(to===29){fin();return}later(hop,250)})})();
+    function fin(){each(tries.children,function(x){x.disabled=false});btn.disabled=true;
+      if(R.ok){found[R.r]=1;btn.classList.add('right');bk.write(R.id);feedback(area,'good','<b>The frog lands on 29!</b> Five numbers: '+R.seq.join(', ')+'. The rule is <b>add '+R.r+'</b>.');
+        if(found[4]&&found[8]){tries.remove();later(function(){feedback(area,'good','<b>Two solutions!</b> add 4 and add 8 both work.');done()},1400)}else later(function(){feedback(area,'info','Great! Now <b>find another solution</b>. Try another rule.')},1600)}
+      else{api.miss();btn.classList.add('wrongpick');feedback(area,'bad','13, 18, 23, 28, 33 ... the frog jumps <b>over</b> 29. add '+R.r+' does not work. Try another rule!')}}
+  }
+}
+function d2Practise(st,api){questionRun(st,api,[lbQ6,lbVenn,lbQ7,lbQ8,lbQ9],['Q6','Venn','Q7','Q8','Q9'],'<b>Pages 80 and 81 are finished!</b>')}
+function d2Check(st,api){
+  st.appendChild(guide('Sequence rescue! Find the missing numbers.'));
+  var s1=pick([1,2,3]),s2=pick([2,3,4]);
+  mcQuiz(st,api,[
+    {q:s1+', '+(s1+4)+', '+(s1+8)+', ?',opts:[{label:String(s1+12),ok:true},{label:String(s1+10),why:'The rule is add 4: '+(s1+8)+' + 4.'},{label:String(s1+9),why:'The rule is add 4: '+(s1+8)+' + 4.'}],good:'<b>Yes!</b> The rule is add 4.'},
+    {q:s2+', '+(s2+8)+', '+(s2+16)+', ?',opts:[{label:String(s2+24),ok:true},{label:String(s2+20),why:'The rule is add 8: '+(s2+16)+' + 8.'},{label:String(s2+18),why:'The rule is add 8: '+(s2+16)+' + 8.'}],good:'<b>Yes!</b> The rule is add 8.'},
+    {q:'6, 10, 14, 18 … What is the rule?',opts:[{label:'add 4',ok:true},{label:'add 6',why:'6 + 6 = 12, not 10.'},{label:'add 2',why:'6 + 2 = 8, not 10.'}],good:'<b>add 4!</b>'},
+    {q:'Start at 7. Add 8 each time. Odd or even?',opts:[{label:'Odd',ok:true},{label:'Even',why:'7 is odd and 8 is even. odd + even = odd.'}],good:'<b>Odd!</b> 7, 15, 23, 31 ...'}
+  ],function(){api.done('<b>Super sequence spider!</b>')});
+}
+
+/* =====================================================================
+   HOMEWORK — Workbook pp. 65–68
+   ===================================================================== */
+function wbQ1(st,api){
+  st.appendChild(guide('How many fours can you see? Count in 4s.'));
+  var bk=BookView('wb65',{crop:[140,520]});st.appendChild(bk.el);
+  var P=Pics(3,'four',{word:'four',per:4});st.appendChild(panelOf(P.el,P.cap));
+  var b=h('button',{class:'big go'},['🔢 Count in 4s']);st.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.parentNode.remove();P.count(function(){tilesFact(st,api,bk,['wb1_0','wb1_1','wb1_2'],[4,3],[4,3,12,7],function(){api.done()})},'3 fours: 3 groups of '+tc(4)+' = <b>12</b>')};
+}
+function wbQ2(st,api){
+  st.appendChild(guide('Build the 4 times table! Add one group of 4 at a time.'));
+  var bk=BookView('wb65',{crop:[480,920]});st.appendChild(bk.el);
+  var g=GroupsView(0,4,{max:4,dot:22}),p=panelOf(g.el,g.cap);st.appendChild(p);var area=h('div');st.appendChild(area);var n=0;
+  function nxt(){area.innerHTML='';if(n>=10){api.done('<b>4, 8, 12, 16, 20, 24, 28, 32, 36, 40!</b>');return}
+    var b=h('button',{class:'big',style:'background:#1FA563;color:#fff'},['+ Add a group of 4']);area.appendChild(h('div',{class:'row center'},[b]));
+    if(n>=4){var f=h('button',{class:'big magic'},['🕷️ Webby, do the rest!']);area.lastChild.appendChild(f);f.onclick=function(){area.innerHTML='';(function go(){if(n>=10){nxt();return}g.addGroup();n++;g.cap.innerHTML=n+' groups of 4 = <b>'+4*n+'</b>';bk.write('wb2_'+(n-1));later(go,450)})()}}
+    b.onclick=function(){area.innerHTML='';g.addGroup();n++;var P=4*n;
+      area.appendChild(h('p',{class:'task',style:'text-align:center'},['4 × '+n+' = ?  (add 4 to '+(P-4)+')']));
+      choiceQ(area,api,shuffle([{label:String(P),ok:true},{label:String(P+1),why:(P-4)+' + 4 = '+P+'.'},{label:String(P-4===0?2:P-2),why:(P-4)+' + 4 = '+P+'.'}]),function(){g.cap.innerHTML=n+' groups of 4 = <b>'+P+'</b>';bk.write('wb2_'+(n-1));later(nxt,500)},{cls:function(){return 'big plain'}})}}
+  nxt();
+}
+function wbQ3(st,api){
+  st.appendChild(guide('Colour all the multiples of <span class="tcol" style="color:#7A4CE0">8</span>. Start at 8 and count on 8!'));
+  var bk=BookView('wb65',{crop:[880,1400]});st.appendChild(bk.el);
+  colourTask(st,api,bk,{from:1,to:50,cell:c65,yes:function(n){return n%8===0},col:PURPLE,intro:'👆 Tap the multiples of 8 in the book. The first one is 8.',
+    say:function(n,ok){return ok?'<b>'+n+'</b> = 8 × '+n/8+' ✓':'<b>'+n+'</b> is not a multiple of 8. Count in 8s: 8, 16, 24 ...'},hint:function(n){return n===8?'Start at <b>8</b>!':'Count on 8: '+(n-8)+' + 8 = <b>'+n+'</b>'},allDone:'<b>8, 16, 24, 32, 40, 48!</b>'},function(){api.done()});
+}
+function wbQ4(st,api){
+  st.appendChild(guide('Six spiders on a plant. How many legs? Each spider has 8.'));
+  var bk=BookView('wb65',{crop:[1400,1700]});st.appendChild(bk.el);
+  var P=Pics(6,'spider');st.appendChild(panelOf(P.el,P.cap));
+  var b=h('button',{class:'big go'},['🔢 Count the legs in 8s']);st.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.parentNode.remove();P.count(function(){st.appendChild(h('p',{class:'task'},['Which multiplication fact solves it?']));
+    choiceQ(st,api,shuffle([{label:'8 × 6 = 48',ok:true},{label:'8 + 6 = 14',why:'We need 6 groups of 8, not 8 + 6. Multiply!'},{label:'8 × 6 = 46',why:'Count in 8s: 8, 16, 24, 32, 40, 48.'}]),function(){bk.write('wb4');api.done('<b>48 legs!</b>')},{cls:function(){return 'big plain'}})},'6 groups of '+tc(8)+' = <b>48</b>')};
+}
+function wbLook(st,api){
+  st.appendChild(guide('Read worked example 2. Watch me hop and fill the boxes!'));
+  var bk=BookView('wb66',{crop:[0,980]});st.appendChild(bk.el);
+  hopTask(st,api,bk,{start:2,step:4,ids:['wbwe_0','wbwe_1','wbwe_2','wbwe_3','wbwe_4'],min:0,max:25,auto:0,hopper:'🕷️'},function(){
+    ['wbwf_0','wbwf_1','wbwf_2','wbwf_3'].forEach(function(id,i){bk.write(id,i*250)});
+    later(function(){api.done('<b>2, 6, 10, 14, 18, 22.</b> They are all even: they end in 0, 2, 4, 6 or 8.')},1300)});
+}
+function wbQ5(st,api){
+  st.appendChild(guide('The rule is <b>add 4</b>. Start at <b>3</b>.'));
+  var bk=BookView('wb66',{crop:[960,1560]});st.appendChild(bk.el);
+  hopTask(st,api,bk,{start:3,step:4,ids:['wb5_0','wb5_1','wb5_2','wb5_3','wb5_4'],min:0,max:25,who:'Webby',hopper:'🕷️'},function(){
+    var s=h('div',{class:'panel',style:'text-align:center'});[7,11,15,19,23].forEach(function(n){s.appendChild(oddEvenPic(n))});st.appendChild(s);
+    describeTask(st,api,bk,'Describe the numbers. Use odd and even.',[{label:'They are all odd numbers. They are not multiples of 4.',ok:true},{label:'They are all even.',why:'3 is odd, 4 is even. odd + even = odd!'},{label:'They are multiples of 4.',why:'Multiples of 4 are even. These are odd.'}],['wb5t'],function(){api.done()})});
+}
+function wbQ6(st,api){
+  st.appendChild(guide('The <b>third</b> multiple of 4 is the third number when we count in 4s.'));
+  var bk=BookView('wb67',{crop:[0,300]});st.appendChild(bk.el);
+  var strip=h('div',{class:'strip',style:'margin:10px 0'}),cells=[];for(var i=1;i<=7;i++){var c=h('span',{html:'<small style="font-size:12px;color:var(--soft)">'+['1st','2nd','3rd','4th','5th','6th','7th'][i-1]+'</small><br>?'});cells.push(c);strip.appendChild(c)}st.appendChild(panelOf(strip));
+  var area=h('div');st.appendChild(area);
+  function show(k){for(var i=0;i<k;i++){cells[i].innerHTML='<small style="font-size:12px;color:var(--soft)">'+['1st','2nd','3rd','4th','5th','6th','7th'][i]+'</small><br>'+4*(i+1)}}
+  var b=h('button',{class:'big go'},['🔢 Count in 4s']);area.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.parentNode.remove();var k=0;(function go(){k++;show(k);sPop();if(k<7)later(go,300);else ask()})()};
+  function ask(){area.appendChild(h('p',{class:'task'},['What is the third multiple of 4?']));
+    choiceQ(area,api,shuffle([{label:'12',ok:true},{label:'3',why:'3rd means the third number when we count in 4s: 4, 8, 12.'},{label:'7',why:'Count in 4s: 4, 8, 12. The third one is 12.'}]),function(){cells[2].style.background='#FFF1B8';bk.write('wb6a');
+      area.appendChild(h('p',{class:'task'},['What is the 7th multiple of 4?']));
+      choiceQ(area,api,shuffle([{label:'28',ok:true},{label:'11',why:'That is 7 + 4. Count in 4s seven times.'},{label:'24',why:'24 is the 6th. One more 4!'}]),function(){cells[6].style.background='#FFF1B8';bk.write('wb6b');api.done('<b>4 × 3 = 12</b> and <b>4 × 7 = 28</b>.')},{cls:function(){return 'big plain'}})},{cls:function(){return 'big plain'}})}
+}
+function wbQ7(st,api){
+  st.appendChild(guide('Keep counting in 4s after 40!'));
+  var bk=BookView('wb67',{crop:[270,480]});st.appendChild(bk.el);
+  hopTask(st,api,bk,{start:40,step:4,ids:['wb7_0','wb7_1','wb7_2','wb7_3','wb7_4'],min:40,max:60,who:'Webby',hopper:'🕷️'},function(){api.done('<b>44, 48, 52, 56, 60!</b>')});
+}
+function wbQ8(st,api){
+  st.appendChild(guide('Look at the multiples of 4 on the 100 square. What pattern do you see?'));
+  var bk=BookView('wb67',{crop:[460,700]});st.appendChild(bk.el);
+  var hs=HundredSquare();for(var n=1;n<=100;n++){hs.cells[n].disabled=true;if(n%2===0)hs.cells[n].classList.add('l2');if(n%4===0){hs.cells[n].style.background='#1FA563';hs.cells[n].style.color='#fff'}}
+  st.appendChild(h('div',{class:'legend',html:'<span><i style="background:#1FA563"></i>multiple of 4</span><span><i style="background:var(--b2-soft);border:2px solid var(--line)"></i>even number</span>'}));st.appendChild(hs.el);
+  describeTask(st,api,bk,'Describe the pattern of the multiples of 4.',[{label:'They are all even. They are every other even number, and the pattern repeats every 20.',ok:true},{label:'They are all odd.',why:'4, 8, 12 end in 4, 8, 2: even!'},{label:'They are every even number.',why:'Look: 2, 6, 10 are even but not green. Only every other even number.'}],['wb8a','wb8b'],function(){api.done()});
+}
+function wbQ9(st,api){
+  st.appendChild(guide('Count spider legs in 8s. Which spider is the 5th? The 9th?'));
+  var bk=BookView('wb67',{crop:[680,930]});st.appendChild(bk.el);
+  var P=Pics(9,'spider');st.appendChild(panelOf(P.el,P.cap));
+  var b=h('button',{class:'big go'},['🔢 Count in 8s']);st.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.parentNode.remove();P.count(function(){
+    st.appendChild(h('p',{class:'task'},['What is the 5th multiple of 8?']));
+    choiceQ(st,api,shuffle([{label:'40',ok:true},{label:'13',why:'That is 5 + 8. Look at the 5th spider’s number.'},{label:'32',why:'32 is the 4th. Look at the 5th spider.'}]),function(){P.items[4].style.background='#FFF1B8';bk.write('wb9a');
+      st.appendChild(h('p',{class:'task'},['What is the 9th multiple of 8?']));
+      choiceQ(st,api,shuffle([{label:'72',ok:true},{label:'17',why:'That is 9 + 8. Look at the 9th spider.'},{label:'64',why:'64 is the 8th. Look at the last spider.'}]),function(){P.items[8].style.background='#FFF1B8';bk.write('wb9b');api.done('<b>8 × 5 = 40</b> and <b>8 × 9 = 72</b>.')},{cls:function(){return 'big plain'}})},{cls:function(){return 'big plain'}})},'9 spiders: 9 groups of '+tc(8)+' = <b>72</b>')};
+}
+function wbQ10(st,api){
+  st.appendChild(guide('Fill the table. Remember: change the group size and the product in the same way!'));
+  var bk=BookView('wb67',{crop:[920,1320]});st.appendChild(bk.el);
+  factTable(st,api,bk,[{fromCell:c67(0,2),id:'wb10_0_0',size:4,to:2,n:4},{fromCell:c67(0,2),id:'wb10_0_4',size:4,to:8,n:4},
+    {fromCell:c67(1,0),id:'wb10_1_2',size:2,to:4,n:2},{from:'wb10_1_2',id:'wb10_1_4',size:4,to:8,n:2},
+    {fromCell:c67(2,4),id:'wb10_2_2',size:8,to:4,n:8},{from:'wb10_2_2',id:'wb10_2_0',size:4,to:2,n:8},
+    {fromCell:c67(3,0),id:'wb10_3_2',size:2,to:4,n:7},{from:'wb10_3_2',id:'wb10_3_4',size:4,to:8,n:7}],function(){api.done('<b>The table is full!</b>')});
+}
+function wbQ11(st,api){
+  st.appendChild(guide('7, 15 ... What is the jump? Then find the missing numbers.'));
+  var bk=BookView('wb68');st.appendChild(bk.el);var area=h('div');st.appendChild(area);
+  area.appendChild(h('div',{class:'frame',html:'7 → 15 &nbsp;&nbsp; How far is it? &nbsp; 7 + <b>?</b> = 15'}));
+  choiceQ(area,api,shuffle([{label:'add 8',ok:true},{label:'add 7',why:'7 + 7 = 14, not 15.'},{label:'add 15',why:'7 + 15 = 22. Count on from 7 to 15.'}]),function(){bk.write('wb11r');area.innerHTML='';
+    hopTask(area,api,bk,{start:15,step:8,ids:['wb11_0','wb11_1','wb11_2','wb11_3'],min:0,max:50,who:'Webby',hopper:'🕷️'},function(){
+      describeTask(area,api,bk,'Describe the numbers. Use odd and even.',[{label:'They are all odd numbers. They go up in 8s.',ok:true},{label:'They are all even.',why:'7 is odd and 8 is even. odd + even = odd!'},{label:'They are multiples of 8.',why:'Multiples of 8 are even. These are odd.'}],['wb11t'],function(){api.done()})})},{cls:function(){return 'big plain'}});
+}
+
+/* =====================================================================
+   LESSONS
+   ===================================================================== */
+var LESSONS={
+  d1:{title:'Build the 4 and 8 tables',when:'Lesson 1 · Learner’s Book pages 77–79',card:'Lesson 1 · LB pages 77–79',color:'#1FA563',
+    goal:'I can build the 4 and 8 times tables by doubling the 2 times table.',lookWhat:'I can work out and use the multiplication tables for 4 and 8. I can connect the tables for 2, 4 and 8 by doubling.',copy:'lb',
+    stations:[
+      {name:'Warm up',render:d1Warm,src:'Count the sides of squares'},
+      {name:'Discover',render:d1Discover,src:'The doubling machine'},
+      {name:'Learn the rule',render:d1Rule,src:'Worked example, page 78'},
+      {name:'Practise',render:d1Practise,src:"Learner's Book questions 1–5"},
+      {name:'Check',render:d1Check,src:'Double trouble'}
+    ]},
+  d2:{title:'Count in 4s and 8s from any number',when:'Lesson 2 · Learner’s Book pages 80–81',card:'Lesson 2 · LB pages 80–81',color:'#7A4CE0',
+    goal:'I can double and halve facts, and count in 4s or 8s from any number.',lookWhat:'I can connect the tables for 2, 4 and 8 by doubling. I can count in fours or eights from any start number.',copy:'lb',
+    stations:[
+      {name:'Warm up',render:d2Warm,src:'4s and 8s on the 100 square'},
+      {name:'Discover',render:d2Discover,src:'Hop from any number'},
+      {name:'Learn the rule',render:d2Rule,src:'The term-to-term rule'},
+      {name:'Practise',render:d2Practise,src:"Learner's Book questions 6–9"},
+      {name:'Check',render:d2Check,src:'Sequence rescue'}
+    ]},
+  hw:{title:'Homework: Workbook pages 65–68',when:'Homework · Workbook pages 65–68',card:'📓 Homework',color:'#5B6B8F',
+    goal:'I can use the 2, 4 and 8 times tables.',lookWhat:'I finished Workbook Exercise 5.2.',copy:'wb',
+    stations:[
+      {name:'Q1',short:'1',c:'#FF7A3D',render:wbQ1,src:'Workbook p. 65'},
+      {name:'Q2',short:'2',c:'#1FA563',render:wbQ2,src:'Workbook p. 65'},
+      {name:'Q3',short:'3',c:'#7A4CE0',render:wbQ3,src:'Workbook p. 65'},
+      {name:'Q4',short:'4',c:'#E0559B',render:wbQ4,src:'Workbook p. 65'},
+      {name:'p. 66',short:'👀',c:'#5B6B8F',render:wbLook,src:'Worked example 2'},
+      {name:'Q5',short:'5',c:'#2F7BF5',render:wbQ5,src:'Workbook p. 66'},
+      {name:'Q6',short:'6',c:'#FF7A3D',render:wbQ6,src:'Workbook p. 67'},
+      {name:'Q7',short:'7',c:'#1FA563',render:wbQ7,src:'Workbook p. 67'},
+      {name:'Q8',short:'8',c:'#7A4CE0',render:wbQ8,src:'Workbook p. 67'},
+      {name:'Q9',short:'9',c:'#E0559B',render:wbQ9,src:'Workbook p. 67'},
+      {name:'Q10',short:'10',c:'#2F7BF5',render:wbQ10,src:'Workbook p. 67'},
+      {name:'Q11',short:'11',c:'#FF7A3D',render:wbQ11,src:'Workbook p. 68'}
+    ]}
+};
+
+home();
+window.__MM={runLesson:runLesson,answerBook:answerBook,LESSONS:LESSONS};
+})();
+</script>
+</body></html>

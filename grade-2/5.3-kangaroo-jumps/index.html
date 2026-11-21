@@ -1,0 +1,1598 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script>window.MM_STANDALONE=true;</script>
+<title>Kangaroo Jumps</title><link rel="icon" type="image/png" href="../../assets/favicon.png"><link rel="apple-touch-icon" href="../../assets/insightia-logo.png">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&family=Gochi+Hand&display=swap">
+<style>
+/* Lesson map -> one lesson at a time. The real book page is always on screen; answers are hand-written into its blanks. */
+:root{
+  --bg:#EEF6FF; --paper:#FFFFFF; --ink:#1D2B4F; --soft:#5B6B8F; --line:#C9D8EE;
+  --b2:#2F7BF5; --b2-soft:#DCE9FF; --b2-ink:#1450B8;
+  --b5:#FF7A3D; --b5-soft:#FFE6D9; --b5-ink:#B8410C;
+  --b10:#7A4CE0; --b10-soft:#EEE7FF; --b10-ink:#5A33B5;
+  --good:#1FA563; --good-soft:#DDF6E8; --bad:#E5484D; --bad-soft:#FFE3E3;
+  --star:#FFC21A; --gold:#F4B400; --pen:#D81B60; --teal:#16A3A3;
+  --e1:#E0559B; --e2:#FF7A3D; --e3:#2F7BF5; --e4:#1FA563; --e5:#7A4CE0;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Trebuchet MS",system-ui,sans-serif;
+  --hand:"Gochi Hand","Comic Sans MS","Segoe Print",cursive;
+  color-scheme:light;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  -webkit-tap-highlight-color:transparent;overflow-x:hidden;
+  background-image:radial-gradient(circle at 14px 14px,rgba(122,76,224,.08) 2px,transparent 3px),radial-gradient(circle at 0 0,rgba(255,194,26,.12) 2px,transparent 3px);background-size:28px 28px,56px 56px}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;touch-action:manipulation}
+button:focus-visible{outline:4px solid var(--b10);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding-block:16px 60px}
+.c2{color:var(--b2-ink);font-weight:800}.c5{color:var(--b5-ink);font-weight:800}.c10{color:var(--b10-ink);font-weight:800}
+.sub{color:var(--soft);font-size:16px;margin:0}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.center{justify-content:center}
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.bar .grow{flex:1}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:800;font-size:16px;color:var(--ink)}
+.pill:hover{border-color:var(--b10)}
+
+.big{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:60px;min-width:110px;padding:10px 24px;border-radius:18px;font-family:var(--display);font-weight:800;font-size:24px;border:3px solid transparent;box-shadow:0 5px 0 rgba(29,43,79,.2);transition:transform .08s}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(29,43,79,.2)}
+.big.magic{background:linear-gradient(135deg,#7A4CE0,#E0559B);color:#fff}
+.big.b2{background:var(--b2);color:#fff}.big.b5{background:var(--b5);color:#fff}.big.b10{background:var(--b10);color:#fff}
+.big.plain{background:var(--paper);border-color:var(--line)}.big.go{background:var(--good);color:#fff}
+.big.sel,.opt.sel{outline:5px solid var(--star);outline-offset:2px}
+.big.small{min-height:48px;font-size:19px;padding:6px 16px;min-width:0}
+.big[disabled]{opacity:.4;pointer-events:none}
+.big.on{outline:5px solid var(--star);outline-offset:2px}
+.opt{background:var(--paper);border:3px solid var(--line);border-radius:18px;padding:12px 18px;font-size:20px;font-weight:800;min-height:58px;text-align:left;box-shadow:0 4px 0 var(--line)}
+.opt:hover{border-color:var(--b10)}.opt.right{background:var(--good-soft);border-color:var(--good)}.opt.wrongpick{background:var(--bad-soft);border-color:var(--bad)}
+.opt[disabled]{opacity:.75}
+.choices{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.choices.col{flex-direction:column;align-items:stretch;max-width:680px;margin-inline:auto}
+
+/* home */
+.hero{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;background:var(--paper);border-radius:30px;padding:22px 26px;border:3px solid var(--line);position:relative;overflow:hidden}
+.hero h1{font-size:clamp(34px,5.6vw,58px);font-weight:800}
+.hero .sparkles{position:absolute;inset:0;pointer-events:none}
+.hero .sparkles i{position:absolute;font-style:normal;animation:twinkle 2.4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.15)}}
+.tag{font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--b10)}
+.days{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-top:18px}
+.day{text-align:left;background:var(--paper);border:3px solid var(--line);border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:10px;transition:transform .15s,border-color .15s;position:relative;min-width:0}
+.day:hover{transform:translateY(-3px);border-color:var(--c,var(--b10))}
+.day .when{font-weight:800;color:var(--c);text-transform:uppercase;letter-spacing:.06em;font-size:14px}
+.day h2{font-size:26px}
+.day .goal{background:#F4F8FE;border-radius:14px;padding:8px 12px;font-weight:700;font-size:16px}
+.epath{display:flex;gap:6px;flex-wrap:wrap}
+.echip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px 3px 4px;font-size:13px;font-weight:800;color:#fff;background:var(--ec)}
+.echip b{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.3);display:grid;place-items:center;font-size:12px}
+.echip.done::after{content:"\2713";margin-left:2px}
+.daystars{font-size:22px;letter-spacing:2px}
+.star-on{color:var(--star)}.star-off{color:#D5DEEC}
+.mini-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:16px}
+
+/* mascot + speech */
+.guide{display:flex;gap:12px;align-items:flex-start;margin:6px 0 10px}
+.mascot{flex:none;width:80px;height:80px;animation:bob 2.4s ease-in-out infinite}
+.mascot.huge{width:124px;height:124px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.say{position:relative;background:var(--paper);border:3px solid var(--ink);border-radius:22px;padding:12px 16px;font-size:clamp(19px,2.4vw,23px);font-weight:800;min-width:0;flex:1;max-width:780px}
+.say::before{content:"";position:absolute;left:-14px;top:22px;border:12px solid transparent;border-right-color:var(--ink);border-left:0}
+.say .spk{float:right;margin:-4px -6px 4px 8px;width:42px;height:42px;border-radius:50%;background:var(--b10-soft);font-size:20px}
+.say .nm{display:block;font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em}
+
+/* lesson shell */
+.lesson-head{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--paper);border:3px solid var(--line);border-radius:24px;padding:12px 16px;margin-bottom:12px}
+.schoollogo{width:120px;height:auto;display:block}.lesson-head .schoollogo{width:64px;margin-left:auto}
+@media (max-width:600px){.hero .schoollogo{position:absolute;top:10px;right:10px;width:64px}}
+.lesson-head h2{font-size:clamp(22px,3vw,30px)}
+.today{font-weight:800;color:var(--soft);font-size:15px}
+.today b{color:var(--ink)}
+.stepper{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.step{display:flex;align-items:center;gap:8px;border-radius:16px;padding:6px 12px 6px 6px;background:var(--paper);border:3px solid var(--line);font-weight:800;font-size:15px;opacity:.75}
+.step .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--ec);font-family:var(--display);font-size:16px}
+.step.now{border-color:var(--ec);opacity:1;box-shadow:0 0 0 4px color-mix(in srgb,var(--ec) 20%,transparent)}
+.step.done{opacity:1}.step.done .n::after{content:"\2713"}.step.done .n span{display:none}
+.card{background:var(--paper);border-radius:28px;border:3px solid var(--line);padding:20px;min-width:0;position:relative}
+.estage-title{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.estage-title .badge{border-radius:999px;padding:4px 14px;color:#fff;font-family:var(--display);font-weight:800;font-size:20px;background:var(--ec)}
+.task{font-size:20px;font-weight:800;margin:10px 0}
+.next-row{display:flex;justify-content:flex-end;margin-top:14px}
+.qbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.qchip{display:inline-block;border-radius:999px;padding:1px 12px;font-size:16px;font-weight:800;color:#fff}
+
+/* book page */
+.bookwrap{margin:8px 0}.bookwrap>.label{display:table;margin:0 6px 8px auto;background:var(--bk,#5B6B8F);color:#fff;border-radius:999px;padding:3px 12px;font-weight:800;font-size:13px}
+.bookwrap.lb{--bk:var(--e2)} .bookwrap.wb{--bk:#5B6B8F}
+.book{position:relative;border-radius:14px;overflow:hidden;overflow:clip;box-shadow:0 10px 30px rgba(29,43,79,.18),0 0 0 3px #fff,0 0 0 6px var(--bk,#5B6B8F);background:#fff;container-type:inline-size}
+.book .sheet{position:absolute;left:0;width:100%}
+.book img{display:block;width:100%;height:100%;user-select:none;-webkit-user-drag:none}
+.book.lb{--bk:var(--e2)} .book.wb{--bk:#5B6B8F}
+.hw{position:absolute;display:flex;align-items:center;font-family:var(--hand);color:var(--pen);line-height:1;white-space:nowrap;pointer-events:none;clip-path:inset(0 100% 0 0);font-size:calc(var(--fs) * 1cqw);z-index:3}
+.hw.c{justify-content:center}
+.hw.shown{clip-path:inset(0 0 0 0)}
+.hw.go{animation:write 1.1s steps(16,end) forwards}
+.hw.ghost{color:#9AA8C4;clip-path:none}
+@keyframes write{to{clip-path:inset(0 0 0 0)}}
+.hot{position:absolute;border-radius:10px;z-index:4}
+.hot.hint{animation:hint 1.6s ease-in-out infinite}
+@keyframes hint{0%,100%{box-shadow:0 0 0 0 rgba(122,76,224,0)}50%{box-shadow:0 0 0 4px rgba(122,76,224,.55)}}
+.hot.picked{box-shadow:0 0 0 5px var(--star)!important;animation:none;background:rgba(255,194,26,.18)}
+.hot.badtap{animation:badtap .5s}
+@keyframes badtap{0%,100%{background:transparent}40%{background:rgba(229,72,77,.35)}}
+.hot.used{background:rgba(255,255,255,.72);pointer-events:none;animation:none}
+.hot.area{border-radius:0}
+.rowglow{position:absolute;border-radius:12px;box-shadow:0 0 0 5px var(--star),0 0 22px 6px rgba(255,194,26,.6);pointer-events:none;z-index:2;animation:glowp 1.4s ease-in-out infinite}
+@keyframes glowp{50%{box-shadow:0 0 0 7px var(--star),0 0 30px 10px rgba(255,194,26,.75)}}
+.marker{position:absolute;background:rgba(255,213,0,.45);mix-blend-mode:multiply;border-radius:6px;transform-origin:left;transform:scaleX(0);transition:transform .8s ease}
+.marker.on{transform:scaleX(1)}
+.book svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.book svg.lines .ink{fill:none;stroke:var(--pen);stroke-width:6;stroke-linecap:round;stroke-dasharray:1.02;stroke-dashoffset:1.02;animation:draw .8s ease forwards}
+.book svg.lines .ink.now{animation:none;stroke-dashoffset:0}
+.book svg.lines .ink.bad{stroke:var(--bad);stroke-dasharray:.04 .03;animation:none;stroke-dashoffset:0;opacity:.9}
+@keyframes draw{to{stroke-dashoffset:0}}
+.spark{position:absolute;z-index:6;pointer-events:none;font-size:22px;animation:spark .9s ease-out forwards}
+@keyframes spark{from{transform:translate(0,0) scale(.4);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(1.1);opacity:0}}
+.flyer{position:fixed;z-index:70;pointer-events:none;font-family:var(--hand);color:var(--pen);font-size:34px;transition:left .8s cubic-bezier(.5,0,.3,1),top .8s cubic-bezier(.5,-.6,.4,1),transform .8s;text-shadow:0 0 12px #fff}
+
+/* feedback */
+.fb{margin-top:12px;border-radius:18px;padding:12px 16px;font-size:18px;font-weight:700;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;animation:fbin .3s}
+@keyframes fbin{from{transform:translateY(8px);opacity:0}}
+.fb.good{background:var(--good-soft);border:3px solid var(--good)}.fb.bad{background:var(--bad-soft);border:3px solid var(--bad)}.fb.info{background:var(--b10-soft);border:3px solid var(--b10)}
+.fb .msg{flex:1;min-width:200px}.fb .face{font-size:30px;line-height:1}.fb .viz{width:100%}
+.frame{background:#FFF8E1;border:3px solid #F2C94C;border-radius:18px;padding:12px 16px;font-size:clamp(19px,2.4vw,24px);font-weight:800;text-align:center;margin:10px 0}
+.panel{background:#F4F8FE;border:2px solid var(--line);border-radius:20px;padding:12px;margin:10px 0;min-width:0;overflow:hidden}
+.panel .ttl{text-align:center;font-weight:800;font-size:17px;margin-bottom:4px}
+.eqline{font-family:var(--display);font-size:clamp(24px,3.4vw,32px);font-weight:800;text-align:center;line-height:1.2}
+.bigstate{font-family:var(--display);font-size:clamp(30px,5vw,50px);font-weight:800;text-align:center;margin:8px 0}
+
+/* hundred square */
+.hs{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;max-width:600px;margin:10px auto}
+.hc{position:relative;aspect-ratio:1;border-radius:10px;background:#fff;border:2px solid var(--line);font-family:var(--display);font-weight:800;font-size:clamp(12px,2.6vw,21px);line-height:1;padding:0;transition:background .25s,color .25s,transform .2s}
+.hc.m2{background:var(--b2);border-color:var(--b2-ink);color:#fff}
+.hc.m5{background:var(--b5);border-color:var(--b5-ink);color:#fff}
+.hc.m10{background:var(--b10);border-color:var(--b10-ink);color:#fff}
+.hc.pop{animation:pop .45s}
+.hc.shake{animation:shake .4s}
+.hc.l2{background:var(--b2-soft)}
+.hc.l5{box-shadow:inset 0 0 0 4px var(--b5)}
+.hc.l10::after{content:"★";position:absolute;right:1px;top:-3px;font-size:clamp(10px,1.8vw,15px);color:var(--b10)}
+.hc .od{color:inherit}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.wands{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-weight:800;font-size:15px;margin:6px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:20px;height:20px;border-radius:6px}
+
+/* dots and groups */
+.sdots{display:inline-grid;grid-auto-flow:column;grid-template-rows:repeat(2,var(--s,18px));gap:3px;vertical-align:middle}
+.sdots b{width:var(--s,18px);height:var(--s,18px);border-radius:50%;border:1.5px solid rgba(29,43,79,.45);display:block}
+.sdots b.lone{box-shadow:0 0 0 3px var(--star);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,194,26,.9)}50%{box-shadow:0 0 0 9px rgba(255,194,26,0)}}
+.gtray{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;min-height:70px;margin:10px 0;align-items:center}
+.grp1{display:flex;gap:4px;padding:6px;border-radius:14px;border:3px solid var(--gc);background:color-mix(in srgb,var(--gc) 10%,#fff);animation:capin .45s backwards;position:relative;flex-wrap:wrap;max-width:146px;justify-content:center}
+.grp1 i{width:22px;height:22px;border-radius:50%;background:var(--gc);display:block;border:2px solid rgba(29,43,79,.35)}
+.grp1 em{position:absolute;top:-12px;right:-8px;background:var(--gc);color:#fff;font-style:normal;font-family:var(--display);font-weight:800;font-size:14px;border-radius:999px;padding:0 7px}
+@keyframes capin{from{transform:translateY(-30px) scale(.5);opacity:0}}
+.verdict{text-align:center;font-family:var(--display);font-size:clamp(20px,3vw,28px);font-weight:800}
+.tabs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+
+/* flip cards */
+.flips{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.flip{perspective:900px;min-height:230px}
+.flip .in{position:relative;width:100%;height:100%;min-height:230px;transition:transform .7s;transform-style:preserve-3d}
+.flip.on .in{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;border:3px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;background:var(--paper);text-align:center;gap:8px}
+.flip .f{color:#fff;font-family:var(--display);font-size:30px;font-weight:800;cursor:pointer;border:0}
+.flip .f small{font-family:var(--body);font-size:15px;opacity:.9}
+.flip .b{transform:rotateY(180deg);font-weight:800;font-size:19px}
+.strip{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;font-family:var(--display);font-weight:800;font-size:22px}
+.strip span{background:#F4F8FE;border-radius:10px;padding:0 8px}
+.strip u{text-decoration:none;color:#fff;background:var(--uc);border-radius:6px;padding:0 3px}
+
+/* arrays */
+.arr{position:relative;margin:6px auto;transition:height .4s}
+.arr .it{position:absolute;transition:left .7s cubic-bezier(.4,1.3,.5,1),top .7s cubic-bezier(.4,1.3,.5,1),transform .4s,opacity .4s}
+.arr .it svg{display:block;width:100%;height:100%}
+.arr .it.lit{transform:scale(1.18)}
+.arr .grp{position:absolute;border:4px solid var(--gc,var(--b10));border-radius:14px;background:color-mix(in srgb,var(--gc,var(--b10)) 9%,transparent);transition:left .7s cubic-bezier(.4,1.3,.5,1),top .7s cubic-bezier(.4,1.3,.5,1),width .7s,height .7s,opacity .3s;animation:grpin .35s backwards;pointer-events:none}
+.arr .grp b{position:absolute;right:-12px;top:-14px;background:var(--gc,var(--b10));color:#fff;border-radius:999px;font-family:var(--display);font-size:16px;padding:0 8px;line-height:24px;white-space:nowrap}
+.arr .grp.cols b{right:auto;left:50%;top:auto;bottom:-14px;transform:translateX(-50%)}
+@keyframes grpin{from{transform:scale(1.2);opacity:0}}
+.arrcap{text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,28px);min-height:1.4em}
+.factbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.factbtns .big{font-size:26px;min-width:120px}
+.factbtns .big.tried{background:var(--good-soft);border-color:var(--good)}
+
+/* fact family triangle */
+.tri{display:block;margin:0 auto;max-width:300px;width:100%;height:auto}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:520px;margin:10px auto}
+.facts div{background:#fff;border:3px solid var(--line);border-radius:14px;padding:6px;text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,26px);animation:capin .4s backwards}
+.facts div.m{border-color:var(--b2)}.facts div.d{border-color:var(--b5)}
+.seesaw{display:flex;flex-direction:column;align-items:center;margin:10px 0}
+.seesaw .beam{display:flex;align-items:center;gap:10px;background:#fff;border:4px solid var(--ink);border-radius:16px;padding:8px 14px;font-family:var(--display);font-weight:800;font-size:clamp(24px,4vw,34px);transition:transform .6s}
+.seesaw .pivot{width:0;height:0;border-left:26px solid transparent;border-right:26px solid transparent;border-bottom:34px solid var(--ink)}
+.seesaw .side{padding:2px 12px;border-radius:12px;transition:transform .7s}
+.seesaw .side.a{background:var(--b2-soft)}.seesaw .side.b{background:var(--b5-soft)}
+
+/* tiles */
+.tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.tile{min-width:72px;height:64px;border-radius:16px;font-family:var(--display);font-size:32px;font-weight:800;color:#fff;background:var(--b10);box-shadow:0 5px 0 var(--b10-ink);padding:0 12px}
+.tile.used{opacity:.25;pointer-events:none}
+.tile.alt{background:var(--teal);box-shadow:0 5px 0 #0E7A7A}
+.pad{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;max-width:460px;margin:10px auto}
+.pad button{height:58px;border-radius:14px;background:var(--paper);border:3px solid var(--line);font-family:var(--display);font-size:28px;font-weight:800}
+.pad button.used{background:var(--good-soft);border-color:var(--good);pointer-events:none}
+
+/* base ten */
+.b10stage{display:flex;gap:18px;justify-content:center;align-items:flex-end;flex-wrap:wrap;min-height:120px;margin:10px 0}
+.b10grp{display:flex;flex-direction:column;align-items:center;gap:6px}
+.b10blocks{display:flex;gap:4px;align-items:flex-end;flex-wrap:wrap;justify-content:center;max-width:330px}
+.blk{--u:8px;width:var(--u);height:var(--u);background:var(--b2);border:1px solid var(--b2-ink);transition:width .9s cubic-bezier(.4,1.4,.5,1),height .9s cubic-bezier(.4,1.4,.5,1),background .6s;
+  background-image:linear-gradient(rgba(255,255,255,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.35) 1px,transparent 1px);background-size:var(--u) var(--u)}
+.blk.rod{height:calc(var(--u)*10);background-color:var(--b5);border-color:var(--b5-ink)}
+.blk.flat{width:calc(var(--u)*10);height:calc(var(--u)*10);background-color:var(--b10);border-color:var(--b10-ink)}
+.b10lbl{font-weight:800;font-size:16px;background:#fff;border:2px solid var(--line);border-radius:999px;padding:2px 12px;white-space:nowrap}
+
+/* place value slide */
+.pv{max-width:520px;margin:10px auto;border:3px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff}
+.pv .hd,.pv .rw{display:grid;grid-template-columns:repeat(3,1fr)}
+.pv .hd div{background:#8DC2CC;text-align:center;font-weight:800;font-size:20px;padding:4px;border-right:2px solid var(--ink)}
+.pv .rw>div{position:relative;height:66px;border-right:2px solid var(--ink);border-top:2px solid var(--ink)}
+.pv .hd div:last-child,.pv .rw>div:last-child{border-right:0}
+.pv .dg{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--hand);font-size:46px;color:var(--pen);transition:transform 1s cubic-bezier(.5,0,.3,1.3)}
+.pv .dg.slide{transform:translateX(-100%)}
+.pv .dg.zero{color:var(--b10);animation:zeroin .8s backwards}
+@keyframes zeroin{from{transform:scale(3) rotate(-30deg);opacity:0}}
+.pv .dg.trail::after{content:"";position:absolute;left:60%;top:50%;width:80%;height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(255,194,26,.9),transparent);opacity:0;animation:trail 1s}
+@keyframes trail{30%{opacity:1}100%{opacity:0}}
+
+/* pencil boxes */
+.pboxes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:flex-end;margin:10px 0;min-height:60px}
+.pbox{width:34px;height:46px;border-radius:5px;background:linear-gradient(#2A4D8F 0 18%,#3A7BD5 18%);position:relative;animation:capin .35s backwards;flex:none}
+.pbox::before{content:"";position:absolute;left:3px;right:3px;top:-8px;height:10px;background:repeating-linear-gradient(90deg,#E5484D 0 3px,#FFC21A 3px 6px,#1FA563 6px 9px,#7A4CE0 9px 12px)}
+.pbox::after{content:"10";position:absolute;left:0;right:0;bottom:3px;text-align:center;color:#fff;font-weight:800;font-size:13px}
+.crate{display:flex;flex-wrap:wrap;gap:3px;width:118px;padding:16px 5px 5px;border:4px solid var(--b10);border-radius:12px;background:var(--b10-soft);position:relative;animation:capin .5s backwards}
+.crate .pbox{width:20px;height:28px;animation:none}.crate .pbox::after{font-size:9px}.crate .pbox::before{top:-5px;height:6px}
+.crate b{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--b10);color:#fff;border-radius:999px;padding:0 10px;font-family:var(--display);font-size:16px}
+.count{font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,40px);text-align:center}
+
+/* number line */
+.nl{position:relative;height:150px;margin:6px 4px 0}
+.nl svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.nl .tk{position:absolute;top:96px;transform:translateX(-50%);min-width:30px;height:40px;border-radius:10px;font-family:var(--display);font-weight:800;font-size:clamp(13px,2.2vw,19px);padding:0 2px;background:#fff;border:2px solid var(--line)}
+.nl .tk.on{background:var(--b5);border-color:var(--b5-ink);color:#fff}
+.nl .tk.start{background:var(--b2);border-color:var(--b2-ink);color:#fff}
+.nl .tk.shake{animation:shake .4s}
+.nl .frog{position:absolute;top:44px;font-size:38px;transform:translate(-50%,0);line-height:1;transition:none;z-index:3}
+.nl .jl{position:absolute;top:2px;transform:translateX(-50%);font-weight:800;color:var(--b5-ink);font-size:15px}
+
+/* x10 machine */
+.mach{display:flex;align-items:center;justify-content:center;gap:10px;margin:14px 0;flex-wrap:nowrap}
+.mach .chipn{min-width:74px;height:62px;border-radius:16px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:30px;background:#fff;border:3px solid var(--line);transition:transform .7s,opacity .5s;padding:0 10px}
+.mach .box{width:130px;height:110px;border-radius:22px;background:linear-gradient(160deg,#9AA8C4,#5B6B8F);border:4px solid var(--ink);display:grid;place-items:center;position:relative;flex:none}
+.mach .box span{background:#fff;border-radius:10px;padding:4px 10px;font-family:var(--display);font-weight:800;font-size:28px}
+.mach .box::before,.mach .box::after{content:"";position:absolute;top:-16px;width:18px;height:18px;border-radius:50%;background:var(--star);border:3px solid var(--ink)}
+.mach .box::before{left:24px}.mach .box::after{right:24px}
+.mach .box.work{animation:shake .25s 3}
+.mach .out{color:var(--b10-ink);border-color:var(--b10)}
+.mach .chipn.in-go{transform:translateX(60px) scale(.3);opacity:0}
+
+/* riddle */
+.rid{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.rid span{width:52px;height:56px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:24px;background:#fff;border:3px solid var(--line);transition:opacity .5s,transform .5s}
+.rid span.out{opacity:.15;transform:scale(.7) rotate(-12deg)}
+.rid span.win{background:var(--star);border-color:var(--gold);transform:scale(1.3);animation:pop .6s}
+.clues{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+/* certificate */
+.cert{text-align:center;padding:10px 0}
+.lwicd{max-width:720px;margin:14px auto;border-radius:12px;overflow:hidden;text-align:left}
+.lwicd .t{background:#3F8F9C;color:#fff;font-weight:800;padding:10px 16px;font-size:20px}
+.lwicd .bdy{background:#A0C9CF;padding:14px 16px;display:flex;gap:14px;align-items:center;font-weight:700;font-size:19px}
+.lwicd .box{flex:none;width:40px;height:40px;background:#fff;border-radius:6px;display:grid;place-items:center;font-family:var(--hand);font-size:40px;color:var(--pen)}
+.lwicd .box span{clip-path:inset(0 100% 0 0);animation:write .8s .6s steps(8,end) forwards}
+.bigstars{font-size:60px;letter-spacing:8px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.confetti i{position:absolute;top:-20px;width:12px;height:16px;border-radius:3px;animation:fall 1.9s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* copy to my book */
+.booktabs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.booktabs button{font-family:var(--display);font-weight:800;font-size:22px;padding:10px 22px;border-radius:16px;border:3px solid var(--line);background:var(--paper)}
+.booktabs button.on.lb{background:var(--b5-soft);border-color:var(--b5)}.booktabs button.on.wb{background:#E7EBF1;border-color:#5B6B8F}
+.pagehead{font-family:var(--display);font-weight:800;font-size:24px;margin-top:16px}
+.modal{position:fixed;inset:0;background:rgba(29,43,79,.6);z-index:50;overflow:auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 30px max(16px,env(safe-area-inset-left,0px))}
+.modal .inner{max-width:1100px;margin:0 auto}
+.modal .closeb{position:sticky;top:0;z-index:10;display:flex;justify-content:flex-end;margin-bottom:8px}
+
+@media (max-width:600px){
+  body{font-size:17px}
+  .hero{grid-template-columns:1fr;padding:18px;text-align:center}.hero .mascot{margin:0 auto}
+  .card{padding:14px;border-radius:22px}
+  .big{min-width:90px;font-size:21px;padding:8px 16px}
+  .mascot{width:58px;height:58px}
+  .step .t{display:none}
+  .hs{gap:2px}.hc{border-radius:6px;border-width:1px}
+  .mach .box{width:100px;height:90px}.mach .box span{font-size:22px}.mach .chipn{min-width:60px;font-size:24px}
+  .rid span{width:44px;height:50px;font-size:20px}
+  .tile{min-width:62px;height:58px;font-size:28px}
+  .pv .dg{font-size:38px}.pv .rw>div{height:56px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.hw.go{clip-path:inset(0 0 0 0)}}
+@media print{.bar,.booktabs,.noprint{display:none!important}body{background:#fff}.book{break-inside:avoid;box-shadow:none}}
+/* Unit 5 extras: equal groups, pictures, counting stick, coloured cells */
+.cfill{position:absolute;border-radius:8px;mix-blend-mode:multiply;z-index:2;animation:cfin .45s}
+.cfill.now{animation:none}
+@keyframes cfin{from{transform:scale(.2);opacity:0}}
+.tcol{font-weight:800}
+.dbl{display:inline-block;background:var(--good-soft);border:2px solid var(--good);border-radius:10px;padding:0 8px;color:#14804B}
+.hlv{display:inline-block;background:var(--b10-soft);border:2px solid var(--b10);border-radius:10px;padding:0 8px;color:var(--b10-ink)}
+.gv{--d:24px;display:flex;flex-direction:column;gap:calc(var(--d)*.35);align-items:center;margin:8px auto;max-width:760px}
+.gvrow{display:flex;align-items:center;gap:10px;border-radius:999px;padding:3px 10px;background:#fff;border:2px solid var(--line);transition:box-shadow .2s,transform .2s;max-width:100%}
+.gvrow.lit{box-shadow:0 0 0 4px var(--star);transform:scale(1.03)}
+.gvrow.pop{animation:capin .45s}
+.gvdots{display:flex;gap:calc(var(--d)*.3)}
+.gvdots i{display:block;width:var(--d);height:var(--d);border-radius:50%;border:2px solid rgba(29,43,79,.35);transition:opacity .5s,transform .5s}
+.gvdots i.new{animation:dotin .5s backwards}
+.gvdots i.gone{opacity:0;transform:scale(.2)}
+@keyframes dotin{from{transform:scale(0) translateY(-14px);opacity:0}60%{transform:scale(1.3)}}
+.gvtot{min-width:38px;font-family:var(--display);font-size:calc(var(--d)*.85 + 6px);color:var(--soft);opacity:0;transition:opacity .2s}
+.gvtot.on{opacity:1;color:var(--ink)}
+.pics{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:10px 0}
+.pic{position:relative;width:86px;display:flex;justify-content:center;padding:4px;border-radius:14px;transition:background .2s}
+.pics.spider .pic{width:100px}.pics.domino .pic{width:62px}
+.pic.now{background:#FFF8E1}
+.pic.pop{animation:capin .45s}
+.pic svg{width:100%;height:auto;display:block}
+.pic .parts > *{stroke:#1D2B4F;transition:stroke .2s}
+.pics.square .pic .parts > *{stroke:#1D2B4F}
+.pic .parts > .lit{stroke:var(--star)}
+.pics.spider .pic .parts > .lit{stroke:#7A4CE0}
+.pic .pt,.pic .pb{transition:fill .2s}
+.pic .pt.lit{fill:#F4B400}.pic .pb.lit{fill:#16A3A3}
+.pic .word{display:grid;place-items:center;width:78px;height:58px;border:3px solid var(--ink);border-radius:8px;background:#fff;font-weight:800;font-size:20px}
+.pbadge{position:absolute;top:-10px;right:-6px;background:var(--ink);color:#fff;font-family:var(--display);font-size:18px;border-radius:999px;padding:0 9px;opacity:0;transform:scale(.5);transition:opacity .2s,transform .2s}
+.pbadge.on{opacity:1;transform:scale(1)}
+.cstick{position:relative;margin:16px 6% 10px 6%}
+.stickbar{display:flex;height:26px;border-radius:6px;overflow:hidden;border:3px solid var(--ink)}
+.stickbar span{flex:1}
+.cstick .zero{position:absolute;left:0;top:-26px;transform:translateX(-50%);font-family:var(--display);font-weight:800;font-size:18px}
+.stickrows{margin-top:8px}
+.srow{position:relative;height:54px}
+.slab{position:absolute;left:-6%;top:12px;transform:translateX(-40%);color:#fff;border-radius:999px;padding:0 8px;font-weight:800;font-size:13px}
+.scell{position:absolute;top:6px;transform:translateX(-50%);min-width:38px;height:42px;border-radius:12px;background:#fff;border:3px solid var(--line);font-family:var(--display);font-weight:800;font-size:clamp(14px,2.4vw,20px);padding:0 3px;color:var(--soft)}
+.scell.on{color:#fff}
+.scell.pop{animation:pop .45s}
+.scell.next{box-shadow:0 0 0 4px var(--star);animation:hint 1.4s infinite}
+.bricks{display:flex;flex-direction:column;align-items:center;gap:0;margin:10px 0}
+.bricks .br{display:flex}
+.bricks .br span{width:74px;height:52px;border:3px solid var(--ink);margin:-1.5px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:24px;background:#FBE3D6}
+.bricks .br span.q{background:#fff;color:var(--soft)}
+.bricks .br span.hot{background:#FFF1B8;box-shadow:inset 0 0 0 4px var(--star)}
+.mini-venn{display:block;margin:6px auto;max-width:420px;width:100%;height:auto}
+.addrow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font-family:var(--display);font-weight:800;font-size:clamp(22px,3.6vw,32px);margin:8px 0}
+.addrow .chip{background:#fff;border:3px solid var(--line);border-radius:14px;padding:2px 14px}
+@media (max-width:600px){.pic{width:64px}.pics.spider .pic{width:76px}.pics.domino .pic{width:46px}.bricks .br span{width:58px;height:44px;font-size:20px}.scell{min-width:30px;height:36px}}
+.pend{opacity:0;animation:pendin .6s forwards}
+.pend.now{opacity:1;animation:none}
+@keyframes pendin{to{opacity:1}}
+</style>
+<style>
+/* Watermark (website copy only) */
+.book::after{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;opacity:.18;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200'%3E%3Ctext x='20' y='120' transform='rotate(-24 180 100)' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%231D2B4F'%3E%C2%A9 Teacher Dima Abuhaifa%3C/text%3E%3C/svg%3E");background-size:360px 200px}
+body::after{content:"";position:fixed;inset:0;z-index:40;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200'%3E%3Ctext x='20' y='120' transform='rotate(-24 180 100)' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%231D2B4F'%3E%C2%A9 Teacher Dima Abuhaifa%3C/text%3E%3C/svg%3E");background-size:360px 200px}
+@media print{body::after{display:none}}
+.wmark{display:table;margin:-40px auto 24px;background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:800;font-size:13px;color:var(--soft)}
+@media print{.wmark{margin:10px auto}}
+</style>
+</head><body>
+<div class="wrap" id="app"></div>
+<div class="wmark">© Teacher Dima Abuhaifa</div>
+<script>
+(function(){
+"use strict";
+/* Grade 2 · Unit 5.3 Connecting 3 ×, 6 × and 9 × · Kangaroo Jumps
+   Colour code everywhere: groups of 3 = orange, groups of 6 = pink, groups of 9 = teal. */
+var GAME={
+  store:'kangarooJumps.v1',who:'Roo',
+  certTitle:'Hop-tastic work, kangaroo!',bonusTitle:'⭐ Bonus for super kangaroos',
+  tag:'Grade 2 · Lesson 5.3 · Multiplication and division · by Teacher Dima Abuhaifa',
+  titleHtml:'Kangaroo <span style="color:#16A3A3">Jumps</span>',
+  sub:'Double the 3s to get the 6s. Add the 3s and 6s to get the 9s. Real book pages, a counting stick, dominoes and brick walls. Answers written right into the book.',
+  lessons:['k1','k2'],extra:['hw'],
+  pages:{lb:['lb82','lb83','lb84','lb85','lb86'],wb:['wb69','wb70','wb71','wb72']},
+  words:[['double','Make it two times as big. Double 3 is 6.'],
+    ['add two tables','Add the 3 times table and the 6 times table to get the 9 times table: 3 × 4 + 6 × 4 = 9 × 4.'],
+    ['group size','How many are in each group. 6 × 4 = 24 means groups of 6, and 4 groups.'],
+    ['product','The answer to a multiplication. In 9 × 3 = 27, the product is 27.'],
+    ['multiple','A number you land on when you count in equal jumps. 9, 18, 27 are multiples of 9.'],
+    ['counting stick','A stick with 10 equal parts. We count along it in 3s, 6s or 9s.'],
+    ['odd','A number that ends in 1, 3, 5, 7 or 9.'],
+    ['even','A number that ends in 0, 2, 4, 6 or 8.'],
+    ['term-to-term rule','How to get from one number to the next in a sequence: add 9.']]
+};
+/* Roo the kangaroo */
+function mascot(cls,mood){
+  var mouth=mood==='wow'?'<ellipse cx="50" cy="80" rx="6" ry="7" fill="#1D2B4F"/>':'<path d="M41 77 Q50 86 59 77" stroke="#1D2B4F" stroke-width="4.5" fill="none" stroke-linecap="round"/>';
+  return h('div',{class:'mascot '+(cls||''),'aria-hidden':'true',html:'<svg viewBox="0 0 100 100" width="100%" height="100%">'+
+    '<ellipse cx="30" cy="22" rx="10" ry="22" transform="rotate(-18 30 22)" fill="#D9823F" stroke="#1D2B4F" stroke-width="4"/><ellipse cx="30" cy="24" rx="4.5" ry="14" transform="rotate(-18 30 24)" fill="#FFB3A7"/>'+
+    '<ellipse cx="70" cy="22" rx="10" ry="22" transform="rotate(18 70 22)" fill="#D9823F" stroke="#1D2B4F" stroke-width="4"/><ellipse cx="70" cy="24" rx="4.5" ry="14" transform="rotate(18 70 24)" fill="#FFB3A7"/>'+
+    '<circle cx="50" cy="60" r="32" fill="#D9823F" stroke="#1D2B4F" stroke-width="4"/>'+
+    '<ellipse cx="50" cy="74" rx="17" ry="13" fill="#F6D2A8"/><ellipse cx="50" cy="66" rx="6" ry="4.5" fill="#1D2B4F"/>'+
+    '<circle cx="38" cy="52" r="7.5" fill="#fff"/><circle cx="62" cy="52" r="7.5" fill="#fff"/><circle cx="39.5" cy="53" r="4" fill="#1D2B4F"/><circle cx="63.5" cy="53" r="4" fill="#1D2B4F"/>'+
+    '<circle cx="27" cy="68" r="5" fill="#FF9FA8" opacity=".75"/><circle cx="73" cy="68" r="5" fill="#FF9FA8" opacity=".75"/>'+mouth+'</svg>'});
+}
+
+var app=document.getElementById('app');
+var IMG=window.MM_IMG_BASE||'img/';
+var isOdd=function(n){return n%2===1};
+
+/* ---------- saved progress (optional, this device only) ---------- */
+var STORE=GAME.store;
+var SAVE={};try{SAVE=JSON.parse(localStorage.getItem(STORE)||'{}')||{}}catch(e){SAVE={}}
+SAVE.done=SAVE.done||{};SAVE.stars=SAVE.stars||{};SAVE.dyn=SAVE.dyn||{};
+function persist(){try{localStorage.setItem(STORE,JSON.stringify(SAVE))}catch(e){}}
+
+/* ---------- sound + voice ---------- */
+var muted=!!SAVE.muted,ac=null;
+function tone(freqs,dur,type){
+  if(muted)return;
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    freqs.forEach(function(f,i){var o=ac.createOscillator(),g=ac.createGain();o.type=type||'triangle';o.frequency.value=f;var t=ac.currentTime+i*dur;
+      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.16,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+dur+.02)});
+  }catch(e){}
+}
+var sGood=function(){tone([523,659,784],.1)},sBad=function(){tone([300,220],.15,'sine')},sWin=function(){tone([523,659,784,1047,784,1047,1319],.11)},sPop=function(){tone([660,880],.06)},sWrite=function(){tone([1200,1500,1800],.05,'sine')},sMagic=function(){tone([784,988,1175,1568],.07,'sine')};
+var canSpeak='speechSynthesis' in window;
+function speak(t){if(!canSpeak)return;try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t.replace(/<[^>]+>/g,'').replace(/×/g,' times ').replace(/÷/g,' divided by '));u.rate=.85;u.lang='en-GB';speechSynthesis.speak(u)}catch(e){}}
+
+/* ---------- helpers ---------- */
+function h(tag,attrs,kids){
+  var el=document.createElement(tag);
+  if(attrs)for(var k in attrs){var v=attrs[k];if(v==null)continue;
+    if(k==='class')el.className=v;else if(k==='html')el.innerHTML=v;else if(k.slice(0,2)==='on')el.addEventListener(k.slice(2),v);else if(k==='style')el.style.cssText=v;else el.setAttribute(k,v)}
+  (kids||[]).forEach(function(c){if(c==null)return;el.appendChild(typeof c==='string'?document.createTextNode(c):c)});
+  return el;
+}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function starStr(n){var s='';for(var i=0;i<3;i++)s+='<span class="'+(i<n?'star-on':'star-off')+'">★</span>';return s}
+function later(fn,ms){return setTimeout(fn,ms)}
+function each(list,fn){Array.prototype.forEach.call(list,fn)}
+var KC={2:'var(--b2)',5:'var(--b5)',10:'var(--b10)'},KCI={2:'c2',5:'c5',10:'c10'};
+function kw(k){return '<span class="'+KCI[k]+'">'+k+'</span>'}
+function onesU(n,k){var s=String(n);return s.slice(0,-1)+'<u style="--uc:'+(KC[k]||'var(--b10)')+'">'+s.slice(-1)+'</u>'}
+function confetti(n){
+  var c=h('div',{class:'confetti'});var cols=['#FF7A3D','#2F7BF5','#FFC21A','#1FA563','#7A4CE0','#E0559B'];
+  for(var i=0;i<(n||70);i++){var p=h('i');p.style.left=Math.random()*100+'%';p.style.background=cols[i%6];p.style.animationDelay=Math.random()*.7+'s';p.style.animationDuration=(1.4+Math.random())+'s';if(i%3===0)p.style.borderRadius='50%';c.appendChild(p)}
+  document.body.appendChild(c);later(function(){c.remove()},3200);
+}
+function sparkleAt(el,n){
+  var r=el.getBoundingClientRect();
+  for(var i=0;i<(n||7);i++){var s=h('span',{class:'spark'},['✨']);s.style.position='fixed';s.style.left=(r.left+r.width/2-10)+'px';s.style.top=(r.top+r.height/2-12)+'px';
+    var ang=Math.random()*Math.PI*2,rr=30+Math.random()*40;s.style.setProperty('--dx',Math.cos(ang)*rr+'px');s.style.setProperty('--dy',Math.sin(ang)*rr+'px');document.body.appendChild(s);(function(s){later(function(){s.remove()},1000)})(s)}
+}
+
+/* ---------- the guide ---------- */
+function guide(text,mood){
+  var g=h('div',{class:'guide'});g.appendChild(mascot('',mood));
+  var s=h('div',{class:'say'});
+  if(canSpeak){s.appendChild(h('button',{class:'spk','aria-label':'Read to me',onclick:function(){speak(text)}},['🔊']))}
+  s.appendChild(h('span',{class:'nm'},[GAME.who+' says']));
+  s.appendChild(h('span',{html:text}));
+  g.appendChild(s);return g;
+}
+/* ---------- feedback + choices ---------- */
+function feedback(host,kind,html,viz){
+  var old=host.querySelector(':scope > .fb');if(old)old.remove();
+  var f=h('div',{class:'fb '+kind,role:'status'});
+  f.innerHTML='<span class="face" aria-hidden="true">'+(kind==='good'?'⭐':kind==='bad'?'🤔':'💡')+'</span><div class="msg">'+html+'</div>';
+  if(viz){var v=h('div',{class:'viz'});v.appendChild(viz);f.appendChild(v)}
+  host.appendChild(f);later(function(){f.scrollIntoView({behavior:'smooth',block:'nearest'})},80);
+  return f;
+}
+function choiceQ(box,api,opts,onRight,cfg){
+  cfg=cfg||{};var wrap=h('div',{class:'choices'+(cfg.col?' col':'')}),solved=false;
+  opts.forEach(function(o){
+    var b=h('button',{class:(cfg.cls?cfg.cls(o):'opt'),html:o.html||o.label});
+    b.addEventListener('click',function(){
+      if(solved)return;
+      if(o.ok){solved=true;b.classList.add('right','sel');sGood();each(wrap.children,function(x){if(x!==b)x.disabled=true});onRight(o,b)}
+      else{api.miss();sBad();b.classList.add('wrongpick');b.disabled=true;feedback(box,'bad',o.why||cfg.wrongMsg||'Not quite. Look at the picture again!',o.viz?o.viz():null)}
+    });
+    wrap.appendChild(b);
+  });
+  box.appendChild(wrap);return wrap;
+}
+function pickMany(area,api,opts,need,onDone){
+  var wrap=h('div',{class:'choices'}),got=0;
+  opts.forEach(function(o){var b=h('button',{class:'opt',html:o.label});b.onclick=function(){
+    if(b.disabled)return;b.disabled=true;
+    if(o.ok){b.classList.add('right');sGood();got++;if(o.onPick)o.onPick();if(got===need){each(wrap.children,function(x){x.disabled=true});onDone()}}
+    else{b.classList.add('wrongpick');sBad();api.miss();feedback(area,'bad',o.why)}};wrap.appendChild(b)});
+  area.appendChild(wrap);return wrap;
+}
+function nextBtn(host,label,fn){var r=h('div',{class:'next-row'},[h('button',{class:'big go',onclick:function(){r.remove();fn()}},[label||'Next →'])]);host.appendChild(r);later(function(){r.scrollIntoView({behavior:'smooth',block:'nearest'})},200);return r}
+
+/* BookView: a (cropped) real book page. Answers are written into it in handwriting. */
+var svgId=0;
+function BookView(key,opts){
+  opts=opts||{};var P=PAGES[key];var y0=opts.crop?opts.crop[0]:0,y1=opts.crop?Math.min(opts.crop[1],P.h):P.h;
+  var x0=opts.cx?opts.cx[0]:0,x1=opts.cx?opts.cx[1]:P.w,VW=x1-x0;
+  var wrap=h('div',{class:'bookwrap '+P.book});var el=h('div',{class:'book '+P.book});el.style.aspectRatio=VW+' / '+(y1-y0);
+  var sheet=h('div',{class:'sheet'});sheet.style.top=(-y0/(y1-y0)*100)+'%';sheet.style.height=(P.h/(y1-y0)*100)+'%';sheet.style.left=(-x0/VW*100)+'%';sheet.style.width=(P.w/VW*100)+'%';
+  sheet.appendChild(h('img',{src:IMG+key+'.jpg',alt:BOOKNAME[P.book]+' page '+P.n,draggable:'false'}));
+  var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','lines');svg.setAttribute('viewBox','0 0 '+P.w+' '+P.h);svg.setAttribute('preserveAspectRatio','none');
+  var mid='ah'+(++svgId);svg.innerHTML='<defs><marker id="'+mid+'" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#D81B60"/></marker></defs>';
+  sheet.appendChild(svg);el.appendChild(sheet);
+  wrap.appendChild(h('div',{class:'label'},[BOOKNAME[P.book]+' · page '+P.n]));wrap.appendChild(el);
+  function pos(node,x,y,w,hh){node.style.left=(x/P.w*100)+'%';node.style.top=(y/P.h*100)+'%';node.style.width=(w/P.w*100)+'%';node.style.height=(hh/P.h*100)+'%';return node}
+  var api={el:wrap,book:el,sheet:sheet,P:P,written:{}};
+  api.toPage=function(cx,cy){var r=sheet.getBoundingClientRect();return [(cx-r.left)/r.width*P.w,(cy-r.top)/r.height*P.h]};
+  api.put=function(x,y,w,hh,text,align,fontPx,shown){
+    var n=pos(h('div',{class:'hw '+(align==='c'?'c':'')+(shown?' shown':'')},[text]),x,y,w,hh);
+    n.style.setProperty('--fs',(fontPx/VW*100).toFixed(3));sheet.appendChild(n);return n};
+  api.write=function(id,delay,text){
+    var a=ANS[id];if(!a||a[0]!==key||api.written[id])return;api.written[id]=true;
+    if(text!=null){SAVE.dyn[id]=String(text);persist()}
+    var t=text!=null?String(text):(SAVE.dyn[id]||a[5]);
+    var n=api.put(a[1],a[2],a[3],a[4],t,a[6],a[7],false);
+    later(function(){n.classList.add('go');sWrite();later(function(){api.sparkle(a[1]+(a[6]==='c'?a[3]/2:Math.min(a[3],a[7]*t.length*.42)),a[2]+a[4]/2)},700)},delay||0);
+    return n;
+  };
+  api.show=function(id){var a=ANS[id];if(!a||a[0]!==key||api.written[id])return;api.written[id]=true;api.put(a[1],a[2],a[3],a[4],SAVE.dyn[id]||a[5],a[6],a[7],true)};
+  api.sparkle=function(x,y){for(var i=0;i<7;i++){var s=h('span',{class:'spark'},['✨']);s.style.left=(x/P.w*100)+'%';s.style.top=(y/P.h*100)+'%';var ang=Math.random()*Math.PI*2,r=30+Math.random()*40;s.style.setProperty('--dx',Math.cos(ang)*r+'px');s.style.setProperty('--dy',Math.sin(ang)*r+'px');sheet.appendChild(s);(function(s){later(function(){s.remove()},1000)})(s)}};
+  api.hot=function(x,y,w,hh,label,fn,hint){var b=pos(h('button',{class:'hot'+(hint===false?'':' hint'),'aria-label':label}),x,y,w,hh);b.onclick=fn;sheet.appendChild(b);return b};
+  api.fill=function(x,y,w,hh,col,now){var f=pos(h('div',{class:'cfill'+(now?' now':'')}),x,y,w,hh);f.style.background=col||'rgba(122,76,224,.45)';sheet.insertBefore(f,svg);if(!now){sPop()}return f};
+  api.place=function(x,y,w,hh,node){pos(node,x,y,w,hh);node.style.position='absolute';node.style.zIndex=3;sheet.appendChild(node);return node};
+  api.glow=function(x,y,w,hh){var g=pos(h('div',{class:'rowglow'}),x,y,w,hh);sheet.appendChild(g);return g};
+  api.marker=function(x,y,w,hh,delay){var m=pos(h('div',{class:'marker'}),x,y,w,hh);sheet.insertBefore(m,svg);later(function(){m.classList.add('on')},delay||200);return m};
+  function ns(t){return document.createElementNS('http://www.w3.org/2000/svg',t)}
+  api.line=function(x1,y1,x2,y2,arrow,now,bad){var l=ns('path');l.setAttribute('d','M'+x1+' '+y1+' L'+x2+' '+y2);l.setAttribute('pathLength','1');l.setAttribute('class','ink'+(now?' now':'')+(bad?' bad':''));if(arrow)l.setAttribute('marker-end','url(#'+mid+')');svg.appendChild(l);return l};
+  api.ring=function(r,now){var e=ns('ellipse');e.setAttribute('cx',r[0]);e.setAttribute('cy',r[1]);e.setAttribute('rx',r[2]);e.setAttribute('ry',r[3]);e.setAttribute('pathLength','1');e.setAttribute('class','ink'+(now?' now':''));svg.appendChild(e);if(!now){sWrite();later(function(){api.sparkle(r[0]+r[2],r[1]-r[3])},500)}return e};
+  api.flyTo=function(fromEl,id,text,cb){/* a number flies from a button into its place on the page */
+    var a=ANS[id];var r=fromEl.getBoundingClientRect(),sr=sheet.getBoundingClientRect();
+    var f=h('div',{class:'flyer'},[String(text)]);f.style.left=(r.left+r.width/2-16)+'px';f.style.top=(r.top+r.height/2-20)+'px';document.body.appendChild(f);
+    var tx=sr.left+(a[1]+a[3]/2)/P.w*sr.width-16,ty=sr.top+(a[2]+a[4]/2)/P.h*sr.height-20;
+    requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.left=tx+'px';f.style.top=ty+'px';f.style.transform='scale(.8)'})});
+    later(function(){f.remove();api.write(id,0,text);if(cb)cb()},820);
+  };
+  (opts.show||[]).forEach(api.show);
+  return api;
+}
+/* fill a page with its full answer key (for "Copy to my book") */
+function fillPage(v,key){
+  Object.keys(ANS).forEach(function(id){if(ANS[id][0]===key)v.show(id)});
+  (RINGS[key]||[]).forEach(function(r){v.ring(r,true)});
+  (PENLINES[key]||[]).forEach(function(l){v.line(l[0],l[1],l[2],l[3],l[4],true)});
+  (FILLS[key]||[]).forEach(function(f){v.fill(f[0],f[1],f[2],f[3],f[4],true)});
+  if(DRAWS[key])DRAWS[key](v,true);
+}
+function zoomPage(key){
+  var m=h('div',{class:'modal',role:'dialog','aria-modal':'true'});var inner=h('div',{class:'inner'});
+  inner.appendChild(h('div',{class:'closeb'},[h('button',{class:'big plain small',onclick:function(){m.remove()}},['✕ Close'])]));
+  var v=BookView(key);fillPage(v,key);inner.appendChild(v.el);m.appendChild(inner);document.body.appendChild(m);
+}
+/* Hundred square: count in 2s, 5s and 10s and watch the pattern appear */
+function HundredSquare(){
+  var g=h('div',{class:'hs'}),cells=[];
+  for(var n=1;n<=100;n++){var b=h('button',{class:'hc','aria-label':String(n)},[String(n)]);cells[n]=b;g.appendChild(b)}
+  return {el:g,cells:cells,clear:function(){for(var n=1;n<=100;n++)cells[n].className='hc'}};
+}
+/* little dot picture: 2 rows, so pairs are easy to see; a lonely dot glows */
+function sdots(n,s,color){
+  var g=h('span',{class:'sdots',style:'--s:'+(s||16)+'px','aria-hidden':'true'});
+  for(var i=0;i<n;i++){var b=h('b');b.style.background=color||'var(--b2)';if(isOdd(n)&&i===n-1)b.className='lone';g.appendChild(b)}
+  return g;
+}
+
+/* Array of stars (or wheels). It can turn, make groups and split apart. */
+var STAR='<svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.1.8-5.3 4.9 1.5 7.1L12 17.6 5.6 21.2l1.5-7.1L1.8 9.2l7.1-.8z" fill="#F5B731" stroke="#3B3B3B" stroke-width="1.3" stroke-linejoin="round"/></svg>';
+var COUNTER='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.6" fill="#D9A05B" stroke="#8A5A2B" stroke-width="1.2"/><path d="M12 3.2c3.6 0 7.4 2.2 8.2 6.2.5 2.6-1 3.4-1.9 5.1-.8 1.6-1.4 4.2-6.3 4.2s-5.7-2.4-6.6-4.1C4.5 13 3 12.2 3.7 9.6 4.6 5.6 8.4 3.2 12 3.2z" fill="#FF8FC1"/><circle cx="12" cy="12" r="3.3" fill="#fff" stroke="#8A5A2B" stroke-width="1.1"/><g stroke-width="1.4" stroke-linecap="round"><path d="M7 8.5l1.2-.7" stroke="#2F7BF5"/><path d="M15.5 6.6l1.2.6" stroke="#FFC21A"/><path d="M17.4 11.5l.3 1.3" stroke="#1FA563"/><path d="M8.4 15.6l1.1.8" stroke="#7A4CE0"/><path d="M11.6 6.2l.2 1.2" stroke="#fff"/><path d="M14.2 16.2l1.2-.5" stroke="#2F7BF5"/><path d="M6.2 11.8l.4 1.2" stroke="#FFC21A"/></g></svg>';
+var SMILE='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="#F7B52C" stroke="#7A4A0E" stroke-width="1.4"/><circle cx="9" cy="9.5" r="1.3" fill="#3B2A10"/><circle cx="15" cy="9.5" r="1.3" fill="#3B2A10"/><path d="M7 13.5Q12 19 17 13.5" stroke="#3B2A10" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+var WHEEL='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="#222"/><circle cx="12" cy="12" r="7" fill="#C9CED6"/><g stroke="#666" stroke-width="1.6"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></g><circle cx="12" cy="12" r="2.2" fill="#333"/></svg>';
+var ITEMS={star:STAR,donut:COUNTER,wheel:WHEEL,smile:SMILE};
+function ArrayView(R,C,opts){
+  opts=opts||{};
+  var el=h('div',{class:'arr'}),items=[],grps=[];
+  var st={turn:false,split:null,gk:.7};
+  for(var i=0;i<R*C;i++){var it=h('div',{class:'it',html:ITEMS[opts.item||'star']||opts.item});items.push(it);el.appendChild(it)}
+  var cap=h('div',{class:'arrcap'});
+  function dims(){return st.turn?[C,R]:[R,C]}
+  function rc(i){var r=Math.floor(i/C),c=i%C;return st.turn?[c,r]:[r,c]}
+  var geo={};
+  function layout(){
+    var d=dims(),rows=d[0],cols=d[1],w=el.clientWidth||300;
+    var gx=st.split==='cols'?1:0,gy=st.split==='rows'?1:0;
+    var s=Math.max(16,Math.min(opts.max||52,Math.floor((w-24)/(cols+gx*(cols-1)*.6)/1.18)));
+    var step=s*1.18,gap=s*st.gk;
+    var totW=cols*step+gx*(cols-1)*gap,totH=rows*step+gy*(rows-1)*gap;
+    var x0=Math.max(8,(w-totW)/2),y0=18;
+    geo={s:s,step:step,gap:gap,x0:x0,y0:y0,rows:rows,cols:cols,gx:gx,gy:gy};
+    el.style.height=(y0+totH+26)+'px';
+    items.forEach(function(it,i){var p=rc(i);it.style.width=it.style.height=s+'px';it.style.left=(x0+p[1]*step+gx*p[1]*gap)+'px';it.style.top=(y0+p[0]*step+gy*p[0]*gap)+'px'});
+    grps.forEach(function(g){placeG(g)});
+  }
+  function placeG(g){
+    var G=geo,pad=6;
+    if(g.mode==='rows'){var y=G.y0+g.k*G.step+G.gy*g.k*G.gap;g.el.style.left=(G.x0-pad)+'px';g.el.style.top=(y-pad)+'px';g.el.style.width=(G.cols*G.step-(G.step-G.s)+2*pad)+'px';g.el.style.height=(G.s+2*pad)+'px'}
+    else{var x=G.x0+g.k*G.step+G.gx*g.k*G.gap;g.el.style.left=(x-pad)+'px';g.el.style.top=(G.y0-pad)+'px';g.el.style.width=(G.s+2*pad)+'px';g.el.style.height=(G.rows*G.step-(G.step-G.s)+2*pad)+'px'}
+  }
+  function clearG(){grps.forEach(function(g){g.el.remove()});grps=[];items.forEach(function(it){it.classList.remove('lit')})}
+  var timers=[];function T(fn,ms){timers.push(later(fn,ms))}
+  function stop(){timers.forEach(clearTimeout);timers=[]}
+  requestAnimationFrame(layout);
+  if(window.ResizeObserver)new ResizeObserver(function(){layout()}).observe(el);
+  var api={el:el,cap:cap,R:R,C:C};
+  api.reset=function(){stop();clearG();st.split=null;layout();cap.innerHTML=''};
+  /* show groups of `size`, counting in steps: 5, 10, 15 ... ; split=true pulls the groups apart (sharing) */
+  api.groups=function(size,split,label,cb){
+    stop();clearG();var d=dims();
+    var mode=size===d[1]?'rows':'cols',count=mode==='rows'?d[0]:d[1];
+    st.split=mode;st.gk=split?.7:.32;layout();
+    cap.innerHTML='';
+    for(var k=0;k<count;k++)(function(k){T(function(){
+      var g={mode:mode,k:k,el:h('div',{class:'grp '+mode,style:'--gc:'+(split?'var(--b5)':'var(--b2)')})};
+      g.el.appendChild(h('b',null,[split?String(k+1):String((k+1)*size)]));
+      el.appendChild(g.el);grps.push(g);placeG(g);sPop();
+      items.forEach(function(it,i){var p=rc(i);if((mode==='rows'?p[0]:p[1])===k){it.classList.add('lit');later(function(){it.classList.remove('lit')},350)}});
+      if(k===count-1)T(function(){cap.innerHTML=label||'';sGood();if(cb)cb()},500);
+    },350+k*420)})(k);
+  };
+  api.turn=function(cb){stop();clearG();st.turn=!st.turn;st.split=null;sMagic();layout();cap.innerHTML='';T(function(){var d=dims();cap.innerHTML=d[0]+' rows of '+d[1]+' &nbsp;·&nbsp; still '+(R*C)+'!';if(cb)cb()},800)};
+  api.dims=dims;
+  return api;
+}
+/* show a fact on an array: a × b = p (groups of a), p ÷ a = b (share into groups of a) */
+function factOnArray(arr,f,cb){
+  var d=arr.dims();
+  if(f.op==='×'){var size=(f.a===d[1]||f.a===d[0])?f.a:f.b,n=arr.R*arr.C/size;arr.groups(size,false,'<span class="c2">'+n+' groups of '+size+'</span> = '+(n*size)+' &nbsp;→&nbsp; '+f.txt,cb)}
+  else{var sz=f.b;var cnt=f.a/f.b;arr.groups(sz,true,'<span class="c5">'+f.a+' shared into groups of '+sz+' → '+cnt+' groups</span> &nbsp;→&nbsp; '+f.txt,cb)}
+}
+
+/* fact family triangle */
+function triangle(a,b,c){
+  return h('div',{html:'<svg class="tri" viewBox="0 0 300 250"><path d="M150 18 L282 228 L18 228 Z" fill="#FFF8E1" stroke="#1D2B4F" stroke-width="6" stroke-linejoin="round"/>'+
+    '<line x1="70" y1="170" x2="230" y2="170" stroke="#1D2B4F" stroke-width="3" stroke-dasharray="6 6"/><text x="150" y="205" text-anchor="middle" font-size="28" font-weight="800" fill="#1D2B4F" font-family="Baloo 2,system-ui">× ÷</text>'+
+    '<circle cx="150" cy="70" r="42" fill="#7A4CE0"/><text x="150" y="83" text-anchor="middle" font-size="38" font-weight="800" fill="#fff" font-family="Baloo 2,system-ui">'+c+'</text>'+
+    '<circle cx="62" cy="200" r="36" fill="#2F7BF5"/><text x="62" y="212" text-anchor="middle" font-size="34" font-weight="800" fill="#fff" font-family="Baloo 2,system-ui">'+a+'</text>'+
+    '<circle cx="238" cy="200" r="36" fill="#FF7A3D"/><text x="238" y="212" text-anchor="middle" font-size="34" font-weight="800" fill="#fff" font-family="Baloo 2,system-ui">'+b+'</text></svg>'});
+}
+function familyOf(a,b){var c=a*b,L=[[a+' × '+b+' = '+c,'m'],[c+' = '+a+' × '+b,'m'],[c+' ÷ '+a+' = '+b,'d'],[b+' = '+c+' ÷ '+a,'d']];
+  if(a!==b)L=[[a+' × '+b+' = '+c,'m'],[b+' × '+a+' = '+c,'m'],[c+' = '+a+' × '+b,'m'],[c+' = '+b+' × '+a,'m'],[c+' ÷ '+a+' = '+b,'d'],[c+' ÷ '+b+' = '+a,'d'],[b+' = '+c+' ÷ '+a,'d'],[a+' = '+c+' ÷ '+b,'d']];
+  return L}
+function factsGrid(a,b,stagger){var g=h('div',{class:'facts'});familyOf(a,b).forEach(function(f,i){var d=h('div',{class:f[1]},[f[0]]);if(stagger)d.style.animationDelay=(i*.35)+'s';g.appendChild(d)});return g}
+
+/* base ten blocks: x10 makes every cube a rod and every rod a flat */
+function BaseTen(n){
+  var w=h('div'),stage=h('div',{class:'b10stage'});w.appendChild(stage);
+  var t=Math.floor(n/10),o=n%10,done=false;
+  var g1=h('div',{class:'b10grp'}),b1=h('div',{class:'b10blocks'}),l1=h('div',{class:'b10lbl'});g1.appendChild(b1);g1.appendChild(l1);
+  var g2=h('div',{class:'b10grp'}),b2=h('div',{class:'b10blocks'}),l2=h('div',{class:'b10lbl'});g2.appendChild(b2);g2.appendChild(l2);
+  var rods=[],cubes=[];
+  for(var i=0;i<t;i++){var r=h('div',{class:'blk rod'});rods.push(r);b1.appendChild(r)}
+  for(var j=0;j<o;j++){var c=h('div',{class:'blk'});cubes.push(c);b2.appendChild(c)}
+  l1.textContent=t+' ten'+(t===1?'':'s');l2.textContent=o+' one'+(o===1?'':'s');
+  if(t)stage.appendChild(g1);if(o||!t)stage.appendChild(g2);
+  var cap=h('div',{class:'eqline'},[String(n)]);w.appendChild(cap);
+  return {el:w,go:function(cb){
+    if(done){if(cb)cb();return}done=true;sMagic();
+    rods.forEach(function(r,i){later(function(){r.classList.add('flat')},i*120)});
+    cubes.forEach(function(c,i){later(function(){c.classList.add('rod')},300+i*120)});
+    later(function(){l1.textContent=t+' hundred'+(t===1?'':'s');l2.textContent=o+' ten'+(o===1?'':'s');cap.innerHTML=n+' × 10 = <span class="c10">'+(n*10)+'</span>';sGood();if(cb)cb()},1300+Math.max(t,o)*120);
+  }};
+}
+/* place value chart: every digit slides one place to the left, 0 fills the ones */
+function PVSlide(n){
+  var w=h('div',{class:'pv'});w.innerHTML='<div class="hd"><div>100s</div><div>10s</div><div>1s</div></div>';
+  var rw=h('div',{class:'rw'});var cells=[h('div'),h('div'),h('div')];cells.forEach(function(c){rw.appendChild(c)});w.appendChild(rw);
+  var s=String(n),digs=[];
+  for(var i=0;i<s.length;i++){var col=3-s.length+i;var d=h('div',{class:'dg'},[s[i]]);cells[col].appendChild(d);digs.push(d)}
+  var cap=h('div',{class:'eqline',style:'margin-top:6px'},[n+' × 10 = ?']);
+  var box=h('div');box.appendChild(w);box.appendChild(cap);
+  var done=false;
+  return {el:box,go:function(cb){
+    if(done){if(cb)cb();return}done=true;sMagic();
+    digs.forEach(function(d){d.classList.add('slide','trail')});
+    later(function(){var z=h('div',{class:'dg zero'},['0']);cells[2].appendChild(z);sPop();cap.innerHTML=n+' × 10 = <span class="c10">'+(n*10)+'</span>';sparkleAt(cells[2]);if(cb)cb()},1050);
+  }};
+}
+/* pencil boxes of 10 that bundle into crates of 100 */
+function PencilBoxes(){
+  var w=h('div'),area=h('div',{class:'pboxes'}),count=h('div',{class:'count'});w.appendChild(area);w.appendChild(count);var n=0;
+  function draw(bundled){area.innerHTML='';var crates=bundled?Math.floor(n/10):0,left=n-crates*10;
+    for(var c=0;c<crates;c++){var cr=h('div',{class:'crate'});cr.style.animationDelay=(c*.2)+'s';for(var k=0;k<10;k++)cr.appendChild(h('span',{class:'pbox'}));cr.appendChild(h('b',null,['100']));area.appendChild(cr)}
+    for(var i=0;i<left;i++){var b=h('span',{class:'pbox'});if(!bundled&&i===left-1)b.style.animationDelay='0s';else b.style.animation='none';area.appendChild(b)}
+    count.innerHTML=bundled&&crates?crates+' hundred'+(crates>1?'s':'')+' + '+(left*10)+' = <span class="c10">'+(n*10)+'</span> pencils':n+' box'+(n===1?'':'es')+' = <span class="c10">'+(n*10)+'</span> pencils'}
+  return {el:w,add:function(){n++;sPop();draw(false);return n},set:function(k,b){n=k;draw(!!b)},bundle:function(){sMagic();draw(true)},get n(){return n}};
+}
+/* number line with a hopping frog */
+function NumberLine(min,max,opts){
+  opts=opts||{};var w=h('div',{class:'nl'});var span=max-min;
+  var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 1000 150');svg.setAttribute('preserveAspectRatio','none');
+  svg.innerHTML='<line x1="0" y1="92" x2="1000" y2="92" stroke="#1D2B4F" stroke-width="4" vector-effect="non-scaling-stroke"/>';w.appendChild(svg);
+  function X(v){return 2+(v-min)/span*96}
+  var tks={};
+  for(var v=min;v<=max;v++){if(opts.only&&opts.only.indexOf(v)<0)continue;
+    var t=document.createElementNS('http://www.w3.org/2000/svg','line');t.setAttribute('x1',X(v)*10);t.setAttribute('x2',X(v)*10);t.setAttribute('y1',82);t.setAttribute('y2',102);t.setAttribute('stroke','#1D2B4F');t.setAttribute('stroke-width','3');t.setAttribute('vector-effect','non-scaling-stroke');svg.appendChild(t);
+    if(opts.labels&&opts.labels.indexOf(v)<0)continue;
+    var b=h('button',{class:'tk'},[String(v)]);b.style.left=X(v)+'%';w.appendChild(b);tks[v]=b}
+  var frog=h('div',{class:'frog'},[opts.hopper||'🐸']);w.appendChild(frog);var at=opts.start!=null?opts.start:min;frog.style.left=X(at)+'%';
+  return {el:w,tks:tks,X:X,hop:function(to,label,cb){
+    var from=at;at=to;var p=document.createElementNS('http://www.w3.org/2000/svg','path');var x1=X(from)*10,x2=X(to)*10,mx=(x1+x2)/2;
+    p.setAttribute('d','M'+x1+' 84 Q'+mx+' 10 '+x2+' 84');p.setAttribute('fill','none');p.setAttribute('stroke','#FF7A3D');p.setAttribute('stroke-width','4');p.setAttribute('vector-effect','non-scaling-stroke');p.setAttribute('pathLength','1');p.style.strokeDasharray='1';p.style.strokeDashoffset='1';p.style.transition='stroke-dashoffset .6s';svg.appendChild(p);
+    requestAnimationFrame(function(){p.style.strokeDashoffset='0'});
+    if(label){var jl=h('div',{class:'jl'},[label]);jl.style.left=((X(from)+X(to))/2)+'%';w.appendChild(jl)}
+    var t0=null;function step(ts){if(!t0)t0=ts;var k=Math.min(1,(ts-t0)/600);var x=X(from)+(X(to)-X(from))*k;frog.style.left=x+'%';frog.style.top=(44-Math.sin(k*Math.PI)*40)+'px';if(k<1)requestAnimationFrame(step);else{sPop();if(cb)cb()}}
+    requestAnimationFrame(step);
+  }};
+}
+/* the x10 machine */
+function Machine(){
+  var w=h('div',{class:'mach'}),inn=h('div',{class:'chipn'},['?']),box=h('div',{class:'box',html:'<span>× 10</span>'}),out=h('div',{class:'chipn out'},['?']);
+  w.appendChild(inn);w.appendChild(h('span',{style:'font-size:28px'},['➜']));w.appendChild(box);w.appendChild(h('span',{style:'font-size:28px'},['➜']));w.appendChild(out);
+  return {el:w,load:function(n){inn.classList.remove('in-go');inn.textContent=String(n);out.textContent='?'},
+    run:function(n,cb){inn.classList.add('in-go');box.classList.add('work');sMagic();later(function(){box.classList.remove('work');out.textContent=String(n*10);out.animate&&out.animate([{transform:'scale(.3)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:450});sparkleAt(out);if(cb)cb()},800)}};
+}
+
+/* =====================================================================
+   LESSON ENGINE
+   ===================================================================== */
+var E5=[{k:'Warm up',c:'var(--e1)'},{k:'Discover',c:'var(--e2)'},{k:'Learn the rule',c:'var(--e3)'},{k:'Practise',c:'var(--e4)'},{k:'Check',c:'var(--e5)'}];
+function schoolLogo(){return h('img',{class:'schoollogo',src:'img/insightia-logo.png',alt:'Insightia International Academy'})}
+function topBar(back){
+  var b=h('div',{class:'bar noprint'});
+  if(back)b.appendChild(h('button',{class:'pill',onclick:home},['← Lesson map']));
+  else if(window.MM_STANDALONE)b.appendChild(h('a',{class:'pill',href:'../',style:'text-decoration:none'},['← Grade 2 games']));
+  b.appendChild(h('div',{class:'grow'}));
+  b.appendChild(h('button',{class:'pill',onclick:function(){answerBook()}},['📖 Copy to my book']));
+  b.appendChild(h('button',{class:'pill',onclick:wordBank},['Word bank']));
+  var m=h('button',{class:'pill'},[muted?'🔇 Sound':'🔊 Sound']);
+  m.onclick=function(){muted=!muted;SAVE.muted=muted;persist();m.textContent=muted?'🔇 Sound':'🔊 Sound'};
+  b.appendChild(m);return b;
+}
+function runLesson(id,start){
+  var L=LESSONS[id],i=start||0,mistakes=0;
+  app.innerHTML='';app.appendChild(topBar(true));
+  var head=h('div',{class:'lesson-head'});
+  head.appendChild(mascot());
+  head.appendChild(h('div',{style:'flex:1;min-width:200px'},[h('div',{class:'today',html:L.when}),h('h2',null,[L.title]),h('div',{class:'today',html:'Today I can: <b>'+L.goal+'</b>'})]));
+  head.appendChild(schoolLogo());
+  app.appendChild(head);
+  var stepper=h('div',{class:'stepper'});app.appendChild(stepper);
+  var card=h('section',{class:'card'});app.appendChild(card);
+  function drawStepper(){
+    stepper.innerHTML='';
+    L.stations.forEach(function(s,k){
+      var ec=s.c||E5[k%5].c;
+      var b=h('button',{class:'step'+(k===i?' now':'')+(SAVE.done[id+k]?' done':''),style:'--ec:'+ec,onclick:function(){i=k;show()}});
+      b.innerHTML='<span class="n"><span>'+(s.short||k+1)+'</span></span><span class="t">'+s.name+'</span>';
+      stepper.appendChild(b);
+    });
+  }
+  function show(){
+    drawStepper();card.innerHTML='';window.scrollTo({top:0,behavior:'smooth'});
+    var s=L.stations[i],ec=s.c||E5[i%5].c;card.style.borderColor=ec;
+    var t=h('div',{class:'estage-title'});t.innerHTML='<span class="badge" style="--ec:'+ec+'">'+s.name+'</span>'+(s.src?'<span class="today">'+s.src+'</span>':'');
+    card.appendChild(t);
+    var stage=h('div');card.appendChild(stage);
+    var finished=false;
+    var api={
+      miss:function(){mistakes++},
+      done:function(msg){
+        if(finished)return;finished=true;SAVE.done[id+i]=true;persist();drawStepper();sGood();
+        var r=h('div',{class:'next-row'});
+        if(msg)feedback(stage,'good',msg);
+        var last=i===L.stations.length-1;
+        r.appendChild(h('button',{class:'big go',onclick:function(){if(last)certificate(id,mistakes);else{i++;show()}}},[last?'Finish 🏆':'Next: '+L.stations[i+1].name+' →']));
+        stage.appendChild(r);later(function(){r.scrollIntoView({behavior:'smooth',block:'nearest'})},300);
+      }
+    };
+    s.render(stage,api);
+  }
+  show();
+}
+function certificate(id,mistakes){
+  var L=LESSONS[id];var s=mistakes===0?3:mistakes<=3?2:1;
+  if(!SAVE.stars[id]||SAVE.stars[id]<s){SAVE.stars[id]=s;persist()}
+  app.innerHTML='';app.appendChild(topBar(true));
+  var c=h('section',{class:'card cert'});
+  c.appendChild(h('div',{class:'row center'},[mascot('huge','wow')]));
+  c.appendChild(h('h2',{style:'font-size:clamp(32px,5vw,48px)'},[GAME.certTitle]));
+  c.appendChild(h('div',{class:'bigstars',html:starStr(s)}));
+  var lw=h('div',{class:'lwicd'});lw.innerHTML='<div class="t">Look what I can do!</div><div class="bdy"><div class="box"><span>✓</span></div><div>'+L.lookWhat+'</div></div>';c.appendChild(lw);
+  c.appendChild(h('p',{class:'task'},['Now copy the answers into your book.']));
+  var r=h('div',{class:'row center',style:'margin-top:10px'});
+  r.appendChild(h('button',{class:'big magic',onclick:function(){answerBook(L.copy)}},['📖 Copy to my book']));
+  r.appendChild(h('button',{class:'big go',onclick:home},['Lesson map']));
+  c.appendChild(r);app.appendChild(c);sWin();confetti(120);later(function(){confetti(60)},900);
+}
+/* one book question after another, with Q chips */
+function questionRun(st,api,Q,names,doneMsg){
+  var k=0,bar=h('div',{class:'qbar'}),area=h('div');st.appendChild(bar);st.appendChild(area);
+  function drawBar(){bar.innerHTML='';Q.forEach(function(_,j){bar.appendChild(h('span',{class:'qchip',style:'background:'+(j<k?'var(--good)':j===k?'var(--e4)':'#C9D8EE')},[names[j]]))})}
+  function next(){k++;if(k<Q.length)go();else api.done(doneMsg)}
+  function go(){drawBar();area.innerHTML='';Q[k](area,api,function(){nextBtn(area,k<Q.length-1?'Next question →':'Finish ✓',function(){next();window.scrollTo({top:0,behavior:'smooth'})})})}
+  go();
+}
+function whoSays(host,who,col,say){var w=h('div',{class:'guide'});w.innerHTML='<div class="mascot" style="animation:none;display:grid;place-items:center;border-radius:50%;background:'+col+';color:#fff;font-family:var(--display);font-weight:800;font-size:34px;border:4px solid #fff;box-shadow:0 0 0 3px var(--line)">'+who[0]+'</div><div class="say"><span class="nm">'+who+' says</span>'+say+'</div>';host.appendChild(w);return w}
+
+/* ---------- shared book tasks ---------- */
+/* ring the multiples of k on the page */
+function ringTask(a,api,bk,M,k,done){
+  var lens=h('div',{class:'panel',style:'text-align:center'});lens.innerHTML='<div class="ttl">👆 Tap a number in the book</div>';a.appendChild(lens);
+  var need=Object.keys(M.yes).length,got=0,tiles={},tr=h('div',{class:'tiles'});
+  var order=Object.keys(M.yes).map(function(n){return [n,M.yes[n]]}).concat(Object.keys(M.no).map(function(n){return [n,M.no[n]]})).sort(function(p,q){return Math.abs(p[1][1]-q[1][1])>20?p[1][1]-q[1][1]:p[1][0]-q[1][0]});
+  order.forEach(function(o){var t=h('button',{class:'big plain small',style:'min-width:64px'},[o[0]]);tiles[o[0]]=t;tr.appendChild(t)});
+  a.insertBefore(h('p',{class:'sub',style:'text-align:center;font-weight:800'},['Tap the number in the book, or here:']),lens);a.insertBefore(tr,lens);
+  function why(n,ok){var d=n%10;lens.innerHTML='';if(M.why){lens.appendChild(h('div',{class:'eqline',html:String(n)}));lens.appendChild(h('div',{style:'font-weight:800',html:M.why(n,ok)}));return}
+    lens.appendChild(h('div',{class:'eqline',html:'<span class="strip"><span>'+onesU(n,k)+'</span></span>'}));
+    var msg=k===2?(ok?'The ones digit is <b>'+d+'</b>. '+d+' makes pairs, so '+n+' is a multiple of 2.':'The ones digit is <b>'+d+'</b>. 1 is left over, so '+n+' is not a multiple of 2.')
+      :(ok?n+' ends in <b>'+d+'</b>. Multiples of 5 end in 0 or 5.':n+' ends in <b>'+d+'</b>, not 0 or 5. Not a multiple of 5.');
+    lens.appendChild(h('div',{style:'font-weight:800',html:msg}));
+    if(k===2&&d)lens.appendChild(h('div',{style:'margin-top:6px'},[sdots(d,18,ok?'var(--b2)':'var(--b5)')]));
+  }
+  Object.keys(M.yes).forEach(function(n){var b=M.yes[n],done1=false;var fn=function(){if(done1)return;done1=true;tiles[n].classList.add('right');tiles[n].style.background='var(--good-soft)';tiles[n].disabled=true;bk.ring(ringOf(b));sPop();why(+n,true);got++;if(got===need){feedback(a,'good','<b>You found them all!</b>');done()}};
+    bk.hot(b[0]-10,b[1]-8,b[2]+20,b[3]+16,n,fn,false);tiles[n].onclick=fn});
+  Object.keys(M.no).forEach(function(n){var b=M.no[n];var fn=function(){api.miss();sBad();hb.classList.remove('badtap');void hb.offsetWidth;hb.classList.add('badtap');why(+n,false)};var hb=bk.hot(b[0]-10,b[1]-8,b[2]+20,b[3]+16,n,fn,false);tiles[n].onclick=fn});
+}
+/* sort numbers into a Venn diagram on the page */
+function vennTask(a,api,bk,key,nums,fromList,done){
+  var V=VENN[key],picked=null,left=nums.length,chips={};
+  var info=h('div',{class:'panel',style:'text-align:center'});
+  function explain(n){var d=n%10;
+    if(key==='lb74')return d===0?n+' ends in 0: a multiple of 5 <b>and</b> 10. It goes in the <b>overlap</b>.':d===5?n+' ends in 5: a multiple of 5 but not 10. Only the <b>5 circle</b>.':n+' ends in '+d+': not a multiple of 5 or 10. It goes <b>outside</b>.';
+    var two=n%2===0,five=n%5===0;return n+' ends in '+d+'. '+(two?'Even, so a multiple of 2. ':'Odd, so not a multiple of 2. ')+(five?'It ends in '+d+', so a multiple of 5.':'It does not end in 0 or 5, so not a multiple of 5.')+' → '+(two&&five?'<b>overlap</b>':two?'<b>2 circle only</b>':five?'<b>5 circle only</b>':'<b>outside</b>');}
+  function setPick(n){picked=n;sPop();info.innerHTML='<div class="eqline">'+n+'</div><div style="font-weight:800">Now tap where '+n+' goes in the Venn diagram.</div>';
+    Object.keys(chips).forEach(function(k){chips[k].style.outline=+k===n?'5px solid var(--star)':'';if(pg[k])pg[k].classList.toggle('picked',+k===n)})}
+  var tr=h('div',{class:'tiles'}),pg={};
+  nums.forEach(function(n){chips[n]=h('button',{class:'tile'},[String(n)]);chips[n].onclick=function(){setPick(n)};tr.appendChild(chips[n]);
+    if(fromList){var L=V.list[n];pg[n]=bk.hot(L[0]-6,L[1]-4,L[2]+12,L[3]+8,String(n),function(){if(!chips[n].disabled)setPick(n)},false)}});
+  a.appendChild(tr);
+  info.innerHTML='<div class="ttl">👆 Tap a number first'+(fromList?' (in the list or below)':'')+'</div>';a.appendChild(info);
+  var A=V.area;
+  var area=bk.hot(A[0],A[1],A[2],A[3],'Venn diagram',function(e){
+    if(picked==null){feedback(a,'info','First tap a number.');return}
+    var p=bk.toPage(e.clientX,e.clientY),dl=Math.hypot(p[0]-V.L[0],p[1]-V.L[1])<V.L[2],dr=Math.hypot(p[0]-V.R[0],p[1]-V.R[1])<V.R[2];
+    var reg=dl&&dr?'B':dl?'L':dr?'R':'O',n=picked;
+    if(reg===V.rule(n)){picked=null;sGood();var c=chips[n];c.style.outline='';c.classList.add('used');c.disabled=true;if(pg[n]){pg[n].classList.remove('picked');pg[n].classList.add('used')}bk.write('v'+key+'_'+n);left--;
+      feedback(a,'good','<b>Yes!</b> '+explain(n));info.innerHTML='<div class="ttl">'+(left?'👆 Tap the next number':'All sorted! ✨')+'</div>';if(!left)done()}
+    else{api.miss();sBad();feedback(a,'bad','Not there. '+explain(n))}
+  },false);
+  area.classList.add('area');
+}
+/* fact family boxes on the page, built with number tiles; the array shows each fact */
+function factBoxes(a,api,bk,f,arr,done){
+  var F=FF[f],row=0,fill=[],nodes=[],usedKeys={},glow=null,busy=false;
+  var tray=h('div',{class:'tiles'}),status=h('div',{class:'task',style:'text-align:center'});
+  a.appendChild(status);a.appendChild(tray);
+  var big=Math.max.apply(null,F.nums),sm=F.nums.filter(function(x){return x!==big});
+  var tiles=F.nums.concat([sm[0]+sm[1]]);
+  var tileEls={};
+  tiles.forEach(function(n,ti){var t=h('button',{class:'tile'+(ti===3?' alt':'')},[String(n)]);tileEls[n]=t;t.onclick=function(){
+    if(busy||fill.length>=3)return;
+    if(ti===3){api.miss();sBad();feedback(a,'bad',n+' is '+sm[0]+' + '+sm[1]+'. That is adding! Count the array: it has <b>'+big+'</b>.');return}
+    var b=ffBox(f,row,fill.length);fill.push(n);nodes.push(bk.put(b[0],b[1],b[2],b[3],String(n),'c',F.font,true));sPop();t.classList.add('used');
+    if(fill.length===3)later(check,250)};tray.appendChild(t)});
+  var clr=h('button',{class:'big plain small'},['Clear the boxes']);clr.onclick=function(){if(!busy)resetRow()};a.appendChild(h('div',{class:'row center'},[clr]));
+  function resetRow(){nodes.forEach(function(n){n.remove()});nodes=[];fill=[];each(tray.children,function(t){t.classList.remove('used')})}
+  function signs(){var fm=FORMS[row];return fm==='m'?['×','=']:fm==='mr'?['=','×']:fm==='d'?['÷','=']:['=','÷']}
+  function startRow(){
+    if(glow)glow.remove();
+    if(row>=8){status.innerHTML='All 8 facts! ✨';tray.remove();clr.remove();done();return}
+    var b0=ffBox(f,row,0),b2=ffBox(f,row,2);glow=bk.glow(b0[0]-4,b0[1]-4,b2[0]+b2[2]-b0[0]+8,b0[3]+8);
+    var s=signs();status.innerHTML='Fact '+(row+1)+' of 8: &nbsp;<span style="font-family:var(--display);font-size:28px">□ '+s[0]+' □ '+s[1]+' □</span>';
+  }
+  function check(){
+    var p=fill[0],q=fill[1],r=fill[2],fm=FORMS[row],ok=fm==='m'?p*q===r:fm==='mr'?p===q*r:fm==='d'?p/q===r:p===q/r;
+    var key=fm+fill.join(',');
+    if(!ok){api.miss();sBad();
+      var msg=fm==='d'||fm==='dr'?'When we divide, we start with the biggest number, <b>'+big+'</b>: '+big+' ÷ '+sm[0]+' = '+sm[1]+'.':'Look at the array: '+sm[0]+' × '+sm[1]+' makes <b>'+big+'</b> altogether.';
+      if(fm==='mr'||fm==='dr')msg+=' The = sign is like a balance: both sides must be the same.';
+      feedback(a,'bad',msg);later(resetRow,900);return}
+    if(usedKeys[key]){api.miss();sBad();feedback(a,'bad','You already wrote that one! Swap the two numbers around.');later(resetRow,900);return}
+    usedKeys[key]=1;busy=true;nodes.forEach(function(n){n.remove()});nodes=[];
+    fill.forEach(function(v,k){bk.write(f+'_'+row+'_'+k,k*180,v)});
+    var txt=fm==='m'?p+' × '+q+' = '+r:fm==='mr'?p+' = '+q+' × '+r:fm==='d'?p+' ÷ '+q+' = '+r:p+' = '+q+' ÷ '+r;
+    var fact=fm==='m'?{op:'×',a:p,b:q}:fm==='mr'?{op:'×',a:q,b:r}:fm==='d'?{op:'÷',a:p,b:q}:{op:'÷',a:q,b:r};fact.txt=txt;
+    var fb=a.querySelector(':scope > .fb');if(fb)fb.remove();
+    if(arr){arr.el.scrollIntoView({behavior:'smooth',block:'nearest'});factOnArray(arr,fact,function(){fill=[];each(tray.children,function(t){t.classList.remove('used')});busy=false;row++;startRow()})}
+    else later(function(){fill=[];each(tray.children,function(t){t.classList.remove('used')});busy=false;row++;startRow()},700);
+  }
+  startRow();
+}
+/* optional extra question; mistakes here do not count */
+function bonus(host,q,opts,good){
+  var p=h('div',{class:'panel',style:'margin-top:14px;border:3px dashed var(--gold)'});
+  p.appendChild(h('div',{class:'pagehead'},[GAME.bonusTitle]));p.appendChild(h('p',{class:'task',html:q}));
+  choiceQ(p,{miss:function(){}},shuffle(opts),function(){feedback(p,'good',good);confetti(40)},{cls:function(){return 'big plain'}});
+  host.appendChild(p);
+}
+function home(){
+  app.innerHTML='';app.appendChild(topBar(false));
+  var hero=h('section',{class:'hero'});
+  var sp=h('div',{class:'sparkles','aria-hidden':'true'});[[8,12],[22,78],[55,8],[70,85],[88,30],[94,70],[40,90]].forEach(function(p,i){var s=h('i',null,[i%2?'✦':'★']);s.style.left=p[0]+'%';s.style.top=p[1]+'%';s.style.color=['#FFC21A','#7A4CE0','#E0559B','#2F7BF5'][i%4];s.style.animationDelay=(i*.3)+'s';sp.appendChild(s)});hero.appendChild(sp);
+  hero.appendChild(mascot('huge'));
+  hero.appendChild(h('div',null,[
+    h('div',{class:'tag'},[GAME.tag]),
+    h('h1',{html:GAME.titleHtml}),
+    h('p',{class:'sub',style:'font-size:18px;margin-top:6px'},[GAME.sub])]));
+  hero.appendChild(schoolLogo());
+  app.appendChild(hero);
+  var days=h('div',{class:'days'});
+  GAME.lessons.forEach(function(id){
+    var L=LESSONS[id];var b=h('button',{class:'day',style:'--c:'+L.color,onclick:function(){runLesson(id)}});
+    var path=h('div',{class:'epath'});L.stations.forEach(function(s,k){path.appendChild(h('span',{class:'echip'+(SAVE.done[id+k]?' done':''),style:'--ec:'+(s.c||E5[k%5].c),html:'<b>'+(s.short||k+1)+'</b>'+s.name}))});
+    b.appendChild(h('div',{class:'when'},[L.card||L.when]));
+    b.appendChild(h('h2',null,[L.title]));
+    b.appendChild(h('div',{class:'goal',html:'Today I can: '+L.goal}));
+    b.appendChild(path);
+    b.appendChild(h('div',{class:'daystars',html:starStr(SAVE.stars[id]||0)}));
+    days.appendChild(b);
+  });
+  app.appendChild(days);
+  var more=h('div',{class:'mini-cards'});
+  (GAME.extra||[]).forEach(function(id){var L=LESSONS[id];var hb=h('button',{class:'day',style:'--c:'+L.color,onclick:function(){runLesson(id)}});
+    hb.innerHTML='<div class="when">'+L.card+'</div><h2 style="font-size:22px">'+L.title+'</h2><div class="daystars">'+starStr(SAVE.stars[id]||0)+'</div>';more.appendChild(hb)});
+  var cb=h('button',{class:'day',style:'--c:var(--pen)',onclick:function(){answerBook()}});
+  cb.innerHTML='<div class="when">📖 Copy to my book</div><h2 style="font-size:22px">See every page with the answers written in</h2><div class="sub">'+(GAME.pages.wb?'One book at a time':'Learner’s Book pages')+'</div>';more.appendChild(cb);
+  app.appendChild(more);
+  if(GAME.homeExtra)GAME.homeExtra(app);
+}
+function answerBook(which){
+  app.innerHTML='';app.appendChild(topBar(true));
+  var c=h('section',{class:'card'});
+  c.appendChild(h('h2',{style:'font-size:clamp(26px,4vw,36px)'},['📖 Copy to my book']));
+  var books=Object.keys(GAME.pages);
+  c.appendChild(guide(books.length>1?'Here are your book pages with the answers written in. Copy one book first. Then do the other book.':'Here are your book pages with the answers written in. Copy them into your book.'));
+  var tabs=h('div',{class:'booktabs noprint'}),list=h('div');var cur=which&&GAME.pages[which]?which:books[0];
+  function draw(){
+    tabs.innerHTML='';if(books.length>1)books.forEach(function(bk,k){tabs.appendChild(h('button',{class:bk+(cur===bk?' on':''),onclick:function(){cur=bk;draw()}},[(k+1)+'. '+BOOKNAME[bk]]))});
+    list.innerHTML='';
+    GAME.pages[cur].forEach(function(k){
+      list.appendChild(h('div',{class:'row'},[h('div',{class:'pagehead',style:'flex:1'},[BOOKNAME[cur]+' · page '+PAGES[k].n]),h('button',{class:'big plain small noprint',onclick:function(){zoomPage(k)}},['🔍 Bigger'])]));
+      var v=BookView(k);fillPage(v,k);list.appendChild(v.el);
+    });
+    if(books.length>1){var other=books[(books.indexOf(cur)+1)%books.length];
+      list.appendChild(h('div',{class:'row center noprint',style:'margin-top:16px'},[h('button',{class:'big go',onclick:function(){cur=other;draw();window.scrollTo(0,0)}},['Now the '+BOOKNAME[other]+' →'])]))}
+    if(window.MM_STANDALONE)list.appendChild(h('div',{class:'row center noprint',style:'margin-top:10px'},[h('button',{class:'big plain',onclick:function(){window.print()}},['🖨 Print these pages'])]));
+  }
+  c.appendChild(tabs);c.appendChild(list);app.appendChild(c);draw();window.scrollTo(0,0);
+}
+function wordBank(){
+  var m=h('div',{class:'modal',role:'dialog','aria-modal':'true'}),inner=h('div',{class:'inner card',style:'max-width:720px'});
+  inner.appendChild(h('div',{class:'closeb'},[h('button',{class:'big plain small',onclick:function(){m.remove()}},['✕ Close'])]));
+  inner.appendChild(h('h2',null,['Word bank']));
+  GAME.words.forEach(function(w){
+    var d=h('div',{class:'panel',style:'margin:8px 0'});d.appendChild(h('div',{class:'row'},[h('b',{style:'font-family:var(--display);font-size:26px'},[w[0]]),canSpeak?h('button',{class:'big plain small',onclick:function(){speak(w[0]+'. '+w[1])}},['🔊']):null]));
+    d.appendChild(h('div',{style:'font-weight:700'},[w[1]]));inner.appendChild(d)});
+  m.appendChild(inner);m.addEventListener('click',function(e){if(e.target===m)m.remove()});document.body.appendChild(m);
+}
+
+/* =====================================================================
+   MORE MODELS for Unit 5: equal groups that double, picture counters,
+   dominoes, counting stick, and book tasks (fact tables, hops, colouring)
+   ===================================================================== */
+var BOOKNAME={lb:"Learner's Book",wb:'Workbook'};
+var TCOL={1:'#5B6B8F',2:'#2F7BF5',3:'#FF7A3D',4:'#1FA563',5:'#F4B400',6:'#E0559B',7:'#8A5A2B',8:'#7A4CE0',9:'#16A3A3',10:'#5B6B8F'};
+function tc(k,t){return '<b class="tcol" style="color:'+(TCOL[k]||'var(--ink)')+'">'+(t==null?k:t)+'</b>'}
+
+/* Equal groups: every group is one row of dots. Groups can double, halve, or join together. */
+function GroupsView(n,size,opts){
+  opts=opts||{};
+  var el=h('div',{class:'gv'}),cap=h('div',{class:'arrcap'}),rows=[];
+  var st={n:n,size:size,max:opts.max||Math.max(size,8)};
+  function fit(){var w=el.clientWidth||320;var d=Math.max(9,Math.min(opts.dot||26,Math.floor((w-78)/(st.max*1.32))));el.style.setProperty('--d',d+'px')}
+  function dot(col,isNew,delay){var d=h('i');d.style.background=col;if(isNew){d.className='new';d.style.animationDelay=(delay||0)+'s'}return d}
+  function addRow(anim){
+    var row=h('div',{class:'gvrow'+(anim?' pop':'')}),dots=h('div',{class:'gvdots'}),tot=h('b',{class:'gvtot'});
+    for(var k=0;k<st.size;k++)dots.appendChild(dot(TCOL[opts.color||st.size]||'#2F7BF5'));
+    row.appendChild(dots);row.appendChild(tot);el.appendChild(row);rows.push({row:row,dots:dots,tot:tot});
+  }
+  for(var r=0;r<n;r++)addRow(false);
+  requestAnimationFrame(fit);if(window.ResizeObserver)new ResizeObserver(fit).observe(el);
+  var api={el:el,cap:cap,get n(){return st.n},get size(){return st.size}};
+  api.hideTotals=function(){rows.forEach(function(r){r.tot.textContent='';r.tot.classList.remove('on')})};
+  /* count the groups: size, 2 × size, 3 × size ... */
+  api.count=function(cb,label){api.hideTotals();
+    if(!rows.length){if(label!==false)cap.innerHTML=label||('0 groups = <b>0</b>');if(cb)later(cb,300);return}
+    rows.forEach(function(r,k){later(function(){r.tot.textContent=String((k+1)*st.size);r.tot.classList.add('on');r.row.classList.add('lit');sPop();later(function(){r.row.classList.remove('lit')},300);
+      if(k===rows.length-1)later(function(){if(label!==false)cap.innerHTML=label||(st.n+' groups of '+tc(st.size)+' = <b>'+(st.n*st.size)+'</b>');if(cb)cb()},450)},250+k*380)})};
+  /* every group gets bigger: new dots pop in, in a new colour */
+  api.grow=function(to,cb,col){var add=to-st.size;st.size=to;st.max=Math.max(st.max,to);fit();api.hideTotals();sMagic();
+    rows.forEach(function(r,k){for(var j=0;j<add;j++)r.dots.appendChild(dot(col||TCOL[to]||'#7A4CE0',true,k*.12+j*.05))});
+    later(function(){if(cb)cb()},rows.length*120+add*50+650)};
+  /* every group gets smaller: the extra dots fade away */
+  api.shrink=function(to,cb){var cut=st.size-to;st.size=to;api.hideTotals();sMagic();
+    rows.forEach(function(r,k){var ds=r.dots.children;for(var j=0;j<cut;j++){(function(d,dl){d.style.transitionDelay=dl+'s';d.classList.add('gone');later(function(){d.remove()},700+dl*1000)})(ds[ds.length-1-j],k*.08)}});
+    later(function(){if(cb)cb()},rows.length*80+800)};
+  api.addGroup=function(){st.n++;addRow(true);fit();sPop();return st.n};
+  api.recolor=function(col){rows.forEach(function(r){each(r.dots.children,function(d){d.style.background=col})})};
+  return api;
+}
+
+/* Pictures to count: squares (4 sides), spiders (8 legs), word cards, dominoes */
+function squareSVG(){return '<svg viewBox="0 0 60 60"><rect x="9" y="9" width="42" height="42" fill="#4A63B8"/><g class="parts" stroke-width="6" stroke-linecap="round"><line x1="9" y1="9" x2="51" y2="9"/><line x1="51" y1="9" x2="51" y2="51"/><line x1="51" y1="51" x2="9" y2="51"/><line x1="9" y1="51" x2="9" y2="9"/></g></svg>'}
+function spiderSVG(){var legs='';[[-1,1],[1,1]].forEach(function(sd){for(var i=0;i<4;i++){var y=26+i*7,s=sd[0];legs+='<path d="M'+(40+s*8)+' '+y+' Q'+(40+s*22)+' '+(y-14+i*5)+' '+(40+s*30)+' '+(y+4+i*3)+'"/>'}});
+  return '<svg viewBox="0 0 80 64"><g class="parts" fill="none" stroke-width="3.5" stroke-linecap="round">'+legs+'</g><ellipse cx="40" cy="38" rx="12" ry="14" fill="#2B2B3A"/><circle cx="40" cy="22" r="9" fill="#3B3B4F"/><circle cx="36.5" cy="21" r="3" fill="#fff"/><circle cx="43.5" cy="21" r="3" fill="#fff"/><circle cx="37" cy="21.5" r="1.4" fill="#111"/><circle cx="44" cy="21.5" r="1.4" fill="#111"/></svg>'}
+var PIPS={1:[[1,1]],2:[[0,0],[2,2]],3:[[0,0],[1,1],[2,2]],4:[[0,0],[2,0],[0,2],[2,2]],5:[[0,0],[2,0],[1,1],[0,2],[2,2]],6:[[0,0],[2,0],[0,1],[2,1],[0,2],[2,2]]};
+function dominoSVG(top,bot,col){var s='<svg viewBox="0 0 50 96"><rect x="2" y="2" width="46" height="92" rx="7" fill="#FFF8E7" stroke="#1D2B4F" stroke-width="3"/><line x1="4" y1="48" x2="46" y2="48" stroke="#1D2B4F" stroke-width="2.5"/>';
+  function half(n,y0,c,cls){(PIPS[n]||[]).forEach(function(p){s+='<circle class="'+cls+'" cx="'+(12+p[0]*13)+'" cy="'+(y0+10+p[1]*13)+'" r="5" fill="'+c+'"/>'})}
+  half(top,2,col&&col[0]||'#1D2B4F','pt');half(bot,48,col&&col[1]||'#1D2B4F','pb');return s+'</svg>'}
+function Pics(n,kind,opts){
+  opts=opts||{};var el=h('div',{class:'pics '+kind}),items=[],cap=h('div',{class:'arrcap'});
+  function one(){var p=h('div',{class:'pic'});
+    p.innerHTML=kind==='square'?squareSVG():kind==='spider'?spiderSVG():kind==='domino'?dominoSVG(opts.top,opts.bot,opts.cols):'<span class="word">'+(opts.word||'four')+'</span>';
+    var b=h('b',{class:'pbadge'});p.appendChild(b);el.appendChild(p);items.push(p);return p}
+  for(var i=0;i<n;i++)one();
+  var per=opts.per||(kind==='square'?4:kind==='spider'?8:kind==='domino'?(opts.top+opts.bot):4);
+  var api={el:el,cap:cap,items:items};
+  api.add=function(){var p=one();p.classList.add('pop');sPop();return items.length};
+  /* light up the parts of each picture, then show the running total: 4, 8, 12 ... */
+  api.count=function(cb,label){var t=0;items.forEach(function(p){p.querySelector('.pbadge').classList.remove('on')});
+    function step(k){if(k>=items.length){if(label!==false)cap.innerHTML=label||(items.length+' groups of '+tc(per)+' = <b>'+items.length*per+'</b>');if(cb)cb();return}
+      var p=items[k],parts=p.querySelectorAll('.parts > *');p.classList.add('now');
+      each(parts,function(x,j){later(function(){x.classList.add('lit')},j*(kind==='spider'?70:110))});
+      later(function(){t+=per;var b=p.querySelector('.pbadge');b.textContent=String(t);b.classList.add('on');sPop();p.classList.remove('now');step(k+1)},parts.length*(kind==='spider'?70:110)+260)}
+    step(0)};
+  api.countHalves=function(which,cb){/* dominoes: count the top halves, then the bottom halves */
+    var t=0,n=which==='t'?opts.top:opts.bot;
+    items.forEach(function(p,k){later(function(){each(p.querySelectorAll(which==='t'?'.pt':'.pb'),function(c){c.classList.add('lit')});t+=n;var b=p.querySelector('.pbadge');b.textContent=String(t);b.classList.add('on');b.style.background=which==='t'?TCOL[opts.top]:TCOL[opts.bot];sPop();
+      if(k===items.length-1)later(function(){if(cb)cb(t)},400)},200+k*420)})};
+  return api;
+}
+
+/* Counting stick: ten parts. Tap the next mark to count in 3s; more rows can be added under it. */
+function CountingStick(step,opts){
+  opts=opts||{};var el=h('div',{class:'cstick'}),stick=h('div',{class:'stickbar'}),rowsEl=h('div',{class:'stickrows'});
+  for(var i=0;i<10;i++)stick.appendChild(h('span',{style:'background:'+(i%2?'#F4B400':'#E5484D')}));
+  el.appendChild(h('div',{class:'zero'},['0']));el.appendChild(stick);el.appendChild(rowsEl);
+  var rows=[];
+  function addRow(k,col){var r=h('div',{class:'srow'}),cells=[];r.appendChild(h('span',{class:'slab',style:'background:'+col},[k+'s']));
+    for(var i=1;i<=10;i++){var c=h('button',{class:'scell','aria-label':String(i*k)},['?']);c.style.left=(i*10)+'%';r.appendChild(c);cells.push(c)}
+    rowsEl.appendChild(r);var R={k:k,cells:cells,col:col,next:0};rows.push(R);return R}
+  var api={el:el,rows:rows};
+  api.addRow=addRow;
+  api.reveal=function(R,i,anim){var c=R.cells[i];c.textContent=String((i+1)*R.k);c.classList.add('on');c.style.background=R.col;c.style.borderColor=R.col;if(anim!==false){c.classList.add('pop');sPop()}};
+  api.revealAll=function(R,cb,gap){R.cells.forEach(function(c,i){later(function(){api.reveal(R,i)},i*(gap||170))});later(function(){if(cb)cb()},10*(gap||170)+300)};
+  return api;
+}
+
+/* ---------- shared book tasks ---------- */
+/* hop along a number line and write each landing number into the book */
+function hopTask(a,api,bk,cfg,done){
+  var s=cfg.start,st=cfg.step,n=cfg.ids.length,seq=[];for(var i=1;i<=n;i++)seq.push(s+i*st);
+  var mn=cfg.min!=null?cfg.min:Math.max(0,s-(s%10===0?0:s%10)),mx=cfg.max!=null?cfg.max:seq[n-1]+(10-seq[n-1]%10)%10;
+  var labels=[s];for(var v=Math.ceil(mn/10)*10;v<=mx;v+=10)if(labels.indexOf(v)<0&&Math.abs(v-s)>2)labels.push(v);
+  var nl=NumberLine(mn,mx,{labels:labels,start:s,hopper:cfg.hopper});var p=h('div',{class:'panel'});p.appendChild(nl.el);a.appendChild(p);
+  nl.tks[s]&&nl.tks[s].classList.add('start');
+  each(nl.el.querySelectorAll('.tk'),function(t){if(+t.textContent!==s){t.style.background='transparent';t.style.border='0';t.style.color='var(--soft)';t.style.fontSize='14px'}});
+  function chipAt(v){var t=h('button',{class:'tk on'},[String(v)]);t.style.left=nl.X(v)+'%';t.style.background=TCOL[st]||'var(--b5)';t.style.borderColor=TCOL[st]||'var(--b5)';nl.el.appendChild(t)}
+  var k=0,ctl=h('div');a.appendChild(ctl);
+  function hopBtn(){ctl.innerHTML='';if(k>=n){if(done)done(seq);return}
+    var from=k?seq[k-1]:s,to=seq[k];
+    var b=h('button',{class:'big',style:'background:'+(TCOL[st]||'var(--b5)')+';color:#fff'},[(cfg.hopper||'🐸')+' Hop + '+st]);ctl.appendChild(h('div',{class:'row center'},[b]));
+    if(cfg.auto&&k>=cfg.auto){b.remove();go();return}
+    b.onclick=function(){b.parentNode.remove();go()};
+    function go(){nl.hop(to,'+'+st,function(){
+      if(cfg.auto&&k>=cfg.auto){chipAt(to);bk.write(cfg.ids[k]);k++;later(hopBtn,450);return}
+      ctl.appendChild(h('p',{class:'task',style:'text-align:center'},['Where did '+(cfg.who||'the frog')+' land? '+from+' + '+st+' = ?']));
+      var opts=shuffle([to,to+1,to-1].filter(function(x,i,arr){return arr.indexOf(x)===i}));
+      choiceQ(ctl,api,opts.map(function(v){return v===to?{label:String(v),ok:true}:{label:String(v),why:'Count on '+st+' from '+from+'. Use your fingers: '+Array.apply(null,Array(st)).map(function(_,j){return from+j+1}).join(', ')+'.'}}),
+        function(){chipAt(to);bk.write(cfg.ids[k]);k++;later(hopBtn,650)},{cls:function(){return 'big plain'}})})}
+  }
+  later(hopBtn,300);
+  return nl;
+}
+/* colour cells on a number grid in the book */
+function colourTask(a,api,bk,cfg,done){
+  var need=[],got=0,hots={},cnt=0;
+  for(var n=cfg.from;n<=cfg.to;n++){(function(n){var b=cfg.cell(n),ok=cfg.yes(n);if(ok)need.push(n);
+    hots[n]=bk.hot(b[0],b[1],b[2],b[3],String(n),function(){
+      if(hots[n].classList.contains('used'))return;
+      if(ok){hots[n].classList.add('used');hots[n].style.background='transparent';bk.fill(b[0]+3,b[1]+3,b[2]-6,b[3]-6,cfg.col);got++;cnt++;info.innerHTML=cfg.say(n,true,got);
+        if(got===need.length){helpRow.remove();feedback(a,'good',cfg.allDone||'<b>All coloured!</b>');done()}}
+      else{api.miss();sBad();hots[n].classList.remove('badtap');void hots[n].offsetWidth;hots[n].classList.add('badtap');info.innerHTML=cfg.say(n,false,got)}
+    },false)})(n)}
+  var info=h('div',{class:'panel',style:'text-align:center;font-weight:800;font-size:19px'},[cfg.intro||'👆 Tap the numbers in the book.']);a.appendChild(info);
+  var helpRow=h('div',{class:'row center'});
+  var hb=h('button',{class:'big plain small'},['💡 Show me the next one']);hb.onclick=function(){var n=need.filter(function(x){return !hots[x].classList.contains('used')})[0];if(n==null)return;
+    var b=cfg.cell(n);var g=bk.glow(b[0],b[1],b[2],b[3]);later(function(){g.remove()},1800);info.innerHTML=cfg.hint(n)};
+  helpRow.appendChild(hb);a.appendChild(helpRow);
+}
+/* fill in a doubling / halving table in the book, one empty cell at a time, with groups that grow or shrink */
+function factTable(a,api,bk,items,done){
+  var k=0,area=h('div');a.appendChild(area);var glows=[];
+  function clearG(){glows.forEach(function(g){g.remove()});glows=[]}
+  function step(){area.innerHTML='';clearG();if(k>=items.length){done();return}
+    var it=items[k];var A=ANS[it.from],B=ANS[it.id];
+    if(A)glows.push(bk.glow(A[1],A[2],A[3],A[4]));else if(it.fromCell)glows.push(bk.glow(it.fromCell[0],it.fromCell[1],it.fromCell[2],it.fromCell[3]));
+    glows.push(bk.glow(B[1],B[2],B[3],B[4]));
+    var dbl=it.to>it.size;
+    area.appendChild(h('p',{class:'task',style:'text-align:center',html:'Empty box '+(k+1)+' of '+items.length+': &nbsp;'+tc(it.size,it.size+' × '+it.n+' = '+it.size*it.n)+' &nbsp;'+(dbl?'<span class="dbl">double →</span>':'<span class="hlv">← halve</span>')+' &nbsp;?'}));
+    var g=GroupsView(it.n,it.size,{max:Math.max(it.size,it.to)});var p=h('div',{class:'panel'});p.appendChild(g.el);p.appendChild(g.cap);area.appendChild(p);
+    g.cap.innerHTML=it.n+' groups of '+tc(it.size)+' = <b>'+it.size*it.n+'</b>';
+    var b=h('button',{class:'big '+(dbl?'go':'magic')},[dbl?'✨ Double every group':'✂️ Halve every group']);area.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.parentNode.remove();(dbl?g.grow:g.shrink)(it.to,function(){
+      g.count(function(){
+        area.appendChild(h('p',{class:'task',style:'text-align:center'},['Which fact goes in the empty box?']));
+        var P=it.to*it.n,opts=[{label:it.to+' × '+it.n+' = '+P,ok:true},{label:it.to+' × '+it.n+' = '+it.size*it.n,why:'The groups changed size, so the product changes too! Count the dots: '+P+'.'},{label:it.size+' × '+(dbl?it.n*2:it.n)+' = '+(dbl?P:it.size*it.n),why:'The number of groups does <b>not</b> change. There are still '+it.n+' groups.'}];
+        choiceQ(area,api,shuffle(opts),function(){bk.write(it.id);feedback(area,'good',(dbl?'Double '+it.size+' is '+it.to+', and double '+it.size*it.n+' is '+P+'.':'Half of '+it.size+' is '+it.to+', and half of '+it.size*it.n+' is '+P+'.')+' The number of groups stays '+it.n+'.');
+          nextBtn(area,k<items.length-1?'Next empty box →':'Finish ✓',function(){k++;step()})},{col:true});
+      },it.n+' groups of '+tc(it.to)+' = <b>'+it.to*it.n+'</b>')})};
+  }
+  step();
+}
+/* choose the best sentence, then it is written on the book's lines */
+function describeTask(a,api,bk,q,opts,ids,done){
+  a.appendChild(h('p',{class:'task'},[q]));
+  choiceQ(a,api,shuffle(opts),function(){ids.forEach(function(id,i){bk.write(id,i*900)});later(done,ids.length*900+300)},{col:true});
+}
+/* small odd/even picture: pairs of dots, a lonely dot glows when the number is odd */
+function oddEvenPic(n){var w=h('span',{style:'display:inline-flex;flex-direction:column;align-items:center;margin:4px 8px;font-weight:800'});w.appendChild(sdots(n,14,isOdd(n)?'var(--b5)':'var(--b2)'));w.appendChild(h('span',null,[n+(isOdd(n)?' odd':' even')]));return w}
+/* a short quiz: several rounds of choices; only the first try of each round counts for the score */
+function mcQuiz(host,api,rounds,cb){
+  var k=0,score=0,area=h('div');host.appendChild(area);
+  function round(){area.innerHTML='';if(k>=rounds.length){area.appendChild(h('div',{class:'bigstate'},['Score: '+score+' / '+rounds.length]));cb(score);return}
+    var R=rounds[k];area.appendChild(h('div',{class:'today',style:'text-align:center'},['Question '+(k+1)+' of '+rounds.length]));
+    if(R.q)area.appendChild(h('div',{class:'bigstate',html:R.q}));if(R.viz)area.appendChild(R.viz());
+    var first=true;
+    choiceQ(area,{miss:function(){if(first){first=false;api.miss()}}},shuffle(R.opts),function(){if(first)score++;if(R.after)R.after(area);feedback(area,'good',R.good||'<b>Yes!</b>');nextBtn(area,'Next →',function(){k++;round()})},{cls:function(){return R.col?'opt':'big plain'},col:R.col});
+  }
+  round();
+}
+/* =====================================================================
+   SMALL HELPERS FOR THIS GAME
+   ===================================================================== */
+/* fill □ × □ = □ in the book with number tiles (either order of the first two numbers is fine) */
+function tilesFact(a,api,bk,ids,ans,tiles,done){
+  var fill=[],nodes=[],g=null,status=h('p',{class:'task',style:'text-align:center',html:'Tap the tiles to fill the boxes: &nbsp;<span style="font-family:var(--display);font-size:28px">□ × □ = □</span>'}),tray=h('div',{class:'tiles'});
+  a.appendChild(status);a.appendChild(tray);
+  function glow(){if(g)g.remove();g=null;var Q=ANS[ids[fill.length]];if(Q)g=bk.glow(Q[1],Q[2],Q[3],Q[4])}
+  shuffle(tiles).forEach(function(n){var t=h('button',{class:'tile'},[String(n)]);t.onclick=function(){
+    if(fill.length>=3||t.classList.contains('used'))return;var Q=ANS[ids[fill.length]];nodes.push(bk.put(Q[1],Q[2],Q[3],Q[4],String(n),'c',Q[7],true));fill.push(n);t.classList.add('used');sPop();
+    if(fill.length<3)glow();else{if(g)g.remove();later(check,250)}};tray.appendChild(t)});
+  glow();
+  function reset(){nodes.forEach(function(n){n.remove()});nodes=[];fill=[];each(tray.children,function(t){t.classList.remove('used')});glow()}
+  function check(){
+    var ok=fill[0]*fill[1]===fill[2]&&((fill[0]===ans[0]&&fill[1]===ans[1])||(fill[0]===ans[1]&&fill[1]===ans[0]));
+    if(!ok){api.miss();sBad();feedback(a,'bad',fill[0]*fill[1]!==fill[2]?fill[0]+' × '+fill[1]+' is not '+fill[2]+'. Look at the picture and count again!':'Look at the picture again: groups of <b>'+ans[0]+'</b>, and <b>'+ans[1]+'</b> groups.');later(reset,1000);return}
+    nodes.forEach(function(n){n.remove()});ids.forEach(function(id,i){bk.write(id,i*200,fill[i])});tray.remove();status.innerHTML=fill[0]+' × '+fill[1]+' = '+fill[2]+' ✓';
+    var fb=a.querySelector(':scope > .fb');if(fb)fb.remove();later(done,800)}
+}
+function panelOf(){var p=h('div',{class:'panel'});each(arguments,function(x){p.appendChild(x)});return p}
+function factCard(txt,k){return h('div',{class:'m',style:'border-color:'+TCOL[k]},[txt])}
+
+
+/* =====================================================================
+   THE BOOK PAGES (Learner's Book pp. 82–86, Workbook pp. 69–72) and their answer key
+   ===================================================================== */
+var PAGES={
+  lb82:{w:1470,h:1700,book:'lb',n:82},lb83:{w:1470,h:1710,book:'lb',n:83},lb84:{w:1470,h:1700,book:'lb',n:84},lb85:{w:1470,h:1650,book:'lb',n:85},lb86:{w:1470,h:810,book:'lb',n:86},
+  wb69:{w:1470,h:880,book:'wb',n:69},wb70:{w:1470,h:1710,book:'wb',n:70},wb71:{w:1470,h:1500,book:'wb',n:71},wb72:{w:1470,h:1670,book:'wb',n:72}
+};
+var ANS={},RINGS={},PENLINES={},FILLS={},DRAWS={},VENN={},FF={},FORMS=[];
+function A(id,p,x,y,w,hh,t,al,f){ANS[id]=[p,x,y,w,hh,String(t),al||'c',f||46]}
+function row(pre,p,xs,y,s,vals,f){vals.forEach(function(v,i){A(pre+i,p,xs[i],y,s,s,v,'c',f||46)})}
+var TEAL='rgba(22,163,163,.45)';
+/* Learner's Book p. 82: the 3 × and 6 × table, and facts with the same value */
+var X82=[272,382,492,601,711,820,930,1039,1149,1259];
+[2,3,4,6,7,8,9,10].forEach(function(n){A('q1_3_'+n,'lb82',X82[n-1],1111,105,104,3*n,'c',42)});
+[2,3,4,5,6,7,8,9].forEach(function(n){A('q1_6_'+n,'lb82',X82[n-1],1220,105,104,6*n,'c',42)});
+A('q2_0','lb82',160,1530,600,55,'3 × 4 = 6 × 2','l',42);A('q2_1','lb82',760,1530,600,55,'3 × 6 = 6 × 3','l',42);
+A('q2_2','lb82',160,1610,600,55,'3 × 8 = 6 × 4','l',42);A('q2_3','lb82',760,1610,600,55,'3 × 10 = 6 × 5','l',42);
+/* p. 83 */
+var X83=[197,579,959],W83=[376,374,375],Y83=[97,199,302,404];
+function c83(r,c){return [X83[c],Y83[r],W83[c],98]}
+[['0_0','3 × 5 = 15'],['1_2','6 × 7 = 42'],['2_0','3 × 8 = 24'],['3_2','6 × 9 = 54']].forEach(function(e){var rc=e[0].split('_'),b=c83(+rc[0],+rc[1]);A('q3_'+e[0],'lb83',b[0],b[1],b[2],b[3],e[1],'c',40)});
+function g83(n){var k=n-1;return [[149,229,308,388,468,549,628,709,788,868][k%10],[905,985,1065,1145,1225,1305,1385,1465,1545,1625][Math.floor(k/10)],75,75]}
+FILLS.lb83=[9,18,27,36,45,54,63,72,81,90,99].map(function(n){var b=g83(n);return [b[0]+3,b[1]+3,b[2]-6,b[3]-6,TEAL]});
+A('q4a','lb83',975,980,470,50,'A diagonal line!','l',36);A('q4b','lb83',975,1050,470,50,'Tens go up 1,','l',36);A('q4c','lb83',975,1120,470,50,'ones go down 1.','l',36);
+/* p. 84 */
+A('q5a','lb84',160,185,1260,48,'Add the 3 and 6 tables together, because 3 + 6 = 9.','l',34);
+A('q5b','lb84',160,263,1260,48,'Example: 3 × 2 = 6 and 6 × 2 = 12, so 9 × 2 = 6 + 12 = 18.','l',34);
+var WALL={
+  a84:{page:'lb84',bot:[3,3,3],b:[[296,723,127,127],[428,723,127,127],[560,723,126,127]],m:[[362,592,127,127],[494,592,127,127]],t:[428,460,127,127],font:56},
+  b84:{page:'lb84',bot:[1,9,1],b:[[874,723,127,127],[1006,723,127,127],[1136,723,127,127]],m:[[940,592,127,127],[1072,592,127,127]],t:[1006,460,127,127],font:56},
+  a70:{page:'wb70',bot:[1,3,1],b:[[243,1207,88,89],[336,1208,88,88],[429,1207,88,89]],m:[[289,1115,89,88],[382,1115,88,88]],t:[336,1022,88,88],font:44},
+  b70:{page:'wb70',bot:[9,1,2],b:[[898,1207,87,89],[990,1207,89,89],[1083,1207,89,89]],m:[[944,1115,87,88],[1036,1115,89,88]],t:[990,1022,89,88],font:44},
+  a71:{page:'wb71',bot:[1,6,1],b:[[229,446,105,104],[338,446,105,104],[447,446,106,104]],m:[[283,335,105,106],[393,335,105,106]],t:[338,226,105,105],font:50},
+  b71:{page:'wb71',bot:[3,1,9],b:[[883,446,105,104],[993,446,104,104],[1102,446,105,104]],m:[[938,335,105,106],[1048,335,104,106]],t:[993,226,104,105],font:50}
+};
+Object.keys(WALL).forEach(function(k){var W=WALL[k],B=W.bot,m0=B[0]*B[1],m1=B[1]*B[2];
+  A(k+'_m0',W.page,W.m[0][0],W.m[0][1],W.m[0][2],W.m[0][3],m0,'c',W.font);A(k+'_m1',W.page,W.m[1][0],W.m[1][1],W.m[1][2],W.m[1][3],m1,'c',W.font);A(k+'_t',W.page,W.t[0],W.t[1],W.t[2],W.t[3],m0*m1,'c',W.font)});
+[213,365,516,667,819].forEach(function(x,i){A('q7_'+i,'lb84',x,1224,119,117,1+9*i,'c',50)});
+A('q7b','lb84',210,1530,1200,50,'They are the multiples of 9 (the 9 times table).','l',38);
+/* p. 85: a picture of 8 × 4 made from the 5 and 3 times tables */
+function penDomino(top,bot){var s='<svg viewBox="0 0 50 96" width="100%" height="100%"><rect x="3" y="3" width="44" height="90" rx="7" fill="none" stroke="#D81B60" stroke-width="3"/><line x1="5" y1="48" x2="45" y2="48" stroke="#D81B60" stroke-width="2.5"/>';
+  [[top,2],[bot,48]].forEach(function(hf){(PIPS[hf[0]]||[]).forEach(function(p){s+='<circle cx="'+(12+p[0]*13)+'" cy="'+(hf[1]+10+p[1]*13)+'" r="4.6" fill="#D81B60"/>'})});return s+'</svg>'}
+function drawDominoes(v,now,cfg){
+  cfg.xs.forEach(function(x,i){var d=h('div',{class:'pend'+(now?' now':''),html:penDomino(cfg.top,cfg.bot)});if(!now)d.style.animationDelay=(i*.35)+'s';v.place(x,cfg.y,cfg.w,cfg.h,d)});
+  var t=v.put(cfg.tx,cfg.ty,cfg.tw,60,cfg.text,'l',cfg.font||44,!!now);if(!now)later(function(){t.classList.add('go');sWrite()},cfg.xs.length*350+200);
+}
+var DOM85={xs:[358,578,798,1018],y:600,w:156,h:300,top:5,bot:3,tx:200,ty:1120,tw:1150,text:'8 × 4 = 5 × 4 + 3 × 4 = 20 + 12 = 32'};
+DRAWS.lb85=function(v,now){drawDominoes(v,now,DOM85)};
+/* p. 86: facts connected to 6 × 9 = 54, written at the ends of the arrows */
+var STAR9=[[615,222,300,50],[960,292,360,50],[960,540,360,50],[615,598,300,50],[250,546,350,50],[250,292,350,50]];
+['9 × 6 = 54','54 ÷ 6 = 9','54 ÷ 9 = 6','3 × 9 = 27','12 × 9 = 108','27 + 27 = 54'].forEach(function(t,i){var p=STAR9[i];A('q9_'+i,'lb86',p[0],p[1],p[2],p[3],t,'c',38)});
+/* Workbook p. 69 */
+row('w1_','wb69',[203,314,425,537,647,758,869,981],572,85,[6,9,12,15,18,21,24,27]);
+A('w1t','wb69',160,800,1240,48,'They go odd, even, odd, even. They are multiples of 3.','l',36);
+/* p. 70 */
+row('w2_','wb70',[217,329,440,550,662,773,884,995],147,85,[12,18,24,30,36,42,48,54]);
+A('w2t','wb70',175,322,1240,48,'They are all even numbers. They are multiples of 6.','l',36);
+function c70(r,c){return [[177,426,675][c],[482,570,657,745][r],244,83]}
+[['0_2','6 × 2 = 12'],['1_2','6 × 6 = 36'],['2_0','3 × 4 = 12'],['3_0','3 × 1 = 3']].forEach(function(e){var rc=e[0].split('_'),b=c70(+rc[0],+rc[1]);A('w3_'+e[0],'wb70',b[0],b[1],b[2],b[3],e[1],'c',36)});
+row('w5_','wb70',[217,329,440,550,662],1471,85,[17,26,35,44,53]);
+A('w5t','wb70',175,1645,1240,48,'They go odd, even, odd, even, odd.','l',36);
+/* p. 71 */
+A('w7','wb71',160,862,640,50,'9 × 7 = 63. She travels 63 metres.','l',36);
+/* p. 72: the picture for 9 × 6, and the 3, 6 and 9 table */
+var DOM72={xs:[302,472,642,812,982,1152],y:70,w:120,h:230,top:5,bot:4,tx:220,ty:620,tw:1150,text:'9 × 6 = 5 × 6 + 4 × 6 = 30 + 24 = 54'};
+DRAWS.wb72=function(v,now){drawDominoes(v,now,DOM72)};
+var X72=[178,419,666,912,1159],W72=[237,242,241,242,241],Y72=[866,953,1041,1129];
+function c72(r,c){return [X72[c],Y72[r],W72[c],83]}
+[['0_0','3 × 3 = 9'],['0_4','9 × 3 = 27'],['1_2','6 × 10 = 60'],['1_4','9 × 10 = 90'],['2_0','3 × 9 = 27'],['2_4','9 × 9 = 81'],['3_2','6 × 0 = 0'],['3_4','9 × 0 = 0']].forEach(function(e){var rc=e[0].split('_'),b=c72(+rc[0],+rc[1]);A('w9_'+e[0],'wb72',b[0],b[1],b[2],b[3],e[1],'c',32)});
+
+/* =====================================================================
+   SMALL HELPERS FOR THIS GAME
+   ===================================================================== */
+/* multiply the bricks next to each other, from the bottom row to the top */
+function brickTask(a,api,bk,key,done){
+  var W=WALL[key],B=W.bot,steps=[{x:B[0],y:B[1],r:[W.b[0],W.b[1]],id:key+'_m0'},{x:B[1],y:B[2],r:[W.b[1],W.b[2]],id:key+'_m1'},{x:B[0]*B[1],y:B[1]*B[2],r:[W.m[0],W.m[1]],id:key+'_t'}],k=0,area=h('div'),gl=[];a.appendChild(area);
+  function step(){area.innerHTML='';gl.forEach(function(g){g.remove()});gl=[];if(k>=3){done();return}
+    var S=steps[k],P=S.x*S.y;S.r.forEach(function(r){gl.push(bk.glow(r[0],r[1],r[2],r[3]))});
+    area.appendChild(h('div',{class:'bigstate'},[S.x+' × '+S.y+' = ?']));
+    var big=Math.max(S.x,S.y),sm=Math.min(S.x,S.y);
+    if(sm===1)area.appendChild(h('div',{class:'frame',html:'Times 1 is easy: <b>1 group of '+big+'</b> is just '+big+'!'}));
+    else if(P===81)area.appendChild(h('div',{class:'frame',html:'Tip: 9 × 10 = 90. Take away one 9: <b>90 − 9 = 81</b>.'}));
+    if(sm>1){var g=GroupsView(sm,big,{max:big,dot:P>40?16:24});area.appendChild(panelOf(g.el,g.cap));later(function(){g.count(null,sm+' groups of '+tc(big)+' = <b>'+P+'</b>')},200)}
+    var opts=[{label:String(P),ok:true},{label:String(S.x+S.y),why:S.x+' + '+S.y+' = '+(S.x+S.y)+'. That is adding! We need to <b>multiply</b>.'},{label:String(P+big),why:'Count the groups again: '+sm+' groups of '+big+'.'}];
+    if(S.x+S.y===P)opts.splice(1,1);
+    choiceQ(area,api,shuffle(opts),function(){bk.write(S.id);k++;later(step,900)},{cls:function(){return 'big plain'}});
+  }
+  step();
+}
+/* tap a start number; the kangaroo writes a sequence with the rule into the book */
+function panelOfSeq(nums,col){var s=h('div',{class:'strip'});nums.forEach(function(n){s.appendChild(h('span',{style:'background:'+(col||'#F4F8FE')},[String(n)]))});return s}
+
+/* =====================================================================
+   LESSON 1 — Build the 3, 6 and 9 tables (Learner's Book pp. 82–83)
+   ===================================================================== */
+function k1Warm(st,api){
+  st.appendChild(guide('This is a <b>counting stick</b>. Count in 3s! Tap the next mark.'));
+  var cs=CountingStick(3);st.appendChild(panelOf(cs.el));var R3=cs.addRow(3,TCOL[3]);var area=h('div');st.appendChild(area);
+  var info=h('div',{class:'frame',html:'Start at 0. Jump 3. Tap the first glowing mark!'});st.insertBefore(info,area);
+  function glowNext(){R3.cells.forEach(function(c,i){c.classList.toggle('next',i===R3.next)})}
+  R3.cells.forEach(function(c,i){c.onclick=function(){if(c.classList.contains('on'))return;
+    if(i===R3.next){cs.reveal(R3,i);R3.next++;info.innerHTML='Count in 3s: '+R3.cells.slice(0,R3.next).map(function(x){return x.textContent}).join(', ');speak(c.textContent);glowNext();if(R3.next===10)later(dbl,500)}
+    else{api.miss();sBad();c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');info.innerHTML='Tap the <b>glowing</b> mark. Count on 3 from '+(R3.next*3)+'.'}}});
+  glowNext();
+  function dbl(){var b=h('button',{class:'big',style:'background:'+TCOL[6]+';color:#fff'},['✨ Double every number']);area.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.parentNode.remove();var R6=cs.addRow(6,TCOL[6]);cs.revealAll(R6,function(){info.innerHTML='Double the 3s: <b>6, 12, 18, 24 ...</b> That is the <span class="tcol" style="color:'+TCOL[6]+'">6 times table</span>!';
+      var b2=h('button',{class:'big',style:'background:'+TCOL[9]+';color:#fff'},['➕ Add the 3s and the 6s']);area.appendChild(h('div',{class:'row center'},[b2]));
+      b2.onclick=function(){b2.parentNode.remove();var R9=cs.addRow(9,TCOL[9]);cs.revealAll(R9,function(){info.innerHTML='3 + 6 = 9, 6 + 12 = 18, 9 + 18 = 27 ... That is the <span class="tcol" style="color:'+TCOL[9]+'">9 times table</span>!';
+        area.appendChild(h('p',{class:'task'},['Look at the 4th mark: 3 × 4 = 12 and 6 × 4 = 24. What is 9 × 4?']));
+        choiceQ(area,api,shuffle([{label:'36',ok:true},{label:'48',why:'48 is double 24. We need to <b>add</b>: 12 + 24.'},{label:'32',why:'Add 12 + 24: 10 + 20 = 30 and 2 + 4 = 6.'}]),function(){api.done('<b>12 + 24 = 36.</b> So 9 × 4 = 36!')},{cls:function(){return 'big plain'}})})}})}}
+}
+function k1Discover(st,api){
+  st.appendChild(guide('Let’s make groups! Start with <b>4 groups of 3</b>.'));
+  var g=GroupsView(4,3,{max:9});st.appendChild(panelOf(g.el,g.cap));var area=h('div'),board=h('div',{class:'facts'});st.appendChild(area);st.appendChild(h('p',{class:'task',style:'text-align:center'},['⭐ Our facts:']));st.appendChild(board);
+  g.count(function(){board.appendChild(factCard('3 × 4 = 12',3));
+    var b=h('button',{class:'big go'},['✨ Double every group']);area.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.parentNode.remove();g.grow(6,function(){g.count(function(){
+      area.appendChild(h('p',{class:'task',style:'text-align:center',html:'Each group has '+tc(6)+' now. How many altogether?'}));
+      choiceQ(area,api,shuffle([{label:'24',ok:true},{label:'12',why:'The groups doubled, so the total doubles: 12 + 12.'},{label:'18',why:'Count in 6s: 6, 12, 18, 24.'}]),function(){board.appendChild(factCard('6 × 4 = 24',6));area.innerHTML='';join()},{cls:function(){return 'big plain'}})})})}});
+  function join(){area.appendChild(h('div',{class:'frame',html:'Now put a group of '+tc(3)+' and a group of '+tc(6)+' together. 3 + 6 = <b>9</b>!'}));
+    var g2=GroupsView(4,3,{max:9});area.appendChild(panelOf(g2.el,g2.cap));
+    var b=h('button',{class:'big',style:'background:'+TCOL[9]+';color:#fff'},['➕ Add 6 to every group']);area.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.parentNode.remove();g2.grow(9,function(){g2.count(function(){
+      area.appendChild(h('p',{class:'task',style:'text-align:center'},['12 + 24 = ?']));
+      choiceQ(area,api,shuffle([{label:'36',ok:true},{label:'34',why:'10 + 20 = 30 and 2 + 4 = 6. 30 + 6 = 36.'},{label:'48',why:'That is double 24. Add 12 + 24.'}]),function(){board.appendChild(factCard('9 × 4 = 36',9));
+        api.done('<b>3 × 4 + 6 × 4 = 9 × 4</b><br>12 + 24 = 36. The 3s and the 6s together make the 9s!')},{cls:function(){return 'big plain'}})},'4 groups of '+tc(9)+' = <b>36</b>')},TCOL[6])};
+  }
+}
+function k1Rule(st,api){
+  st.appendChild(guide('Two secrets connect the 3, 6 and 9 times tables. Learn them!'));
+  st.appendChild(h('div',{class:'frame',html:'Secret 1: '+tc(3,'3 ×')+' &nbsp;<span class="dbl">double →</span>&nbsp; '+tc(6,'6 ×')+'<br><small>3 × 5 = 15 &nbsp;→&nbsp; 6 × 5 = 30</small>'}));
+  st.appendChild(h('div',{class:'frame',html:'Secret 2: '+tc(3,'3 ×')+' &nbsp;+&nbsp; '+tc(6,'6 ×')+' &nbsp;=&nbsp; '+tc(9,'9 ×')+'<br><small>15 + 30 = 45 &nbsp;→&nbsp; 9 × 5 = 45</small>'}));
+  var g=GroupsView(5,3,{max:9,dot:20});st.appendChild(panelOf(g.el,g.cap));var area=h('div');st.appendChild(area);
+  g.count(function(){area.appendChild(h('p',{class:'task'},['3 × 5 = 15. Double it! What is 6 × 5?']));
+    choiceQ(area,api,shuffle([{label:'30',ok:true},{label:'20',why:'Double 15 is 15 + 15 = 30.'},{label:'18',why:'Double 15 is 15 + 15 = 30.'}]),function(){g.grow(6,function(){g.count(function(){
+      area.appendChild(h('p',{class:'task'},['3 × 5 = 15 and 6 × 5 = 30. What is 9 × 5?']));
+      choiceQ(area,api,shuffle([{label:'45',ok:true},{label:'60',why:'60 is double 30. Secret 2 says <b>add</b>: 15 + 30.'},{label:'35',why:'15 + 30: 10 + 30 = 40, and 5 more is 45.'}]),function(){g.grow(9,function(){g.count(null,'5 groups of '+tc(9)+' = <b>45</b>')},'#16A3A3');api.done('<b>Yes!</b> 15 + 30 = 45, so 9 × 5 = 45.')},{cls:function(){return 'big plain'}})})})},{cls:function(){return 'big plain'}})});
+}
+function lbQ1(a,api,done){
+  a.appendChild(guide('Fill the table. Count in 3s first. Then double each number for the 6s!'));
+  var bk=BookView('lb82',{crop:[960,1340]});a.appendChild(bk.el);var area=h('div');a.appendChild(area);
+  function rowRun(list,k,prefix,ask,next){var g=null;
+    (function go(i){area.innerHTML='';if(g)g.remove();if(i>=list.length){next();return}
+      var n=list[i],Q=ANS[prefix+n];g=bk.glow(Q[1],Q[2],Q[3],Q[4]);
+      if(i>=3){var b=h('button',{class:'big magic'},['🦘 Roo, fill the rest of the row!']);area.appendChild(h('div',{class:'row center'},[b]));
+        b.onclick=function(){b.parentNode.remove();if(g)g.remove();list.slice(i).forEach(function(m,j){bk.write(prefix+m,j*300)});later(next,list.slice(i).length*300+700)};
+        var c=h('button',{class:'big plain small'},['I want to do it myself']);area.lastChild.appendChild(c);c.onclick=function(){b.parentNode.remove();manual()};return}
+      manual();
+      function manual(){var q=ask(n);area.appendChild(h('p',{class:'task',style:'text-align:center',html:q.text}));
+        choiceQ(area,api,shuffle([{label:String(q.v),ok:true},{label:String(q.v+1),why:q.why},{label:String(q.v-1),why:q.why}]),function(){bk.write(prefix+n);later(function(){go(i+1)},600)},{cls:function(){return 'big plain'}})}
+    })(0)}
+  rowRun([2,3,4,6,7,8,9,10],3,'q1_3_',function(n){var p=3*(n-1);return {v:3*n,text:tc(3,'3 × '+n)+' = ? &nbsp;&nbsp;<small>('+p+' + 3)</small>',why:'Count on 3 from '+p+': '+(p+1)+', '+(p+2)+', <b>'+(p+3)+'</b>.'}},function(){
+    feedback(area,'info','Now the 6s. Look at the number <b>above</b> and <b>double</b> it!');
+    later(function(){rowRun([2,3,4,5,6,7,8,9],6,'q1_6_',function(n){return {v:6*n,text:tc(6,'6 × '+n)+' = ? &nbsp;&nbsp;<small>(double '+3*n+')</small>',why:'Double '+3*n+' is '+3*n+' + '+3*n+' = '+6*n+'.'}},done)},900)});
+}
+function lbQ2(a,api,done){
+  a.appendChild(guide('Some facts in the 3 and 6 tables have the <b>same value</b>. Look: 3 × 2 = 6 × 1.'));
+  var bk=BookView('lb82',{crop:[960,1700]});a.appendChild(bk.el);var area=h('div');a.appendChild(area);
+  var list=[4,6,8,10],k=0;
+  function go(){area.innerHTML='';if(k>=list.length){done();return}var n=list[k],m=n/2,P=3*n;
+    area.appendChild(h('div',{class:'bigstate',html:tc(3,'3 × '+n+' = '+P)+' &nbsp;= &nbsp;'+tc(6,'6 × ?')}));
+    var g1=GroupsView(n,3,{max:6,dot:18}),g2=GroupsView(m,6,{max:6,dot:18});
+    var two=h('div',{class:'row center',style:'align-items:flex-start;gap:18px'},[h('div',{style:'flex:1;min-width:220px'},[g1.el,g1.cap]),h('div',{style:'flex:1;min-width:220px'},[g2.el,g2.cap])]);area.appendChild(panelOf(two));
+    g1.count(null,n+' groups of '+tc(3)+' = <b>'+P+'</b>');
+    choiceQ(area,api,shuffle([{label:'6 × '+m,ok:true},{label:'6 × '+n,why:'6 × '+n+' = '+6*n+'. That is too many! Look at the pink groups.'},{label:'6 × '+(m+1),why:'6 × '+(m+1)+' = '+6*(m+1)+', not '+P+'.'}]),function(){g2.count(function(){bk.write('q2_'+k);feedback(area,'good','<b>'+n+' groups of 3 = '+m+' groups of 6 = '+P+'</b><br>Two 3s make one 6!');nextBtn(area,k<list.length-1?'Next →':'Finish ✓',function(){k++;go()})},m+' groups of '+tc(6)+' = <b>'+P+'</b>')},{cls:function(){return 'big plain'}});
+  }
+  go();
+}
+function lbQ3(a,api,done){
+  a.appendChild(guide('Fill the empty boxes. <span class="dbl">double →</span> or <span class="hlv">← halve</span>? Watch the groups!'));
+  var bk=BookView('lb83',{crop:[0,520]});a.appendChild(bk.el);
+  factTable(a,api,bk,[{fromCell:c83(0,2),id:'q3_0_0',size:6,to:3,n:5},{fromCell:c83(1,0),id:'q3_1_2',size:3,to:6,n:7},{fromCell:c83(2,2),id:'q3_2_0',size:6,to:3,n:8},{fromCell:c83(3,0),id:'q3_3_2',size:3,to:6,n:9}],done);
+}
+function lbQ4(a,api,done){
+  a.appendChild(guide('Colour the multiples of <span class="tcol" style="color:#16A3A3">9</span>. Count on 9 each time!'));
+  var bk=BookView('lb83',{crop:[740,1710]});a.appendChild(bk.el);
+  colourTask(a,api,bk,{from:1,to:100,cell:g83,yes:function(n){return n%9===0},col:TEAL,intro:'👆 Tap the multiples of 9 in the book. The first one is 9.',
+    say:function(n,ok){return ok?'<b>'+n+'</b> = 9 × '+n/9+' ✓ &nbsp;Tip: add 10, then take away 1!':'<b>'+n+'</b> is not a multiple of 9. Count in 9s: 9, 18, 27 ...'},
+    hint:function(n){return n===9?'Start at <b>9</b>!':(n-9)+' + 9 = <b>'+n+'</b> &nbsp;(+10 then −1)'},allDone:'<b>9, 18, 27, 36, 45, 54, 63, 72, 81, 90, 99!</b>'},function(){
+    describeTask(a,api,bk,'Describe the pattern you made.',[{label:'A diagonal line! The tens digit goes up 1 and the ones digit goes down 1.',ok:true},{label:'A straight line going down.',why:'Look again: each 9 is one row down and one place to the left. That is a diagonal!'},{label:'They are all even.',why:'9, 27 and 45 are odd. They go odd, even, odd, even.'}],['q4a','q4b','q4c'],done)});
+}
+function k1Practise(st,api){questionRun(st,api,[lbQ1,lbQ2,lbQ3,lbQ4],['Q1','Q2','Q3','Q4'],'<b>Pages 82 and 83 are finished!</b>')}
+function k1Check(st,api){
+  st.appendChild(guide('Kangaroo quiz! Use the secrets: double the 3s, add the 3s and 6s.'));
+  var n1=pick([4,6,7,8]),n2=pick([2,3,5]),n3=pick([4,6,7]),g;
+  mcQuiz(st,api,[
+    {q:tc(3,'3 × '+n1+' = '+3*n1)+' &nbsp;<span class="dbl">double →</span>&nbsp; '+tc(6,'6 × '+n1+' = ?'),viz:function(){g=GroupsView(n1,3,{max:6,dot:20});return panelOf(g.el)},after:function(){g.grow(6)},
+      opts:[{label:String(6*n1),ok:true},{label:String(3*n1+3),why:'Double '+3*n1+': '+3*n1+' + '+3*n1+'.'},{label:String(3*n1),why:'The groups double, so the product doubles too.'}],good:'<b>Yes!</b> Double '+3*n1+' is '+6*n1+'.'},
+    {q:tc(3,'3 × '+n2+' = '+3*n2)+' and '+tc(6,'6 × '+n2+' = '+6*n2)+'<br>'+tc(9,'9 × '+n2+' = ?'),viz:function(){g=GroupsView(n2,3,{max:9,dot:20});return panelOf(g.el)},after:function(){g.grow(9,null,TCOL[6])},
+      opts:[{label:String(9*n2),ok:true},{label:String(12*n2),why:'That is double '+6*n2+'. Add '+3*n2+' + '+6*n2+'.'},{label:String(9*n2+1),why:'Add '+3*n2+' + '+6*n2+'.'}],good:'<b>Yes!</b> '+3*n2+' + '+6*n2+' = '+9*n2+'.'},
+    {q:'Which number is a multiple of 3?',opts:[{label:'21',ok:true},{label:'20',why:'Count in 3s: 18, 21, 24. 20 is not there.'},{label:'25',why:'Count in 3s: 24, 27. 25 is not there.'}],good:'<b>21 = 3 × 7</b>'},
+    {q:tc(6,'6 × '+n3+' = '+6*n3)+' &nbsp;<span class="hlv">← halve</span>&nbsp; '+tc(3,'3 × '+n3+' = ?'),opts:[{label:String(3*n3),ok:true},{label:String(12*n3),why:'That is double. We need half.'},{label:String(6*n3-3),why:'Halve '+6*n3+'.'}],good:'<b>Yes!</b> Half of '+6*n3+' is '+3*n3+'.'}
+  ],function(){bonus(st,'Which number is in the 3, 6 <b>and</b> 9 times tables?',[{label:'18',ok:true},{label:'12',why:'12 is not a multiple of 9.'},{label:'27',why:'27 is not a multiple of 6.'}],'<b>18!</b> 3 × 6, 6 × 3 and 9 × 2 all make 18.');api.done()});
+}
+
+/* =====================================================================
+   LESSON 2 — Connect the 3, 6 and 9 tables (Learner's Book pp. 84–86)
+   ===================================================================== */
+function k2Warm(st,api){
+  st.appendChild(guide('A <b>brick wall</b>! Multiply two bricks next to each other. The answer goes in the brick above.'));
+  var vals=[[2,1,3],[null,null],[null]],wrap=h('div',{class:'bricks'}),els=[[],[],[]];
+  [2,1,0].forEach(function(r){var br=h('div',{class:'br'});vals[r].forEach(function(v,i){var s=h('span',{class:v==null?'q':''},[v==null?'?':String(v)]);els[r][i]=s;br.appendChild(s)});wrap.appendChild(br)});
+  st.appendChild(panelOf(wrap));var area=h('div');st.appendChild(area);
+  var plan=[{a:[0,0],b:[0,1],to:[1,0]},{a:[0,1],b:[0,2],to:[1,1]},{a:[1,0],b:[1,1],to:[2,0]}],k=0;
+  function v(rc){return vals[rc[0]][rc[1]]}
+  function step(){area.innerHTML='';each(wrap.querySelectorAll('span'),function(s){s.classList.remove('hot')});if(k>=3){api.done('<b>The wall is finished!</b> 2 × 1 = 2, 1 × 3 = 3, 2 × 3 = 6.');return}
+    var P=plan[k],x=v(P.a),y=v(P.b),r=x*y;els[P.a[0]][P.a[1]].classList.add('hot');els[P.b[0]][P.b[1]].classList.add('hot');els[P.to[0]][P.to[1]].classList.add('hot');
+    area.appendChild(h('div',{class:'bigstate'},[x+' × '+y+' = ?']));
+    var opts=[{label:String(r),ok:true},{label:String(x+y),why:x+' + '+y+' is adding. Multiply: '+x+' × '+y+'.'},{label:String(r+1),why:x+' groups of '+y+' is '+r+'.'}].filter(function(o,i,arr){return arr.map(function(q){return q.label}).indexOf(o.label)===i});
+    choiceQ(area,api,shuffle(opts),function(){vals[P.to[0]][P.to[1]]=r;var s=els[P.to[0]][P.to[1]];s.textContent=String(r);s.classList.remove('q');s.classList.add('pop');k++;later(step,700)},{cls:function(){return 'big plain'}});
+  }
+  step();
+}
+function k2Discover(st,api){
+  st.appendChild(guide('Look at these dominoes. Each one has <b>4 spots</b> on top and <b>5 spots</b> at the bottom: 9 spots!'));
+  var P=Pics(3,'domino',{top:4,bot:5});st.appendChild(panelOf(P.el,P.cap));var area=h('div');st.appendChild(area);
+  var b=h('button',{class:'big',style:'background:#F4B400;color:#fff'},['Count the tops in 4s']);area.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.parentNode.remove();P.countHalves('t',function(t1){P.cap.innerHTML='4 × 3 = <b>'+t1+'</b>';
+    var b2=h('button',{class:'big',style:'background:#16A3A3;color:#fff'},['Count the bottoms in 5s']);area.appendChild(h('div',{class:'row center'},[b2]));
+    b2.onclick=function(){b2.parentNode.remove();P.countHalves('b',function(t2){P.cap.innerHTML='4 × 3 = 12 &nbsp;and&nbsp; 5 × 3 = <b>15</b>';
+      area.appendChild(h('p',{class:'task',style:'text-align:center'},['12 + 15 = ?  That is 9 × 3!']));
+      choiceQ(area,api,shuffle([{label:'27',ok:true},{label:'25',why:'10 + 10 = 20 and 2 + 5 = 7. 20 + 7 = 27.'},{label:'30',why:'Add 12 + 15: 20 + 7 = 27.'}]),function(){
+        api.done('<b>9 × 3 = 5 × 3 + 4 × 3 = 15 + 12 = 27</b><br>Split 9 into 5 and 4. Use two tables you know, then add!')},{cls:function(){return 'big plain'}})})}})};
+}
+function k2Rule(st,api){
+  st.appendChild(guide('Big secret: split the group size into two parts you know. Then <b>add</b> the two answers!'));
+  st.appendChild(h('div',{class:'frame',html:'9 = 5 + 4 &nbsp;→&nbsp; 9 × 3 = 5 × 3 + 4 × 3 = 15 + 12 = 27<br>9 = 3 + 6 &nbsp;→&nbsp; 9 × 3 = 3 × 3 + 6 × 3 = 9 + 18 = 27'}));
+  st.appendChild(h('div',{class:'frame',html:'Careful! Double 6 is <b>12</b>, not 9. So doubling the 6s does <b>not</b> give the 9s.'}));
+  st.appendChild(h('p',{class:'task'},['8 × 4: which two tables can we add?']));
+  choiceQ(st,api,shuffle([{label:'5 × 4 + 3 × 4',ok:true},{label:'5 × 4 + 4 × 4',why:'5 + 4 = 9, not 8.'},{label:'6 × 4 + 3 × 4',why:'6 + 3 = 9, not 8.'}]),function(){
+    st.appendChild(h('p',{class:'task'},['5 × 4 = 20 and 3 × 4 = 12. So 8 × 4 = ?']));
+    choiceQ(st,api,shuffle([{label:'32',ok:true},{label:'30',why:'20 + 12 = 32.'},{label:'24',why:'20 + 12 = 32.'}]),function(){api.done('<b>8 × 4 = 20 + 12 = 32</b>')},{cls:function(){return 'big plain'}})},{cls:function(){return 'big plain'}});
+}
+function lbQ5(a,api,done){
+  a.appendChild(guide('Doubling the 6s does not give the 9s. Watch!'));
+  var bk=BookView('lb84',{crop:[0,340]});a.appendChild(bk.el);
+  var g=GroupsView(2,6,{max:12,dot:20});a.appendChild(panelOf(g.el,g.cap));var area=h('div');a.appendChild(area);
+  g.count(function(){var b=h('button',{class:'big go'},['✨ Double the groups of 6']);area.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.parentNode.remove();g.grow(12,function(){g.count(function(){
+      feedback(area,'bad','Oh no! Double 6 is <b>12</b>, not 9. Too many!');
+      area.appendChild(h('p',{class:'task'},['What could you do instead?']));
+      choiceQ(area,api,shuffle([{label:'Add the 3 times table and the 6 times table, because 3 + 6 = 9.',ok:true},{label:'Double the 3 times table.',why:'Double 3 is 6. That gives the 6s, not the 9s.'},{label:'Add 3 to the 6 times table answer.',why:'6 × 2 + 3 = 15, but 9 × 2 = 18. We must add 3 to <b>every</b> group.'}]),function(){
+        area.innerHTML='';var g2=GroupsView(2,3,{max:9,dot:22});area.appendChild(panelOf(g2.el,g2.cap));
+        g2.count(function(){g2.grow(9,function(){g2.count(function(){bk.write('q5a');bk.write('q5b',900);later(done,1800)},'3 × 2 + 6 × 2 = 6 + 12 = <b>18</b> = '+tc(9,'9 × 2'))},TCOL[6])},'2 groups of '+tc(3)+' = 6. Now add 6 to each group!')},{col:true})},'2 groups of 12 = 24')})}},'2 groups of '+tc(6)+' = <b>12</b>');
+}
+function lbQ6(a,api,done){
+  a.appendChild(guide('Multiply the bricks next to each other. Start at the bottom!'));
+  var bk=BookView('lb84',{crop:[340,880]});a.appendChild(bk.el);var sub=h('div');a.appendChild(sub);
+  sub.appendChild(h('div',{class:'pagehead'},['Wall a']));
+  brickTask(sub,api,bk,'a84',function(){sub.appendChild(h('div',{class:'pagehead'},['Wall b']));brickTask(sub,api,bk,'b84',done)});
+}
+function lbQ7(a,api,done){
+  a.appendChild(guide('The rule is <b>add 9</b>. Choose your start number!'));
+  var bk=BookView('lb84',{crop:[1000,1700]});a.appendChild(bk.el);var area=h('div');a.appendChild(area);
+  Object.keys(ANS).forEach(function(k){if(/^q7_\d$/.test(k))delete SAVE.dyn[k]});persist();
+  area.appendChild(h('p',{class:'task',style:'text-align:center'},['Tap a start number:']));
+  var pad=h('div',{class:'pad'});[1,2,3,4,5,6,7,8,9].forEach(function(s){var b=h('button',null,[String(s)]);b.onclick=function(){pad.remove();run(s)};pad.appendChild(b)});area.appendChild(pad);
+  function run(s){area.innerHTML='';var seq=[0,1,2,3,4].map(function(i){return s+9*i});
+    area.appendChild(h('div',{class:'frame',html:'Tip: + 9 is the same as <b>+ 10, then − 1</b>.'}));
+    var nl=NumberLine(0,50,{labels:[s],start:s,hopper:'🦘'});[0,10,20,30,40,50].forEach(function(v){var t=h('span',{class:'jl',style:'top:126px;color:var(--soft)'},[String(v)]);t.style.left=nl.X(v)+'%';nl.el.appendChild(t)});
+    nl.tks[s].classList.add('start');area.appendChild(panelOf(nl.el));bk.write('q7_0',0,s);var k=1,ctl=h('div');area.appendChild(ctl);
+    function hopB(){ctl.innerHTML='';if(k>=5){partB();return}var to=seq[k],from=seq[k-1];
+      var b=h('button',{class:'big',style:'background:#16A3A3;color:#fff'},['🦘 Hop + 9']);ctl.appendChild(h('div',{class:'row center'},[b]));
+      b.onclick=function(){b.parentNode.remove();nl.hop(to,'+9',function(){ctl.appendChild(h('p',{class:'task',style:'text-align:center'},[from+' + 9 = ?']));
+        choiceQ(ctl,api,shuffle([{label:String(to),ok:true},{label:String(to+1),why:'+ 10 gives '+(from+10)+'. Then − 1 gives '+to+'.'},{label:String(from+10),why:'That is + 10. Now take away 1.'}]),function(){var t=h('button',{class:'tk on'},[String(to)]);t.style.left=nl.X(to)+'%';t.style.background='#16A3A3';t.style.borderColor='#16A3A3';nl.el.appendChild(t);bk.write('q7_'+k,0,to);k++;later(hopB,600)},{cls:function(){return 'big plain'}})})}}
+    later(hopB,400);
+  }
+  function partB(){area.appendChild(h('p',{class:'task'},['b) Start at 9 and add 9: 9, 18, 27, 36, 45 ... How can you describe these numbers?']));
+    area.appendChild(panelOf(panelOfSeq([9,18,27,36,45],'#D3F2F2')));
+    describeTask(area,api,bk,'Choose the best description.',[{label:'They are the multiples of 9 (the 9 times table).',ok:true},{label:'They are all odd.',why:'18 and 36 are even.'},{label:'They are the multiples of 10.',why:'Multiples of 10 end in 0. These do not.'}],['q7b'],done)}
+}
+function lbQ8(a,api,done){
+  a.appendChild(guide('9 × 3 = 5 × 3 + 4 × 3. Now draw <b>8 × 4</b> with the 5 and 3 tables!'));
+  var bk=BookView('lb85',{crop:[0,1440]});a.appendChild(bk.el);
+  var P=Pics(4,'domino',{top:5,bot:3});a.appendChild(panelOf(P.el,P.cap));P.cap.innerHTML='4 dominoes. Each one: 5 spots on top and 3 at the bottom. 5 + 3 = 8!';
+  var area=h('div');a.appendChild(area);
+  var b=h('button',{class:'big',style:'background:#F4B400;color:#fff'},['Count the tops in 5s']);area.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.parentNode.remove();P.countHalves('t',function(){P.cap.innerHTML='5 × 4 = <b>20</b>';
+    var b2=h('button',{class:'big',style:'background:#16A3A3;color:#fff'},['Count the bottoms in 3s']);area.appendChild(h('div',{class:'row center'},[b2]));
+    b2.onclick=function(){b2.parentNode.remove();P.countHalves('b',function(){P.cap.innerHTML='5 × 4 = 20 &nbsp;and&nbsp; 3 × 4 = <b>12</b>';
+      area.appendChild(h('p',{class:'task',style:'text-align:center'},['20 + 12 = ?  That is 8 × 4!']));
+      choiceQ(area,api,shuffle([{label:'32',ok:true},{label:'22',why:'20 + 10 = 30, and 2 more is 32.'},{label:'36',why:'20 + 12: 20 + 10 = 30, then + 2 = 32.'}]),function(){
+        feedback(area,'good','<b>8 × 4 = 5 × 4 + 3 × 4 = 20 + 12 = 32.</b> Now watch the picture go into the book!');DRAWS.lb85(bk,false);bk.el.scrollIntoView({behavior:'smooth',block:'center'});later(done,2400)},{cls:function(){return 'big plain'}})})}})};
+}
+function lbQ9(a,api,done){
+  a.appendChild(guide('You know 6 × 9 = 54. Tap <b>6</b> facts that are connected to it.'));
+  var bk=BookView('lb86',{crop:[0,810]});a.appendChild(bk.el);
+  var arr=ArrayView(6,9,{max:30,item:'smile'});a.appendChild(panelOf(arr.el,h('div',{class:'arrcap',html:'6 rows of 9 = 54'})));
+  a.appendChild(h('div',{class:'frame',html:'Ideas: turn it around · divide · halve the 6 · double the 6 · add two halves'}));
+  var k=0;
+  pickMany(a,api,shuffle([{label:'9 × 6 = 54',ok:true},{label:'54 ÷ 6 = 9',ok:true},{label:'54 ÷ 9 = 6',ok:true},{label:'3 × 9 = 27',ok:true},{label:'12 × 9 = 108',ok:true},{label:'27 + 27 = 54',ok:true},
+    {label:'54 ÷ 3 = 9',why:'54 ÷ 3 is 18. Try 54 ÷ 6 or 54 ÷ 9.'},{label:'9 × 9 = 54',why:'9 × 9 = 81. Count the rows: 6 rows of 9.'},{label:'6 + 9 = 54',why:'6 + 9 = 15. We need to multiply!'}]).map(function(o){if(o.ok)o.onPick=function(){bk.write('q9_'+k,0,o.label);k++};return o}),6,function(){feedback(a,'good','<b>6 connected facts!</b> Halve 6 → 3 × 9 = 27. Double 6 → 12 × 9 = 108.');later(done,900)});
+}
+function k2Practise(st,api){questionRun(st,api,[lbQ5,lbQ6,lbQ7,lbQ8,lbQ9],['Q5','Q6','Q7','Q8','Q9'],'<b>Pages 84, 85 and 86 are finished!</b>')}
+function k2Check(st,api){
+  st.appendChild(guide('Kangaroo jump challenge! Count on from any number.'));
+  var s1=pick([1,2,4]),s2=pick([2,4,8]),s3=pick([1,3,5]);
+  mcQuiz(st,api,[
+    {q:s1+', '+(s1+3)+', '+(s1+6)+', ?',opts:[{label:String(s1+9),ok:true},{label:String(s1+8),why:'The rule is add 3: '+(s1+6)+' + 3.'},{label:String(s1+12),why:'The rule is add 3: '+(s1+6)+' + 3.'}],good:'<b>add 3!</b>'},
+    {q:'Start at '+s2+'. Add 6 each time. Odd or even?',opts:[{label:'Even',ok:true},{label:'Odd',why:s2+' is even and 6 is even. even + even = even.'}],good:'<b>Even!</b> '+[0,1,2,3].map(function(i){return s2+6*i}).join(', ')+' ...'},
+    {q:s3+', '+(s3+9)+', '+(s3+18)+', ?',opts:[{label:String(s3+27),ok:true},{label:String(s3+28),why:'+ 10, then − 1.'},{label:String(s3+26),why:'+ 10, then − 1.'}],good:'<b>add 9!</b> + 10, then − 1.'},
+    {q:'9 × 4 = 3 × 4 + 6 × 4. True or false?',opts:[{label:'True',ok:true},{label:'False',why:'3 + 6 = 9, so 12 + 24 = 36 = 9 × 4. It is true!'}],good:'<b>True!</b> 12 + 24 = 36.'}
+  ],function(){api.done('<b>Hop-tastic!</b>')});
+}
+
+/* =====================================================================
+   HOMEWORK — Workbook pp. 69–72
+   ===================================================================== */
+function wbQ1(st,api){
+  st.appendChild(guide('Use the number line. Jump in 3s!'));
+  var bk=BookView('wb69',{crop:[180,880]});st.appendChild(bk.el);
+  hopTask(st,api,bk,{start:3,step:3,ids:['w1_0','w1_1','w1_2','w1_3','w1_4','w1_5','w1_6','w1_7'],min:0,max:30,auto:3,who:'Roo',hopper:'🦘'},function(){
+    var s=h('div',{class:'panel',style:'text-align:center'});[3,6,9,12,15,18].forEach(function(n){s.appendChild(oddEvenPic(n))});st.appendChild(s);
+    describeTask(st,api,bk,'Describe the numbers. Use odd and even.',[{label:'They go odd, even, odd, even. They are multiples of 3.',ok:true},{label:'They are all odd.',why:'6, 12 and 18 are even.'},{label:'They are all even.',why:'3, 9 and 15 are odd.'}],['w1t'],function(){api.done()})});
+}
+function wbQ2(st,api){
+  st.appendChild(guide('Now jump in 6s, all the way to 60!'));
+  var bk=BookView('wb70',{crop:[0,420]});st.appendChild(bk.el);
+  hopTask(st,api,bk,{start:6,step:6,ids:['w2_0','w2_1','w2_2','w2_3','w2_4','w2_5','w2_6','w2_7'],min:0,max:60,auto:3,who:'Roo',hopper:'🦘'},function(){
+    describeTask(st,api,bk,'Describe the numbers. Use odd and even.',[{label:'They are all even numbers. They are multiples of 6.',ok:true},{label:'They go odd, even, odd, even.',why:'6, 12, 18, 24 all end in 0, 2, 4, 6 or 8. All even!'},{label:'They are all odd.',why:'6 is even and we add 6 (even). even + even = even.'}],['w2t'],function(){api.done()})});
+}
+function wbQ3(st,api){
+  st.appendChild(guide('Fill the table. Remember: change the group size and the product in the same way!'));
+  var bk=BookView('wb70',{crop:[420,860]});st.appendChild(bk.el);
+  factTable(st,api,bk,[{fromCell:c70(0,0),id:'w3_0_2',size:3,to:6,n:2},{fromCell:c70(1,0),id:'w3_1_2',size:3,to:6,n:6},{fromCell:c70(2,2),id:'w3_2_0',size:6,to:3,n:4},{fromCell:c70(3,2),id:'w3_3_0',size:6,to:3,n:1}],function(){api.done('<b>The table is full!</b>')});
+}
+function wbQ4(st,api){
+  st.appendChild(guide('Multiply the bricks next to each other. Start at the bottom!'));
+  var bk=BookView('wb70',{crop:[860,1340]});st.appendChild(bk.el);var sub=h('div');st.appendChild(sub);
+  sub.appendChild(h('div',{class:'pagehead'},['Wall a']));
+  brickTask(sub,api,bk,'a70',function(){sub.appendChild(h('div',{class:'pagehead'},['Wall b']));brickTask(sub,api,bk,'b70',function(){api.done('<b>Both walls are finished!</b>')})});
+}
+function wbQ5(st,api){
+  st.appendChild(guide('The rule is <b>add 9</b>. Start at <b>8</b>. Tip: + 10, then − 1!'));
+  var bk=BookView('wb70',{crop:[1320,1710]});st.appendChild(bk.el);
+  hopTask(st,api,bk,{start:8,step:9,ids:['w5_0','w5_1','w5_2','w5_3','w5_4'],min:0,max:60,who:'Roo',hopper:'🦘'},function(){
+    var s=h('div',{class:'panel',style:'text-align:center'});[8,17,26,35,44,53].forEach(function(n){s.appendChild(oddEvenPic(n))});st.appendChild(s);
+    describeTask(st,api,bk,'Describe the numbers. Use odd and even.',[{label:'They go odd, even, odd, even, odd.',ok:true},{label:'They are all even.',why:'17 and 35 are odd. Adding 9 (odd) changes odd ↔ even every time.'},{label:'They are all odd.',why:'26 and 44 are even.'}],['w5t'],function(){api.done()})});
+}
+function wbQ6(st,api){
+  st.appendChild(guide('Two more brick walls! Multiply the bricks next to each other.'));
+  var bk=BookView('wb71',{crop:[0,600]});st.appendChild(bk.el);var sub=h('div');st.appendChild(sub);
+  sub.appendChild(h('div',{class:'pagehead'},['Wall a']));
+  brickTask(sub,api,bk,'a71',function(){sub.appendChild(h('div',{class:'pagehead'},['Wall b']));brickTask(sub,api,bk,'b71',function(){api.done('<b>Both walls are finished!</b>')})});
+}
+function wbQ7(st,api){
+  st.appendChild(guide('Ruby jumps <b>9 metres</b> each jump. She jumps <b>7</b> times. Help her hop!'));
+  var bk=BookView('wb71',{crop:[580,960]});st.appendChild(bk.el);
+  var nl=NumberLine(0,70,{labels:[0],start:0,hopper:'🦘',only:[0,10,20,30,40,50,60,70].concat([9,18,27,36,45,54,63])});[10,20,30,40,50,60,70].forEach(function(v){var t=h('span',{class:'jl',style:'top:126px;color:var(--soft)'},[String(v)]);t.style.left=nl.X(v)+'%';nl.el.appendChild(t)});
+  st.appendChild(panelOf(nl.el));var area=h('div');st.appendChild(area);var k=0;
+  var b=h('button',{class:'big',style:'background:#16A3A3;color:#fff'},['🦘 Jump 9 metres']);area.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){if(k>=7)return;b.disabled=true;k++;nl.hop(9*k,String(k),function(){var t=h('button',{class:'tk on'},[String(9*k)]);t.style.left=nl.X(9*k)+'%';t.style.background='#16A3A3';t.style.borderColor='#16A3A3';nl.el.appendChild(t);b.disabled=false;
+    if(k===7){b.parentNode.remove();area.appendChild(h('p',{class:'task'},['How far did Ruby travel? Which fact helps?']));
+      choiceQ(area,api,shuffle([{label:'9 × 7 = 63 metres',ok:true},{label:'9 + 7 = 16 metres',why:'7 jumps of 9 is multiplying, not adding.'},{label:'9 × 7 = 56 metres',why:'Look at the number line: the last jump lands on 63.'}]),function(){bk.write('w7');api.done('<b>63 metres!</b> 9 × 7 = 63.')},{col:true})}})};
+}
+function wbQ8(st,api){
+  st.appendChild(guide('8 × 5 = 5 × 5 + 3 × 5. Now show <b>9 × 6</b> with the 5 and 4 tables!'));
+  var bk=BookView('wb71',{crop:[980,1500]});st.appendChild(bk.el);
+  var P=Pics(6,'domino',{top:5,bot:4});st.appendChild(panelOf(P.el,P.cap));P.cap.innerHTML='6 dominoes. Each one: 5 spots on top and 4 at the bottom. 5 + 4 = 9!';
+  var area=h('div');st.appendChild(area);
+  var b=h('button',{class:'big',style:'background:#F4B400;color:#fff'},['Count the tops in 5s']);area.appendChild(h('div',{class:'row center'},[b]));
+  b.onclick=function(){b.parentNode.remove();P.countHalves('t',function(){P.cap.innerHTML='5 × 6 = <b>30</b>';
+    var b2=h('button',{class:'big',style:'background:#16A3A3;color:#fff'},['Count the bottoms in 4s']);area.appendChild(h('div',{class:'row center'},[b2]));
+    b2.onclick=function(){b2.parentNode.remove();P.countHalves('b',function(){P.cap.innerHTML='5 × 6 = 30 &nbsp;and&nbsp; 4 × 6 = <b>24</b>';
+      area.appendChild(h('p',{class:'task',style:'text-align:center'},['30 + 24 = ?  That is 9 × 6!']));
+      choiceQ(area,api,shuffle([{label:'54',ok:true},{label:'44',why:'30 + 20 = 50, and 4 more is 54.'},{label:'56',why:'30 + 24: 30 + 20 = 50, then + 4 = 54.'}]),function(){
+        feedback(area,'good','<b>9 × 6 = 30 + 24 = 54.</b> Here is the picture on the next page!');var bk2=BookView('wb72',{crop:[0,780]});area.appendChild(bk2.el);DRAWS.wb72(bk2,false);later(function(){bk2.el.scrollIntoView({behavior:'smooth',block:'center'})},200);later(function(){api.done()},2800)},{cls:function(){return 'big plain'}})})}})};
+}
+function wbQ9(st,api){
+  st.appendChild(guide('Fill the table. Double or halve between the 3s and 6s. Then <b>add them together</b> for the 9s!'));
+  var bk=BookView('wb72',{crop:[780,1240]});st.appendChild(bk.el);var area=h('div');st.appendChild(area);
+  var rows=[{n:3,t:{fromCell:c72(0,2),id:'w9_0_0',size:6,to:3,n:3}},{n:10,t:{fromCell:c72(1,0),id:'w9_1_2',size:3,to:6,n:10}},{n:9,t:{fromCell:c72(2,2),id:'w9_2_0',size:6,to:3,n:9}},{n:0,t:{fromCell:c72(3,0),id:'w9_3_2',size:3,to:6,n:0}}],r=0;
+  function nextRow(){area.innerHTML='';if(r>=rows.length){api.done('<b>The table is full!</b>');return}var R=rows[r];
+    area.appendChild(h('div',{class:'pagehead'},['Row '+(r+1)+' of 4']));var sub=h('div');area.appendChild(sub);
+    factTable(sub,api,bk,[R.t],function(){addStep(R.n)})}
+  function addStep(n){var sub=h('div');area.appendChild(sub);var id='w9_'+r+'_4',Q=ANS[id],g0=bk.glow(Q[1],Q[2],Q[3],Q[4]);
+    sub.appendChild(h('p',{class:'task',style:'text-align:center',html:tc(3,'3 × '+n+' = '+3*n)+' + '+tc(6,'6 × '+n+' = '+6*n)+' &nbsp;→&nbsp; '+tc(9,'9 × '+n+' = ?')}));
+    if(n===0)sub.appendChild(h('div',{class:'frame',html:'0 groups of anything is <b>0</b>. 0 + 0 = 0!'}));
+    else{var g=GroupsView(n,3,{max:9,dot:n>6?14:20});sub.appendChild(panelOf(g.el,g.cap));later(function(){g.grow(9,function(){g.count(null,n+' groups of '+tc(9)+' = <b>'+9*n+'</b>')},TCOL[6])},300)}
+    var P=9*n;var opts=[{label:'9 × '+n+' = '+P,ok:true},{label:'9 × '+n+' = '+(12*n),why:'That is double '+6*n+'. We need to <b>add</b> '+3*n+' + '+6*n+'.'},{label:'9 × '+n+' = '+(P+1),why:'Add '+3*n+' + '+6*n+'.'}];if(n===0)opts=[opts[0],{label:'9 × 0 = 9',why:'0 groups of 9 is 0.'}];
+    choiceQ(sub,api,shuffle(opts),function(){g0.remove();bk.write(id);nextBtn(sub,r<3?'Next row →':'Finish ✓',function(){r++;nextRow()})},{col:true});
+  }
+  nextRow();
+}
+
+/* =====================================================================
+   LESSONS
+   ===================================================================== */
+var LESSONS={
+  k1:{title:'Build the 3, 6 and 9 tables',when:'Lesson 1 · Learner’s Book pages 82–83',card:'Lesson 1 · LB pages 82–83',color:'#FF7A3D',
+    goal:'I can build the 3, 6 and 9 times tables.',lookWhat:'I can build the multiplication tables for 3, 6 and 9. Double the 3s to get the 6s. Add the 3s and 6s to get the 9s.',copy:'lb',
+    stations:[
+      {name:'Warm up',render:k1Warm,src:'The counting stick'},
+      {name:'Discover',render:k1Discover,src:'Groups of 3, 6 and 9'},
+      {name:'Learn the rule',render:k1Rule,src:'Two secrets'},
+      {name:'Practise',render:k1Practise,src:"Learner's Book questions 1–4"},
+      {name:'Check',render:k1Check,src:'Kangaroo quiz'}
+    ]},
+  k2:{title:'Connect the 3, 6 and 9 tables',when:'Lesson 2 · Learner’s Book pages 84–86',card:'Lesson 2 · LB pages 84–86',color:'#16A3A3',
+    goal:'I can connect the 3, 6 and 9 tables by doubling and adding, and count in 9s from any number.',lookWhat:'I can connect the multiplication tables for 3, 6 and 9 through doubling and adding. I can count in threes, sixes or nines from any start number.',copy:'lb',
+    stations:[
+      {name:'Warm up',render:k2Warm,src:'Brick walls'},
+      {name:'Discover',render:k2Discover,src:'Domino spots'},
+      {name:'Learn the rule',render:k2Rule,src:'Split and add'},
+      {name:'Practise',render:k2Practise,src:"Learner's Book questions 5–9"},
+      {name:'Check',render:k2Check,src:'Kangaroo jump challenge'}
+    ]},
+  hw:{title:'Homework: Workbook pages 69–72',when:'Homework · Workbook pages 69–72',card:'📓 Homework',color:'#5B6B8F',
+    goal:'I can use the 3, 6 and 9 times tables.',lookWhat:'I finished Workbook Exercise 5.3.',copy:'wb',
+    stations:[
+      {name:'Q1',short:'1',c:'#FF7A3D',render:wbQ1,src:'Workbook p. 69'},
+      {name:'Q2',short:'2',c:'#E0559B',render:wbQ2,src:'Workbook p. 70'},
+      {name:'Q3',short:'3',c:'#16A3A3',render:wbQ3,src:'Workbook p. 70'},
+      {name:'Q4',short:'4',c:'#7A4CE0',render:wbQ4,src:'Workbook p. 70'},
+      {name:'Q5',short:'5',c:'#2F7BF5',render:wbQ5,src:'Workbook p. 70'},
+      {name:'Q6',short:'6',c:'#FF7A3D',render:wbQ6,src:'Workbook p. 71'},
+      {name:'Q7',short:'7',c:'#E0559B',render:wbQ7,src:'Workbook p. 71'},
+      {name:'Q8',short:'8',c:'#16A3A3',render:wbQ8,src:'Workbook pp. 71–72'},
+      {name:'Q9',short:'9',c:'#7A4CE0',render:wbQ9,src:'Workbook p. 72'}
+    ]}
+};
+
+home();
+window.__MM={runLesson:runLesson,answerBook:answerBook,LESSONS:LESSONS};
+})();
+</script>
+</body></html>
