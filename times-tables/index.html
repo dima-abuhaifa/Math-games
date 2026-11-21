@@ -273,7 +273,7 @@ function tone(freqs,dur,type){
 var sGood=function(){tone([523,659,784],.1)},sBad=function(){tone([300,220],.15,'sine')},sWin=function(){tone([523,659,784,1047,784,1047,1319],.11)},sPop=function(){tone([660,880],.06)};
 function sNote(i){tone([[523,587,659,698,784,880,988,1047,1175,1319][i%10]],.18,'sine')}
 var canSpeak='speechSynthesis' in window;
-function speak(t){if(!canSpeak||muted)return;try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(String(t).replace(/<[^>]+>/g,'').replace(/×/g,' times ').replace(/□|\?/g,' what '));u.rate=.85;u.lang='en-GB';speechSynthesis.speak(u)}catch(e){}}
+function speak(t){if(!canSpeak||muted)return;try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(String(t).replace(/<[^>]+>/g,'').replace(/×/g,' times '));u.rate=.85;u.lang='en-GB';speechSynthesis.speak(u)}catch(e){}}
 
 /* ---------- helpers ---------- */
 function h(tag,attrs,kids){
@@ -514,7 +514,7 @@ function gaps(n,round){
 function qAnswer(q){return q.form==='mA'?q.a:q.form==='mB'?q.b:q.a*q.b}
 function qText(q,shown){var p=q.a*q.b,box='<span class="q" id="qbox">'+(shown==null?'?':shown)+'</span>';
   if(q.form==='mA')return box+' × '+q.b+' = '+p;if(q.form==='mB')return q.a+' × '+box+' = '+p;return q.a+' × '+q.b+' = '+box}
-function qSpoken(q){var p=q.a*q.b;if(q.form==='mA')return 'what times '+q.b+' equals '+p+'?';if(q.form==='mB')return q.a+' times what equals '+p+'?';return 'What is '+q.a+' times '+q.b+'?'}
+function qSpoken(q){var p=q.a*q.b;if(q.form==='mA')return 'What number times '+q.b+' equals '+p+'?';if(q.form==='mB')return q.a+' times what number equals '+p+'?';return 'What is '+q.a+' times '+q.b+'?'}
 function options(q){var ans=qAnswer(q),c;
   if(q.form==='n')c=[(q.a-1)*q.b,(q.a+1)*q.b,q.a*(q.b+1),q.a*(q.b-1),ans+1,ans-1,ans+2,ans+10,ans-10];
   else c=[ans+1,ans-1,ans+2,ans-2,ans+3];
