@@ -1,0 +1,1515 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script>window.FBH_STANDALONE=true;</script>
+<title>Multiplication Builders</title><link rel="icon" type="image/png" href="../../assets/favicon.png"><link rel="apple-touch-icon" href="../../assets/insightia-logo.png">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&family=Gochi+Hand&display=swap">
+<style>
+/* Layout: lesson map -> one lesson at a time, five steps per lesson.
+   The real book page is always on screen; answers are hand-written into its blanks.
+   Colour code everywhere: FACTOR = purple, MULTIPLE = orange, PRODUCT = blue. One bright look, chosen on purpose for projectors. */
+:root{
+  --bg:#EAF4FF; --paper:#FFFFFF; --ink:#1D2B4F; --soft:#5B6B8F; --line:#C9D8EE;
+  --odd:#FF7A3D; --odd-soft:#FFE6D9; --odd-ink:#B8410C;
+  --even:#2F7BF5; --even-soft:#DCE9FF; --even-ink:#1450B8;
+  --good:#1FA563; --good-soft:#DDF6E8; --bad:#E5484D; --bad-soft:#FFE3E3;
+  --star:#FFC21A; --purple:#7A4CE0; --purple-soft:#EEE7FF; --pen:#D81B60;
+  --e1:#E0559B; --e2:#FF7A3D; --e3:#2F7BF5; --e4:#1FA563; --e5:#7A4CE0;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Trebuchet MS",system-ui,sans-serif;
+  --hand:"Gochi Hand","Comic Sans MS","Segoe Print",cursive;
+  color-scheme:light;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  -webkit-tap-highlight-color:transparent;
+  background-image:radial-gradient(circle at 12px 12px,rgba(47,123,245,.07) 3px,transparent 4px);background-size:28px 28px}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;touch-action:manipulation}
+button:focus-visible{outline:4px solid var(--purple);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding-block:16px 60px}
+.o{color:var(--odd-ink);font-weight:800}.e{color:var(--even-ink);font-weight:800}
+.sub{color:var(--soft);font-size:16px;margin:0}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.center{justify-content:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+
+/* top bar */
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.bar .grow{flex:1}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:800;font-size:16px}
+.pill:hover{border-color:var(--purple)} .pill.on{background:var(--purple-soft);border-color:var(--purple)}
+
+/* buttons */
+.big{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:60px;min-width:110px;padding:10px 24px;border-radius:18px;font-family:var(--display);font-weight:800;font-size:24px;border:3px solid transparent;box-shadow:0 5px 0 rgba(29,43,79,.2);transition:transform .08s}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(29,43,79,.2)}
+.big.odd{background:var(--odd);color:#fff}.big.even{background:var(--even);color:#fff}.big.both{background:var(--purple);color:#fff}
+.big.plain{background:var(--paper);border-color:var(--line)}.big.go{background:var(--good);color:#fff}.big.no{background:var(--bad);color:#fff}
+.big.sel{outline:5px solid var(--star);outline-offset:2px}
+.big.small{min-height:48px;font-size:19px;padding:6px 16px;min-width:0}
+.big[disabled]{opacity:.4;pointer-events:none}
+.opt{background:var(--paper);border:3px solid var(--line);border-radius:18px;padding:12px 18px;font-size:20px;font-weight:800;min-height:58px;text-align:left;box-shadow:0 4px 0 var(--line)}
+.opt:hover{border-color:var(--purple)}.opt.right{background:var(--good-soft);border-color:var(--good)}.opt.wrongpick{background:var(--bad-soft);border-color:var(--bad)}
+.choices{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.choices.col{flex-direction:column;align-items:stretch;max-width:640px;margin-inline:auto}
+
+/* home */
+.hero{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;background:var(--paper);border-radius:30px;padding:22px 26px;border:3px solid var(--line);position:relative;overflow:hidden}
+.hero h1{font-size:clamp(34px,5.6vw,58px);font-weight:800}
+.tag{font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--purple)}
+.days{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:18px}
+.day{text-align:left;background:var(--paper);border:3px solid var(--line);border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:10px;transition:transform .15s,border-color .15s;position:relative}
+.day:hover{transform:translateY(-3px);border-color:var(--c,var(--purple))}
+.day .when{font-weight:800;color:var(--c);text-transform:uppercase;letter-spacing:.06em;font-size:14px}
+.day h2{font-size:28px}
+.day .goal{background:#F4F8FE;border-radius:14px;padding:8px 12px;font-weight:700;font-size:16px}
+.epath{display:flex;gap:6px;flex-wrap:wrap}
+.echip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px 3px 4px;font-size:13px;font-weight:800;color:#fff;background:var(--ec)}
+.echip b{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.3);display:grid;place-items:center;font-size:12px}
+.echip.done::after{content:"\2713";margin-left:2px}
+.daystars{font-size:22px;letter-spacing:2px}
+.star-on{color:var(--star)}.star-off{color:#D5DEEC}
+.mini-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+
+/* mascot + speech */
+.guide{display:flex;gap:12px;align-items:flex-start;margin:6px 0 10px}
+.mascot{flex:none;width:76px;height:76px;animation:bob 2.4s ease-in-out infinite}
+.mascot.huge{width:120px;height:120px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.say{position:relative;background:var(--paper);border:3px solid var(--ink);border-radius:22px;padding:12px 16px;font-size:clamp(19px,2.4vw,23px);font-weight:800;min-width:0;flex:1;max-width:760px}
+.say::before{content:"";position:absolute;left:-14px;top:22px;border:12px solid transparent;border-right-color:var(--ink);border-left:0}
+.say .spk{float:right;margin:-4px -6px 4px 8px;width:42px;height:42px;border-radius:50%;background:var(--purple-soft);font-size:20px}
+.say .nm{display:block;font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em}
+
+/* lesson shell */
+.lesson-head{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--paper);border:3px solid var(--line);border-radius:24px;padding:12px 16px;margin-bottom:12px}
+.schoollogo{width:120px;height:auto;display:block}.lesson-head .schoollogo{width:64px;margin-left:auto}
+@media (max-width:600px){.hero .schoollogo{position:absolute;top:10px;right:10px;width:64px}}
+.lesson-head h2{font-size:clamp(22px,3vw,30px)}
+.today{font-weight:800;color:var(--soft);font-size:15px}
+.today b{color:var(--ink)}
+.stepper{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.step{display:flex;align-items:center;gap:8px;border-radius:16px;padding:6px 12px 6px 6px;background:var(--paper);border:3px solid var(--line);font-weight:800;font-size:15px;opacity:.75}
+.step .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--ec);font-family:var(--display);font-size:16px}
+.step .mins{font-size:12px;color:var(--soft);display:block;font-weight:700}
+.step.now{border-color:var(--ec);opacity:1;box-shadow:0 0 0 4px color-mix(in srgb,var(--ec) 20%,transparent)}
+.step.done{opacity:1}.step.done .n::after{content:"\2713"}.step.done .n span{display:none}
+.card{background:var(--paper);border-radius:28px;border:3px solid var(--line);padding:20px;min-width:0;position:relative}
+.estage-title{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.estage-title .badge{border-radius:999px;padding:4px 14px;color:#fff;font-family:var(--display);font-weight:800;font-size:20px;background:var(--ec)}
+.task{font-size:20px;font-weight:800;margin:8px 0}
+.next-row{display:flex;justify-content:flex-end;margin-top:14px}
+.split{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:start}
+.split > *{min-width:0}
+
+/* book page */
+.bookwrap{margin:8px 0}.bookwrap>.label{display:table;margin:0 6px 8px auto;background:var(--bk,#5B6B8F);color:#fff;border-radius:999px;padding:3px 12px;font-weight:800;font-size:13px}
+.bookwrap.lb{--bk:var(--e2)} .bookwrap.wb{--bk:#5B6B8F}
+.book{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(29,43,79,.18),0 0 0 3px #fff,0 0 0 6px var(--bk,#5B6B8F);background:#fff;container-type:inline-size}
+.book .sheet{position:absolute;left:0;width:100%}
+.book img{display:block;width:100%;height:100%;user-select:none;-webkit-user-drag:none}
+.book.lb{--bk:var(--e2)} .book.wb{--bk:#5B6B8F}
+.hw{position:absolute;display:flex;align-items:center;font-family:var(--hand);color:var(--pen);line-height:1;white-space:nowrap;pointer-events:none;clip-path:inset(0 100% 0 0);font-size:calc(var(--fs) * 1cqw)}
+.hw.c{justify-content:center}
+.hw.shown{clip-path:inset(0 0 0 0)}
+.hw.go{animation:write 1.1s steps(16,end) forwards}
+@keyframes write{to{clip-path:inset(0 0 0 0)}}
+.shade{position:absolute;background:rgba(255,122,61,.62);mix-blend-mode:multiply;border-radius:2px;transform:scale(0);transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+.shade.on{transform:scale(1)}
+.hot{position:absolute;border-radius:10px;z-index:4}
+.hot.hint{animation:hint 1.6s ease-in-out infinite}
+@keyframes hint{0%,100%{box-shadow:0 0 0 0 rgba(122,76,224,0)}50%{box-shadow:0 0 0 4px rgba(122,76,224,.55)}}
+.hot.picked{box-shadow:0 0 0 5px var(--star)!important;animation:none}
+.hot.badtap{animation:badtap .5s}
+@keyframes badtap{0%,100%{background:transparent}40%{background:rgba(229,72,77,.35)}}
+.hot.used{background:rgba(255,255,255,.75);pointer-events:none;animation:none}
+.marker{position:absolute;background:rgba(255,213,0,.45);mix-blend-mode:multiply;border-radius:6px;transform-origin:left;transform:scaleX(0);transition:transform .8s ease}
+.marker.on{transform:scaleX(1)}
+.book svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.book svg.lines line{stroke:var(--pen);stroke-width:7;stroke-linecap:round;stroke-dasharray:600;stroke-dashoffset:600;animation:draw .8s ease forwards}
+.book svg.lines line.bad{stroke:var(--bad);stroke-dasharray:14 12;animation:none;opacity:.9}
+@keyframes draw{to{stroke-dashoffset:0}}
+.spark{position:absolute;z-index:6;pointer-events:none;font-size:22px;animation:spark .9s ease-out forwards}
+@keyframes spark{from{transform:translate(0,0) scale(.4);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(1.1);opacity:0}}
+.pagebtn{display:block;width:100%;padding:0;text-align:left}
+
+/* dots */
+.dotstage{position:relative;margin:6px auto;transition:height .3s;touch-action:pan-y}
+.dotstage.drag{touch-action:none;cursor:grab}
+.dot{position:absolute;border-radius:50%;border:2px solid rgba(29,43,79,.55);transition:left .7s cubic-bezier(.4,1.4,.5,1),top .7s,opacity .5s,transform .5s}
+.dot.B{cursor:grab}
+.dotstage.dragging .dot.B{transition:none}
+.dot.gone{opacity:0;transform:translateY(-40px) scale(.4)!important}
+.dot.marked::after{content:"";position:absolute;inset:-6px;border:3px dashed var(--bad);border-radius:50%}
+.dot.lonely{animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,194,26,.9)}50%{box-shadow:0 0 0 10px rgba(255,194,26,0)}}
+.dlabel{position:absolute;font-family:var(--display);font-weight:800;text-align:center;transition:opacity .4s,left .7s}
+.glowbox{position:absolute;border:4px solid var(--even);border-radius:16px;box-shadow:0 0 0 6px rgba(47,123,245,.15),0 0 24px rgba(47,123,245,.45);opacity:0;transform:scale(1.15);transition:opacity .4s,transform .4s;pointer-events:none}
+.glowbox.on{opacity:1;transform:scale(1)}
+.draghint{position:absolute;font-weight:800;font-size:14px;color:var(--purple);white-space:nowrap;animation:nudge 1.2s ease-in-out infinite;pointer-events:none}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(-10px)}}
+.sdots{display:inline-grid;grid-auto-flow:column;grid-template-rows:repeat(2,var(--s,18px));gap:3px;vertical-align:middle}
+.sdots b{width:var(--s,18px);height:var(--s,18px);border-radius:50%;border:1.5px solid rgba(29,43,79,.45);display:block}
+.sdots b.lone{box-shadow:0 0 0 3px var(--star);animation:pulse 1s infinite}
+.numdots{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
+.pairsblock{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:62px;min-height:40px;padding:4px 10px;border-radius:12px;border:2px dashed var(--even);color:var(--even-ink);font-family:var(--display);font-weight:800;font-size:20px;line-height:1;background:radial-gradient(circle,rgba(47,123,245,.28) 3px,transparent 4px) 0 0/12px 12px,#EEF4FF}
+.pairsblock small{font-family:var(--body);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.plus{font-family:var(--display);font-weight:800;font-size:26px}
+.test{background:#F4F8FE;border:2px solid var(--line);border-radius:18px;padding:10px 12px;margin:8px 0;min-width:0}
+.tests{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.tests .test{margin:0}
+.rl{text-align:center;font-weight:800;font-size:17px;margin-top:2px}
+.eqline{font-family:var(--display);font-size:26px;font-weight:800;text-align:center}
+.chip{display:inline-block;border-radius:999px;padding:1px 12px;font-size:16px;font-weight:800;color:#fff;vertical-align:middle}
+.chip.odd{background:var(--odd)}.chip.even{background:var(--even)}
+.claim{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;font-weight:800;margin:6px 0}
+
+/* pairing towers (engage) */
+.numpad{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;max-width:520px;margin:10px auto}
+.numpad button{height:62px;border-radius:16px;background:var(--paper);border:3px solid var(--line);font-family:var(--display);font-size:30px;font-weight:800}
+.numpad button.odd{background:var(--odd);border-color:var(--odd-ink);color:#fff}
+.numpad button.even{background:var(--even);border-color:var(--even-ink);color:#fff}
+.pairs{display:flex;gap:10px;justify-content:center;align-items:flex-start;min-height:120px;flex-wrap:wrap;margin:10px 0}
+.cap{display:flex;flex-direction:column;gap:6px;padding:6px;border-radius:999px;border:3px solid transparent;animation:capin .4s backwards}
+.cap.full{border-color:rgba(47,123,245,.5);background:rgba(47,123,245,.08)}
+.cap.alone{border-color:transparent}
+.cap i{width:40px;height:40px;border-radius:50%;display:block;border:2px solid rgba(29,43,79,.5)}
+.cap.alone i{animation:pulse 1s infinite}
+@keyframes capin{from{transform:translateY(-30px) scale(.5);opacity:0}}
+.verdict{text-align:center;font-family:var(--display);font-size:clamp(22px,3.2vw,30px);font-weight:800}
+
+/* rule cards */
+.flips{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.flip{perspective:900px;min-height:260px}
+.flip .in{position:relative;width:100%;height:100%;min-height:260px;transition:transform .7s;transform-style:preserve-3d}
+.flip.on .in{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;border:3px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;background:var(--paper)}
+.flip .f{background:linear-gradient(135deg,#7A4CE0,#2F7BF5);color:#fff;font-family:var(--display);font-size:32px;font-weight:800;cursor:pointer;border:0}
+.flip .f small{font-family:var(--body);font-size:15px;opacity:.9}
+.flip .b{transform:rotateY(180deg)}
+.frame{background:#FFF8E1;border:3px solid #F2C94C;border-radius:18px;padding:12px 16px;font-size:clamp(19px,2.4vw,24px);font-weight:800;text-align:center}
+
+/* thumbs */
+.thumbs{display:flex;gap:16px;justify-content:center;margin:12px 0}
+.thumb{width:130px;height:110px;border-radius:24px;font-size:56px;box-shadow:0 6px 0 rgba(29,43,79,.2);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.thumb small{font-family:var(--display);font-weight:800;font-size:18px;color:#fff;margin-top:4px}
+.thumb.up{background:var(--good)}.thumb.down{background:var(--bad)}
+.bigstate{font-family:var(--display);font-size:clamp(28px,5vw,48px);font-weight:800;text-align:center;margin:10px 0}
+
+/* who / stamps */
+.who{display:flex;gap:14px;align-items:flex-start;margin:10px 0;position:relative}
+.avatar{flex:none;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:32px;color:#fff;border:4px solid #fff;box-shadow:0 0 0 3px var(--line)}
+.bubble{position:relative;background:var(--paper);border:3px solid var(--ink);border-radius:22px;padding:12px 16px;font-size:clamp(19px,2.6vw,24px);font-weight:800;min-width:0}
+.bubble::before{content:"";position:absolute;left:-14px;top:22px;border:12px solid transparent;border-right-color:var(--ink);border-left:0}
+.bubble .name{display:block;font-size:14px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em}
+.stamp{position:absolute;right:4%;top:50%;font-family:var(--display);font-weight:800;font-size:clamp(20px,3.4vw,34px);color:var(--bad);border:5px solid var(--bad);border-radius:12px;padding:2px 14px;transform:translateY(-50%) rotate(-10deg) scale(3);opacity:0;transition:transform .35s cubic-bezier(.3,1.5,.5,1),opacity .2s;background:rgba(255,255,255,.85);pointer-events:none}
+.stamp.on{transform:translateY(-50%) rotate(-10deg) scale(1);opacity:1}
+
+/* pascal */
+.pascal{display:flex;flex-direction:column;align-items:center;gap:6px;margin:10px 0}
+.prow{display:flex;gap:6px}
+.pc{width:clamp(36px,6.4vw,54px);height:clamp(36px,6.4vw,54px);border-radius:50%;background:var(--paper);border:3px solid var(--line);font-family:var(--display);font-weight:800;font-size:clamp(15px,2.6vw,22px);transition:background .3s,transform .2s,border-color .3s}
+.pc.ev{background:var(--even);border-color:var(--even-ink);color:#fff;transform:scale(1.05)}
+.pc.od{background:var(--odd-soft);border-color:var(--odd)}
+.pc.shake{animation:shake .4s}
+.pc.parent{box-shadow:0 0 0 5px var(--star)}
+.pc.kid{box-shadow:0 0 0 5px var(--purple)}
+.pascal.reveal .pc.ev{animation:glow 1.2s ease-in-out 2}
+@keyframes glow{50%{box-shadow:0 0 0 8px rgba(47,123,245,.35);transform:scale(1.15)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.found{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.found > span{border-radius:999px;padding:6px 14px;font-weight:800;border:3px dashed var(--line);color:var(--soft)}
+.found > span.got{border-style:solid;border-color:var(--good);background:var(--good-soft);color:var(--ink)}
+
+/* cards game */
+.pcards{display:flex;gap:18px;justify-content:center;align-items:center;margin:10px 0}
+.pcard{width:118px;height:160px;perspective:800px}
+.pcard .in{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+.pcard.on .in{transform:rotateY(180deg)}
+.pcard .f,.pcard .b{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:4px solid #fff;box-shadow:0 6px 16px rgba(29,43,79,.2)}
+.pcard .f{background:repeating-linear-gradient(45deg,#7A4CE0 0 12px,#8E66E8 12px 24px)}
+.pcard .b{transform:rotateY(180deg);background:var(--paper);font-family:var(--display);font-size:54px;font-weight:800;line-height:1}
+
+/* feedback */
+.fb{margin-top:12px;border-radius:18px;padding:12px 16px;font-size:18px;font-weight:700;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;animation:fbin .3s}
+@keyframes fbin{from{transform:translateY(8px);opacity:0}}
+.fb.good{background:var(--good-soft);border:3px solid var(--good)}.fb.bad{background:var(--bad-soft);border:3px solid var(--bad)}.fb.info{background:var(--purple-soft);border:3px solid var(--purple)}
+.fb .msg{flex:1;min-width:200px}.fb .face{font-size:30px;line-height:1}.fb .viz{width:100%}
+
+/* odd lines board */
+.olines{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.olines button{border-radius:12px;padding:6px 10px;font-weight:800;font-size:15px;background:#F1F5FB;color:var(--soft);border:2px solid var(--line)}
+.olines button.ok{background:var(--good-soft);color:var(--good);border-color:var(--good)}
+.olines button.no{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,64px));gap:5px;justify-content:center;margin:10px auto}
+.g4 button{aspect-ratio:1;border:3px solid var(--ink);border-radius:10px;background:#fff;font-family:var(--hand);font-size:34px;color:var(--pen)}
+.tray{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.tray button{min-width:48px;height:52px;border-radius:14px;font-family:var(--display);font-size:24px;font-weight:800;color:#fff}
+.tray .odd{background:var(--odd)}.tray .even{background:var(--even)}
+.tray button.pick{outline:5px solid var(--star);outline-offset:2px}.tray button.used{opacity:.2;pointer-events:none}
+
+/* win / certificate */
+.cert{text-align:center;padding:10px 0}
+.lwicd{max-width:720px;margin:14px auto;border-radius:12px;overflow:hidden;text-align:left}
+.lwicd .t{background:#3F8F9C;color:#fff;font-weight:800;padding:10px 16px;font-size:20px}
+.lwicd .bdy{background:#A0C9CF;padding:14px 16px;display:flex;gap:14px;align-items:center;font-weight:700;font-size:19px}
+.lwicd .box{flex:none;width:40px;height:40px;background:#fff;border-radius:6px;display:grid;place-items:center;font-family:var(--hand);font-size:40px;color:var(--pen)}
+.lwicd .box span{clip-path:inset(0 100% 0 0);animation:write .8s .6s steps(8,end) forwards}
+.bigstars{font-size:60px;letter-spacing:8px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.confetti i{position:absolute;top:-20px;width:12px;height:16px;border-radius:3px;animation:fall 1.9s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* answer book */
+.booktabs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.booktabs button{font-family:var(--display);font-weight:800;font-size:22px;padding:10px 22px;border-radius:16px;border:3px solid var(--line);background:var(--paper)}
+.booktabs button.on.lb{background:var(--odd-soft);border-color:var(--odd)}.booktabs button.on.wb{background:#E7EBF1;border-color:#5B6B8F}
+.pagehead{font-family:var(--display);font-weight:800;font-size:24px;margin-top:16px}
+.modal{position:fixed;inset:0;background:rgba(29,43,79,.6);z-index:50;overflow:auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 30px max(16px,env(safe-area-inset-left,0px))}
+.modal .inner{max-width:1100px;margin:0 auto}
+.modal .closeb{position:sticky;top:0;z-index:10;display:flex;justify-content:flex-end;margin-bottom:8px}
+
+@media (max-width:820px){
+  .split{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  body{font-size:17px}
+  .hero{grid-template-columns:1fr;padding:18px}
+  .card{padding:14px;border-radius:22px}
+  .big{min-width:90px;font-size:21px;padding:8px 16px}
+  .mascot{width:56px;height:56px}
+  .step .t{display:none}
+  .thumb{width:110px;height:96px;font-size:46px}
+  .pcard{width:96px;height:132px}
+  .cap i{width:30px;height:30px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.hw.go{clip-path:inset(0 0 0 0)}}
+@media print{.bar,.booktabs,.noprint{display:none!important}body{background:#fff}.book{break-inside:avoid;box-shadow:none}}
+</style>
+<style>
+/* ---------- Multiplication Builders: colour code ----------
+   HUNDREDS = purple, TENS = blue, ONES = orange, THOUSANDS = green. ESTIMATE = teal. CARRY = pink pen. */
+:root{--hun:#7A4CE0;--hun-ink:#5A2FC0;--hun-soft:#EEE7FF;--ten:#2F7BF5;--ten-ink:#1450B8;--ten-soft:#DCE9FF;--one:#FF7A3D;--one-ink:#B8410C;--one-soft:#FFE6D9;--tho:#1FA563;--tho-ink:#14804B;--tho-soft:#DDF6E8;--est:#00A3A3;--est-ink:#007373;--est-soft:#D9F5F5;--choc:#8B5A3C;--choc-d:#5A3420}
+.hu{color:var(--hun-ink);font-weight:800}.te{color:var(--ten-ink);font-weight:800}.onx{color:var(--one-ink);font-weight:800}.th{color:var(--tho-ink);font-weight:800}.es{color:var(--est-ink);font-weight:800}.ca{color:var(--pen);font-weight:800}
+.statement{font-family:var(--display);font-weight:800;font-size:clamp(22px,3.4vw,30px);text-align:center;margin:6px 0}
+/* chocolate bar */
+.chocbar{display:grid;gap:3px;justify-content:center;margin:10px auto;transition:gap .5s}
+.chocbar i{width:clamp(26px,5vw,40px);aspect-ratio:1;background:var(--choc);border:2px solid var(--choc-d);border-radius:4px;box-shadow:inset 3px 3px 0 rgba(255,255,255,.18),inset -3px -3px 0 rgba(0,0,0,.25);transition:margin .5s,box-shadow .4s}
+.chocbar.cols i.gapr{margin-right:14px}.chocbar.rows i.gapb{margin-bottom:14px}
+/* five bars and tens */
+.fives{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0;min-height:40px}
+.five{display:inline-flex;gap:3px;padding:4px 6px;border-radius:999px;background:var(--one-soft);border:2px solid var(--one);animation:capin .35s backwards}
+.five i{width:14px;height:14px;border-radius:50%;background:var(--one);display:block}
+.tenbox{display:inline-flex;flex-direction:column;gap:4px;align-items:center;padding:6px 8px 4px;border-radius:14px;border:3px solid var(--ten);background:var(--ten-soft);animation:capin .4s backwards;position:relative}
+.tenbox .five{animation:none}
+.tenbox b{font-family:var(--display);font-size:18px;line-height:1;color:var(--ten-ink)}
+.tenbox.lit{background:var(--star);border-color:#C79300}
+/* chain of factors (associative law) */
+.chain{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;margin:12px 0}
+.ccard{min-width:64px;height:68px;padding:0 12px;border-radius:16px;background:#fff;border:4px solid var(--ink);font-family:var(--display);font-size:34px;font-weight:800;display:grid;place-items:center;box-shadow:0 5px 0 rgba(29,43,79,.2);animation:capin .4s backwards}
+.ccard.split{border-style:dashed;border-color:var(--purple);color:var(--purple)}
+.ccard.pk{outline:5px solid var(--star);outline-offset:2px}
+.ccard.ten{background:var(--star);border-color:#C79300}
+.cx{width:52px;height:52px;border-radius:50%;background:var(--purple-soft);border:3px solid var(--purple);font-family:var(--display);font-size:28px;font-weight:800;color:var(--purple);position:relative}
+.cx::after{content:"tap";position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--body);font-size:11px;font-weight:800;color:var(--soft)}
+.cx.hintme{animation:hint 1.4s ease-in-out infinite}
+.cx[disabled]{opacity:.35}
+.clog{font-family:var(--display);font-size:clamp(22px,3vw,28px);font-weight:800;text-align:center;line-height:1.35}
+.clog div{animation:fbin .3s}
+/* base ten blocks */
+.blocks{display:inline-flex;flex-wrap:wrap;gap:3px;align-items:flex-end;justify-content:center;--u:4px}
+.b-h{width:calc(var(--u)*10);height:calc(var(--u)*10);background-color:var(--hun);border:1.5px solid var(--hun-ink);border-radius:2px;background-image:linear-gradient(rgba(255,255,255,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.35) 1px,transparent 1px);background-size:var(--u) var(--u);display:block}
+.b-t{width:var(--u);height:calc(var(--u)*10);min-width:5px;background:var(--ten);border:1.5px solid var(--ten-ink);border-radius:2px;display:block;background-image:linear-gradient(rgba(255,255,255,.45) 1px,transparent 1px);background-size:100% var(--u)}
+.b-o{width:var(--u);height:var(--u);min-width:5px;min-height:5px;background:var(--one);border:1.5px solid var(--one-ink);border-radius:2px;display:block}
+.brow{display:flex;gap:6px;align-items:flex-end;justify-content:center;margin:2px 0;animation:capin .35s backwards}
+.brow .blocks{flex-wrap:nowrap}
+/* grid method */
+.gridm{border-collapse:separate;border-spacing:0;margin:10px auto;font-family:var(--display);font-weight:800}
+.gridm th,.gridm td{border:3px solid var(--ink);padding:6px 8px;text-align:center;vertical-align:middle;min-width:70px}
+.gridm th{font-size:clamp(22px,3.4vw,30px);background:#F4F8FE}
+.gridm th.hx{background:#fff;color:var(--soft)}
+.gridm th.ph{background:var(--hun-soft);color:var(--hun-ink)}.gridm th.pt{background:var(--ten-soft);color:var(--ten-ink)}.gridm th.po{background:var(--one-soft);color:var(--one-ink)}
+.gridm td{background:#fff;min-height:60px}
+.gridm td.cell{cursor:default}
+.gridm td .val{display:block;font-size:clamp(22px,3.4vw,30px);color:var(--pen);font-family:var(--hand);min-height:1.1em}
+.gridm td.now{box-shadow:inset 0 0 0 4px var(--star)}
+.gridm td.got{background:var(--good-soft)}
+.sumline{font-family:var(--display);font-weight:800;font-size:clamp(22px,3.4vw,30px);text-align:center;margin:8px 0}
+/* column method with place value counters */
+.colm{display:grid;gap:0;justify-content:center;margin:10px auto;font-family:var(--display);font-weight:800}
+.colm .c{width:clamp(44px,8vw,62px);height:clamp(48px,8vw,62px);display:grid;place-items:center;font-size:clamp(26px,4.4vw,36px);border:1px dashed #C9D8EE}
+.colm .hd{font-size:14px;height:30px;border:0;color:#fff;border-radius:8px 8px 0 0}
+.colm .ans{border-top:4px solid var(--ink);border-bottom:4px solid var(--ink);color:var(--pen);font-family:var(--hand)}
+.colm .car{height:34px;font-size:22px;color:var(--pen);font-family:var(--hand);border:0}
+.colm .now{background:#FFF6C9}
+.colm .pop{animation:popin .5s}
+@keyframes popin{0%{transform:scale(2);opacity:0}100%{transform:scale(1);opacity:1}}
+.mat{display:grid;gap:6px;justify-content:center;margin:8px auto;max-width:100%}
+.matcol{border-radius:14px;border:3px solid var(--mc);background:color-mix(in srgb,var(--mc) 10%,#fff);padding:6px 4px;min-height:90px;display:flex;flex-direction:column;align-items:center;gap:4px;width:clamp(70px,20vw,130px)}
+.matcol>b{font-size:13px;color:var(--mc);text-transform:uppercase;letter-spacing:.04em}
+.frames{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.tf{display:grid;grid-template-columns:repeat(5,var(--cs,14px));gap:2px;padding:2px;border-radius:6px;border:2px solid transparent;transition:transform .5s,opacity .5s}
+.tf.full{border-color:var(--mc);background:#fff}
+.tf.glow{box-shadow:0 0 0 4px var(--star);animation:glow 1s ease-in-out infinite}
+.tf.fly{transform:translateX(calc(-1 * var(--fx,120px))) scale(.2);opacity:0}
+.tf i{width:var(--cs,14px);height:var(--cs,14px);border-radius:50%;background:var(--mc);display:block}
+.tf i.cin{box-shadow:0 0 0 3px var(--pen)}
+.tf i.new{animation:capin .4s backwards}
+.mcount{font-family:var(--display);font-size:20px;line-height:1;color:var(--mc)}
+/* number line for estimates */
+.eline{display:block;width:100%;max-width:720px;margin:6px auto}
+.eline text{font-family:var(--display);font-weight:800}
+.estbox{display:inline-block;border:3px solid var(--est);background:var(--est-soft);color:var(--est-ink);border-radius:14px;padding:4px 14px;font-family:var(--display);font-weight:800;font-size:22px}
+.chooser{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.qhead{font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,44px);text-align:center;margin:4px 0}
+.parts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.parts .test{flex:1;min-width:240px;max-width:520px}
+.stepsay{text-align:center;font-weight:800;font-size:19px;color:var(--soft);margin:4px 0}
+/* digit cards */
+.dcards{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.dcard{width:56px;height:64px;border-radius:10px;border:4px solid var(--c,#C2185B);background:var(--b,#F3D1E2);color:var(--c,#C2185B);font-family:var(--display);font-size:32px;font-weight:800;box-shadow:3px 3px 0 rgba(29,43,79,.25)}
+.dcard.pick{outline:5px solid var(--star);outline-offset:2px}.dcard.used{opacity:.18;pointer-events:none}
+.slots{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap;margin:10px 0;font-family:var(--display);font-weight:800;font-size:30px}
+.slots button{width:56px;height:64px;border-radius:10px;border:3px dashed var(--line);background:#fff;font-family:var(--display);font-size:32px;font-weight:800}
+.slots button.full{border-style:solid;border-color:var(--c,#C2185B);color:var(--c,#C2185B);background:var(--b,#F3D1E2)}
+/* triangles (workbook Q2) */
+.tri{display:block;width:100%;max-width:360px;margin:6px auto}
+.tri text{font-family:var(--display);font-weight:800}
+.tris{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.bigpick{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.bigpick button{min-width:150px;padding:10px 16px;border-radius:16px;background:#fff;border:3px solid var(--line);font-family:var(--display);font-size:26px;font-weight:800;box-shadow:0 4px 0 var(--line)}
+.bigpick button.yes{background:var(--good-soft);border-color:var(--good)}.bigpick button.no{background:var(--bad-soft);border-color:var(--bad);opacity:.7}
+.machine{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-family:var(--display);font-weight:800;font-size:28px;margin:8px 0}
+.machine .box{border:4px solid var(--good);background:var(--good-soft);border-radius:16px;padding:8px 18px}
+.machine .io{min-width:90px;text-align:center;border:3px solid var(--line);border-radius:14px;padding:6px 10px;background:#fff}
+.machine .arrow{font-size:34px;color:var(--soft)}
+.mtab{border-collapse:collapse;margin:8px auto;font-family:var(--display);font-weight:800;font-size:24px}
+.mtab th,.mtab td{border:3px solid var(--ink);padding:4px 18px;text-align:center;min-width:110px}
+.mtab th{background:#F7C9A0}.mtab td.got{color:var(--pen);font-family:var(--hand);font-size:28px}
+.mtab tr.now td{background:#FFF6C9}
+.facts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}
+.facts button{width:56px;height:56px;border-radius:50%;background:#fff;border:3px solid var(--line);font-family:var(--display);font-size:24px;font-weight:800}
+.facts button.yes{background:var(--good);border-color:#14804B;color:#fff}.facts button.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.book svg.lines ellipse{fill:none;stroke:var(--pen);stroke-width:6;stroke-dasharray:700;stroke-dashoffset:700;animation:draw .7s ease forwards}
+.book .patch{position:absolute;background:#fff;border-radius:40%;box-shadow:0 0 6px 4px #fff;z-index:2;opacity:0;transition:opacity .4s}
+.book .patch.on{opacity:.97}
+.book .hw{z-index:3}
+@media (max-width:600px){.ccard{min-width:52px;height:58px;font-size:28px}.cx{width:44px;height:44px}.gridm th,.gridm td{min-width:52px;padding:4px}.dcard,.slots button{width:46px;height:54px;font-size:26px}}
+</style>
+
+<div class="wrap" id="app"></div>
+<style>
+/* Watermark (website copy only) */
+.book::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:.18;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200'%3E%3Ctext x='20' y='120' transform='rotate(-24 180 100)' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%231D2B4F'%3E%C2%A9 Teacher Dima Abuhaifa%3C/text%3E%3C/svg%3E");background-size:360px 200px}
+body::after{content:"";position:fixed;inset:0;z-index:40;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200'%3E%3Ctext x='20' y='120' transform='rotate(-24 180 100)' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%231D2B4F'%3E%C2%A9 Teacher Dima Abuhaifa%3C/text%3E%3C/svg%3E");background-size:360px 200px}
+@media print{body::after{display:none}}
+.wmark{position:fixed;right:10px;bottom:10px;z-index:50;background:rgba(255,255,255,.88);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:800;font-size:13px;color:var(--soft);pointer-events:none}
+@media print{.wmark{position:static;display:block;text-align:center;margin-top:10px}}
+</style>
+
+</head><body>
+<div class="wmark">© Teacher Dima Abuhaifa</div>
+
+<script>
+(function(){
+"use strict";
+var app=document.getElementById('app');
+var IMG=window.FBH_IMG_BASE||'img/';
+var X='×',DV='÷';
+
+/* ---------- saved progress (optional, this device only) ---------- */
+var STORE='multiplicationBuilders.v1';
+var SAVE={};try{SAVE=JSON.parse(localStorage.getItem(STORE)||'{}')||{}}catch(e){SAVE={}}
+SAVE.done=SAVE.done||{};SAVE.stars=SAVE.stars||{};
+function persist(){try{localStorage.setItem(STORE,JSON.stringify(SAVE))}catch(e){}}
+
+/* ---------- sound + voice ---------- */
+var muted=!!SAVE.muted,ac=null;
+function tone(freqs,dur,type){
+  if(muted)return;
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    freqs.forEach(function(f,i){var o=ac.createOscillator(),g=ac.createGain();o.type=type||'triangle';o.frequency.value=f;var t=ac.currentTime+i*dur;
+      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.16,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+dur+.02)});
+  }catch(e){}
+}
+var sGood=function(){tone([523,659,784],.1)},sBad=function(){tone([300,220],.15,'sine')},sWin=function(){tone([523,659,784,1047,784,1047,1319],.11)},sPop=function(){tone([660,880],.06)},sWrite=function(){tone([1200,1500,1800],.05,'sine')},sSnap=function(){tone([392,523,784],.07)};
+var canSpeak='speechSynthesis' in window;
+function speak(t){if(!canSpeak)return;try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t.replace(/<[^>]+>/g,'').replace(/×/g,' times ').replace(/÷/g,' divided by '));u.rate=.85;u.lang='en-GB';speechSynthesis.speak(u)}catch(e){}}
+
+/* ---------- helpers ---------- */
+function h(tag,attrs,kids){
+  var el=document.createElement(tag);
+  if(attrs)for(var k in attrs){var v=attrs[k];if(v==null)continue;
+    if(k==='class')el.className=v;else if(k==='html')el.innerHTML=v;else if(k.slice(0,2)==='on')el.addEventListener(k.slice(2),v);else if(k==='style')el.style.cssText=v;else el.setAttribute(k,v)}
+  (kids||[]).forEach(function(c){if(c==null)return;el.appendChild(typeof c==='string'?document.createTextNode(c):c)});
+  return el;
+}
+var SVGNS='http://www.w3.org/2000/svg';
+function sv(tag,attrs,txt){var el=document.createElementNS(SVGNS,tag);for(var k in attrs)el.setAttribute(k,attrs[k]);if(txt!=null)el.textContent=txt;return el}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function starStr(n){var s='';for(var i=0;i<3;i++)s+='<span class="'+(i<n?'star-on':'star-off')+'">★</span>';return s}
+function later(fn,ms){return setTimeout(fn,ms)}
+function factors(n){var f=[];for(var i=1;i<=n;i++)if(n%i===0)f.push(i);return f}
+function divLine(n,k){var q=Math.floor(n/k),r=n%k;return n+' '+DV+' '+k+' = '+q+(r?' <b style="color:var(--bad)">remainder '+r+'</b>':'')}
+/* colour the key words */
+function cw(s){return s.replace(/(hundreds?)/g,'<span class="hu">$1</span>').replace(/(tens?)/g,'<span class="te">$1</span>').replace(/(ones)/g,'<span class="onx">$1</span>').replace(/(estimate|Estimate)/g,'<span class="es">$1</span>').replace(/(carry|carrying)/g,'<span class="ca">$1</span>')}
+function confetti(n){
+  var c=h('div',{class:'confetti'});var cols=['#FF7A3D','#2F7BF5','#FFC21A','#1FA563','#7A4CE0','#E0559B','#8B5A3C'];
+  for(var i=0;i<(n||70);i++){var p=h('i');p.style.left=Math.random()*100+'%';p.style.background=cols[i%7];p.style.animationDelay=Math.random()*.7+'s';p.style.animationDuration=(1.4+Math.random())+'s';if(i%3===0)p.style.borderRadius='50%';c.appendChild(p)}
+  document.body.appendChild(c);later(function(){c.remove()},3200);
+}
+var PEOPLE=['#E0559B','#2F7BF5','#1FA563','#FF7A3D','#7A4CE0','#00A3A3','#C79300','#D81B60','#5B6B8F','#8B5A3C','#14804B','#B8410C'];
+
+/* ---------- Cubey the builder (mascot): a ones cube in a hard hat ---------- */
+function cubeSVG(mood){
+  var mouth=mood==='wow'?'<ellipse cx="50" cy="72" rx="6" ry="7" fill="#1D2B4F"/>':'<path d="M38 68 Q50 80 62 68" stroke="#1D2B4F" stroke-width="4.5" fill="none" stroke-linecap="round"/>';
+  return '<svg viewBox="0 0 100 100" width="100%" height="100%">'+
+    '<rect x="16" y="34" width="68" height="60" rx="10" fill="#FF7A3D" stroke="#1D2B4F" stroke-width="4"/>'+
+    '<path d="M16 64 H84 M50 34 V94" stroke="#fff" stroke-opacity=".22" stroke-width="3"/>'+
+    '<path d="M14 36 Q50 -2 86 36 Z" fill="#2F7BF5" stroke="#1D2B4F" stroke-width="4" stroke-linejoin="round"/>'+
+    '<rect x="8" y="32" width="84" height="9" rx="4.5" fill="#2F7BF5" stroke="#1D2B4F" stroke-width="3.5"/>'+
+    '<rect x="45" y="9" width="10" height="20" rx="4" fill="#FFC21A" stroke="#1D2B4F" stroke-width="2.5"/>'+
+    '<circle cx="37" cy="56" r="8" fill="#fff"/><circle cx="63" cy="56" r="8" fill="#fff"/><circle cx="38" cy="57" r="4" fill="#1D2B4F"/><circle cx="64" cy="57" r="4" fill="#1D2B4F"/>'+
+    '<circle cx="27" cy="70" r="5" fill="#FF9FA8" opacity=".85"/><circle cx="73" cy="70" r="5" fill="#FF9FA8" opacity=".85"/>'+mouth+'</svg>';
+}
+function bugSVG(mood){return cubeSVG(mood)}
+
+/* =====================================================================
+   VISUAL TOOLS
+   ===================================================================== */
+var PLACE=['ones','tens','hundreds','thousands'],PLACE1=['one','ten','hundred','thousand'],PCOL=['var(--one)','var(--ten)','var(--hun)','var(--tho)'],PSHORT=['O','T','H','Th'];
+function digitAt(n,p){return Math.floor(n/Math.pow(10,p))%10}
+function parts(n){var s=String(n),out=[];for(var i=0;i<s.length;i++){var d=+s[i];if(d)out.push(d*Math.pow(10,s.length-1-i))}return out}
+function pvIndex(v){return v>=1000?3:v>=100?2:v>=10?1:0}
+function pvWord(v){var p=pvIndex(v),d=v/Math.pow(10,p);return d+' '+(d===1?PLACE1[p]:PLACE[p])}
+var BK=['b-o','b-t','b-h'];
+function blocksFor(v,u){
+  var b=h('span',{class:'blocks'});if(u)b.style.setProperty('--u',u+'px');
+  var p=Math.min(pvIndex(v),2),c=v/Math.pow(10,p);
+  for(var i=0;i<c;i++)b.appendChild(h('i',{class:BK[p]}));
+  return b;
+}
+function blocksNum(n,u){var w=h('span',{class:'brow',style:'animation:none'});parts(n).forEach(function(v){w.appendChild(blocksFor(v,u))});return w}
+
+/* Chocolate bar: r rows, c columns. Split into columns (r × c read as c lots of r) or into rows. */
+function ChocBar(r,c){
+  var el=h('div',{class:'chocbar'});el.style.gridTemplateColumns='repeat('+c+',auto)';
+  for(var i=0;i<r*c;i++){var row=Math.floor(i/c),col=i%c;el.appendChild(h('i',{class:(col<c-1?'gapr ':'')+(row<r-1?'gapb':'')}))}
+  return {el:el,cols:function(){el.className='chocbar cols'},rows:function(){el.className='chocbar rows'},whole:function(){el.className='chocbar'}};
+}
+
+/* Fives: n groups of 5 dots. pair() puts every two fives into a ten. */
+function fiveBar(){var f=h('span',{class:'five'});for(var i=0;i<5;i++)f.appendChild(h('i'));return f}
+function FivePairs(host,n){
+  var el=h('div',{class:'fives'});host.appendChild(el);
+  for(var i=0;i<n;i++){var f=fiveBar();f.style.animationDelay=(i*.04)+'s';el.appendChild(f)}
+  var api={el:el};
+  api.pair=function(){el.innerHTML='';for(var k=0;k<n/2;k++){var b=h('div',{class:'tenbox'});b.style.animationDelay=(k*.08)+'s';b.appendChild(fiveBar());b.appendChild(fiveBar());b.appendChild(h('b',null,['10']));el.appendChild(b)}sSnap()};
+  api.count=function(done){var bs=el.querySelectorAll('.tenbox'),k=0;(function nx(){if(k>=bs.length){if(done)done();return}bs[k].classList.add('lit');bs[k].querySelector('b').textContent=String((k+1)*10);sPop();k++;later(nx,330)})()};
+  return api;
+}
+
+/* Chain: numbers joined by ×. Tap a × to multiply those two numbers first (the associative law).
+   opts.split = {18:[9,2]} lets a number be broken into factors first. opts.only = the × that must be used. */
+function Chain(host,api,nums,opts){
+  opts=opts||{};
+  var wrap=h('div',{class:'test'});host.appendChild(wrap);
+  if(opts.title)wrap.appendChild(h('div',{class:'stepsay',html:opts.title}));
+  var row=h('div',{class:'chain'}),qa=h('div'),log=h('div',{class:'clog'});
+  wrap.appendChild(row);wrap.appendChild(qa);wrap.appendChild(log);
+  var cur=nums.slice(),splitLeft=0,busy=false,first=true,steps=0;
+  if(opts.split)for(var k in opts.split)if(cur.indexOf(+k)>=0)splitLeft++;
+  function addLog(){log.appendChild(h('div',null,[(first?'':'= ')+cur.join(' '+X+' ')]));first=false}
+  function draw(){
+    row.innerHTML='';
+    cur.forEach(function(v,i){
+      var canSplit=opts.split&&opts.split[v]&&splitLeft>0;
+      var c=h(canSplit?'button':'div',{class:'ccard'+(canSplit?' split':'')+(steps>0&&v%10===0&&cur.length>1?' ten':'')},[String(v)]);
+      if(canSplit){c.onclick=function(){split(i)};c.setAttribute('aria-label','Break '+v+' into factors')}
+      row.appendChild(c);
+      if(i<cur.length-1){
+        var x=h('button',{class:'cx'+(splitLeft===0&&(opts.only==null||steps>0||opts.only===i)&&opts.hint!==false?' hintme':''),'aria-label':'Multiply '+v+' and '+cur[i+1]+' first'},[X]);
+        if(splitLeft>0)x.disabled=true;
+        x.onclick=function(){merge(i)};row.appendChild(x);
+      }
+    });
+  }
+  function split(i){var v=cur[i],f=opts.split[v];cur.splice(i,1,f[0],f[1]);splitLeft--;sSnap();addLog();draw();
+    if(opts.onSplit)opts.onSplit(v,f)}
+  function merge(i){
+    if(busy||cur.length<2)return;
+    if(opts.only!=null&&steps===0&&i!==opts.only){api.miss();sBad();feedback(qa,'bad',opts.onlyWhy||'Use the other '+X+' sign.');return}
+    busy=true;var a=cur[i],b=cur[i+1],p=a*b;qa.innerHTML='';
+    Array.prototype.forEach.call(row.querySelectorAll('.cx'),function(x){x.disabled=true;x.classList.remove('hintme')});var cs=row.querySelectorAll('.ccard');cs[i].classList.add('pk');cs[i+1].classList.add('pk');
+    qa.appendChild(h('div',{class:'statement',html:a+' '+X+' '+b+' = ?'}));
+    var hint=null;
+    if(a===2&&b===5||a===5&&b===2)hint='2 '+X+' 5 = 10. A ten!';
+    choiceQ(qa,api,numChoices(p,[p+a,p-b,a+b,p+10,p*10>999?p-a:p*10]).map(function(v){return {label:String(v),ok:v===p,why:a+' '+X+' '+b+' is not '+v+'. Count in '+Math.min(a,b)+'s: '+countIn(Math.min(a,b),Math.max(a,b))+'.'}}),function(){
+      later(function(){
+        qa.innerHTML='';cur.splice(i,2,p);steps++;sSnap();addLog();draw();busy=false;
+        if(hint)qa.appendChild(h('div',{class:'stepsay',html:hint}));
+        if(cur.length===1){if(opts.done)opts.done(p)}else if(opts.onMerge)opts.onMerge(a,b,p);
+      },350);
+    },{cls:function(){return 'big plain'}});
+  }
+  addLog();draw();
+  return {el:wrap};
+}
+function countIn(s,k){if(k>12)return s+', '+(2*s)+', '+(3*s)+' …';var a=[];for(var i=1;i<=k;i++)a.push(s*i);return a.join(', ')}
+
+/* Rounding on a number line. Is n closer to the ten (or hundred) below or above? */
+function RoundLine(host,api,n,done){
+  var big=n>=100,step=big?100:10,lo=Math.floor(n/step)*step,hi=lo+step,r=(n-lo)*2>=step?hi:lo;
+  var box=h('div',{class:'test'});host.appendChild(box);
+  box.appendChild(h('div',{class:'stepsay',html:'Round <b>'+n+'</b> to the nearest '+(big?'<span class="hu">hundred</span>':'<span class="te">ten</span>')+'.'}));
+  if(n%step===0){box.appendChild(h('div',{class:'statement',html:n+' is already a '+(big?'hundreds':'tens')+' number!'}));later(function(){done(n)},300);return}
+  var W=720,x=function(v){return 50+(v-lo)/(hi-lo)*620};
+  var svg=sv('svg',{viewBox:'0 0 '+W+' 150',class:'eline',role:'img','aria-label':'Number line from '+lo+' to '+hi});
+  svg.appendChild(sv('line',{x1:30,y1:90,x2:690,y2:90,stroke:'#1D2B4F','stroke-width':5,'stroke-linecap':'round'}));
+  for(var t=0;t<=10;t++){var v=lo+t*step/10,X0=x(v),big5=t===5,end=t===0||t===10;
+    svg.appendChild(sv('line',{x1:X0,y1:end?66:big5?72:78,x2:X0,y2:end?114:big5?108:102,stroke:big5?'#7A4CE0':'#1D2B4F','stroke-width':end?5:3,'stroke-dasharray':big5?'5 4':''}));
+    if(end)svg.appendChild(sv('text',{x:X0,y:140,'text-anchor':'middle','font-size':30,fill:'#1D2B4F'},String(v)));
+    else if(big5)svg.appendChild(sv('text',{x:X0,y:134,'text-anchor':'middle','font-size':17,fill:'#7A4CE0'},'halfway '+v));
+  }
+  var px=x(n);
+  svg.appendChild(sv('circle',{cx:px,cy:90,r:13,fill:'#00A3A3',stroke:'#1D2B4F','stroke-width':3}));
+  svg.appendChild(sv('text',{x:px,y:48,'text-anchor':'middle','font-size':34,fill:'#007373'},String(n)));
+  box.appendChild(svg);
+  var q=h('div');box.appendChild(q);
+  q.appendChild(h('p',{class:'task',style:'text-align:center',html:'Is '+n+' closer to '+lo+' or '+hi+'?'}));
+  choiceQ(q,api,[lo,hi].map(function(v){return {label:String(v),ok:v===r,why:n+' is '+Math.abs(n-v)+' away from '+v+' but only '+Math.abs(n-r)+' away from '+r+'.'+((n-lo)*2===step?' Halfway numbers round up.':'')}}),function(){
+    var p=sv('path',{d:'M'+px+' 76 Q'+((px+x(r))/2)+' 14 '+x(r)+' 76',fill:'none',stroke:'#D81B60','stroke-width':5,'stroke-linecap':'round','stroke-dasharray':'400','stroke-dashoffset':'400',style:'animation:draw .7s ease forwards'});svg.appendChild(p);
+    svg.appendChild(sv('circle',{cx:x(r),cy:90,r:11,fill:'#FFC21A',stroke:'#1D2B4F','stroke-width':3}));
+    q.appendChild(h('div',{class:'statement',html:n+' rounds to <span class="es">'+r+'</span>'}));
+    later(function(){done(r)},500);
+  },{cls:function(){return 'big plain'}});
+}
+/* Estimate n × m: round n, then multiply the rounded number */
+function Estimate(host,api,n,m,done){
+  RoundLine(host,api,n,function(r){
+    var q=h('div',{class:'test'});host.appendChild(q);
+    q.appendChild(h('div',{class:'stepsay',html:'Now multiply the easy number: <b>'+r+' '+X+' '+m+'</b>'}));
+    var E=r*m,base=r/Math.pow(10,pvIndex(r)),w=PLACE[pvIndex(r)];
+    choiceQ(q,api,numChoices(E,[E+r,E-r,r+m,E*10,E/10]).map(function(v){return {label:String(v),ok:v===E,why:'Think: '+base+' '+X+' '+m+' = '+(base*m)+', so '+base+' '+w+' '+X+' '+m+' = '+(base*m)+' '+w+'.'}}),function(){
+      q.appendChild(h('div',{class:'statement',html:'<span class="estbox">Estimate: about '+E+'</span>'}));
+      later(function(){done(E)},400);
+    },{cls:function(){return 'big plain'}});
+  });
+}
+
+/* GRID METHOD with base ten blocks. Each cell shows the blocks for m rows of that part. */
+function GridMethod(host,api,n,m,done){
+  var P=parts(n),U=(n>=100||m>6)?3:4;
+  var box=h('div',{class:'test'});host.appendChild(box);
+  box.appendChild(h('div',{class:'stepsay',html:'<b>Grid method</b>: '+n+' '+X+' '+m}));
+  var say=h('div',{class:'statement',style:'font-size:22px'});box.appendChild(say);
+  var scroller=h('div',{style:'overflow-x:auto'});var tbl=h('table',{class:'gridm'});scroller.appendChild(tbl);box.appendChild(scroller);
+  var tr1=h('tr'),tr2=h('tr');tbl.appendChild(tr1);tbl.appendChild(tr2);
+  tr1.appendChild(h('th',{class:'hx'},[X]));
+  var heads=P.map(function(v){var c=h('th',{class:['po','pt','ph','ph'][pvIndex(v)]},['?']);tr1.appendChild(c);return c});
+  tr2.appendChild(h('th',{class:'hx',style:'color:var(--ink)'},[String(m)]));
+  var cells=P.map(function(){var c=h('td',{class:'cell'});tr2.appendChild(c);return c});
+  var q=h('div');box.appendChild(q);
+  var sumEl=h('div',{class:'sumline'});box.appendChild(sumEl);
+  /* step 1: break the number up */
+  say.innerHTML='Break <b>'+n+'</b> into '+(n>=100?'<span class="hu">hundreds</span>, ':'')+'<span class="te">tens</span> and <span class="onx">ones</span>.';
+  var right=P.join(' + '),dig=String(n).split('').join(' + ');
+  var opts=[{label:n+' = '+right,ok:true}];
+  if(dig!==right)opts.push({label:n+' = '+dig,why:'The '+String(n)[0]+' is worth '+P[0]+', not '+String(n)[0]+'. Look at the blocks!'});
+  if(n>=100)opts.push({label:n+' = '+Math.floor(n/10)+' + '+(n%10),why:'Split it into hundreds, tens and ones: '+right+'.'});
+  else opts.push({label:n+' = '+n+' + 0',why:'Split it into tens and ones: '+right+'.'});
+  q.appendChild(blocksNum(n,4));
+  choiceQ(q,api,shuffle(opts),function(){
+    P.forEach(function(v,j){heads[j].innerHTML='';heads[j].appendChild(h('div',null,[String(v)]));heads[j].appendChild(blocksFor(v,3))});sSnap();
+    later(function(){q.innerHTML='';say.innerHTML='Now build it <b>'+m+'</b> times: '+m+' rows.';
+      var b=h('button',{class:'big both'},['✨ Make '+m+' rows']);q.appendChild(h('div',{class:'row center'},[b]));
+      b.onclick=function(){q.innerHTML='';
+        P.forEach(function(v,j){for(var r=0;r<m;r++){var br=h('div',{class:'brow'});br.style.animationDelay=(r*.08+j*.1)+'s';br.appendChild(blocksFor(v,U));cells[j].appendChild(br)}cells[j].appendChild(h('span',{class:'val'},['']))});
+        sPop();later(function(){cellStep(0)},m*80+400)};
+    },500);
+  },{col:true});
+  function cellStep(j){
+    if(j>=P.length){addStep();return}
+    cells.forEach(function(c){c.classList.remove('now')});cells[j].classList.add('now');
+    var v=P[j],p=pvIndex(v),d=v/Math.pow(10,p),ans=v*m;
+    say.innerHTML=m+' '+X+' '+(p?d+' '+(d===1?PLACE1[p]:PLACE[p])+' = '+(d*m)+' '+PLACE[p]:d)+' &nbsp;→&nbsp; '+m+' '+X+' '+v+' = ?';
+    q.innerHTML='';
+    choiceQ(q,api,numChoices(ans,[ans+v,ans-v,v+m,p?d*m:ans*10,ans*10]).map(function(x){return {label:String(x),ok:x===ans,why:p?'Count the '+PLACE[p]+' in the cell: '+m+' rows of '+d+' = '+(d*m)+' '+PLACE[p]+' = '+ans+'.':'Count the ones: '+m+' rows of '+d+'.'}}),function(){
+      cells[j].querySelector('.val').textContent=String(ans);cells[j].classList.remove('now');cells[j].classList.add('got');sWrite();
+      later(function(){cellStep(j+1)},450);
+    },{cls:function(){return 'big plain'}});
+  }
+  function addStep(){
+    var vals=P.map(function(v){return v*m}),tot=n*m;
+    if(vals.length===1){q.innerHTML='';say.innerHTML='<b>'+n+' '+X+' '+m+' = '+tot+'</b>';later(function(){done(tot)},400);return}
+    say.innerHTML='Add the answers together.';q.innerHTML='';
+    sumEl.innerHTML=vals.join(' + ')+' = ?';
+    choiceQ(q,api,numChoices(tot,[tot+10,tot-10,tot+100,tot-100]).map(function(x){return {label:String(x),ok:x===tot,why:'Add the biggest first: '+vals.join(' + ')+'. Try again!'}}),function(){finish()},{cls:function(){return 'big plain'}});
+    function finish(){q.innerHTML='';sumEl.innerHTML=vals.join(' + ')+' = <span style="color:var(--pen)">'+tot+'</span>';say.innerHTML='<b>'+n+' '+X+' '+m+' = '+tot+'</b>';sGood();later(function(){done(tot)},400)}
+  }
+}
+
+/* COLUMN (compact) METHOD with place value counters. 10 counters in one column are swapped for 1 counter
+   in the next column: that is the carry. */
+function ColumnMethod(host,api,n,m,done){
+  var nd=String(n).length,prod=n*m,cols=Math.max(nd,String(prod).length);
+  var box=h('div',{class:'test'});host.appendChild(box);
+  box.appendChild(h('div',{class:'stepsay',html:'<b>Compact method</b>: '+n+' '+X+' '+m+'. Start with the <span class="onx">ones</span>!'}));
+  var say=h('div',{class:'statement',style:'font-size:22px'});box.appendChild(say);
+  var g=h('div',{class:'colm'});g.style.gridTemplateColumns='repeat('+(cols+1)+',auto)';box.appendChild(g);
+  var numC=[],ansC=[],carC=[];
+  function cell(cls,txt){var c=h('div',{class:'c '+(cls||'')},[txt==null?'':String(txt)]);g.appendChild(c);return c}
+  cell('hd','');for(var p=cols-1;p>=0;p--){var hc=cell('hd',PSHORT[p]);hc.style.background=PCOL[p]}
+  cell('','');for(p=cols-1;p>=0;p--)numC[p]=cell('',p<nd?digitAt(n,p):'');
+  cell('',X);for(p=cols-1;p>=0;p--)cell('',p===0?m:'');
+  cell('ans','');for(p=cols-1;p>=0;p--)ansC[p]=cell('ans','');
+  cell('car','');for(p=cols-1;p>=0;p--)carC[p]=cell('car','');
+  var mat=h('div',{class:'mat'});mat.style.gridTemplateColumns='repeat('+cols+',auto)';box.appendChild(mat);
+  var mc=[];
+  for(p=cols-1;p>=0;p--){var c=h('div',{class:'matcol'});c.style.setProperty('--mc',PCOL[p]);c.appendChild(h('b',null,[PLACE[p]]));var fr=h('div',{class:'frames'});c.appendChild(fr);var cnt=h('div',{class:'mcount'});c.appendChild(cnt);mat.appendChild(c);mc[p]={el:c,fr:fr,cnt:cnt,n:0}}
+  function drawMat(p,count,carried,fresh){
+    var M=mc[p];M.n=count;M.fr.innerHTML='';var cs=count>40?11:14;
+    for(var f=0;f*10<count;f++){
+      var t=h('div',{class:'tf'+(count-f*10>=10?' full':'')});t.style.setProperty('--cs',cs+'px');
+      for(var i=f*10;i<Math.min(count,f*10+10);i++){var dot=h('i',{class:(i>=count-carried?'cin':'')+(fresh&&i<count-carried?' new':'')});if(fresh)dot.style.animationDelay=(i*.025)+'s';t.appendChild(dot)}
+      M.fr.appendChild(t);
+    }
+    M.cnt.textContent=count?String(count):'';
+  }
+  var q=h('div');box.appendChild(q);
+  var carry=0;
+  function stepPlace(p){
+    for(var k=0;k<cols;k++){numC[k].classList.remove('now');ansC[k].classList.remove('now')}
+    if(p>=nd){
+      if(carry){ansC[p].classList.add('now');say.innerHTML='No more digits to multiply. Write the <span class="ca">'+carry+'</span> you carried.';
+        q.innerHTML='';var b=h('button',{class:'big go'},['✍ Write '+carry]);q.appendChild(h('div',{class:'row center'},[b]));
+        b.onclick=function(){ansC[p].textContent=String(carry);ansC[p].classList.add('pop');sWrite();q.innerHTML='';finish()};return}
+      finish();return;
+    }
+    numC[p].classList.add('now');ansC[p].classList.add('now');
+    var d=digitAt(n,p),pr=d*m,tot=pr+carry,w=PLACE[p];
+    say.innerHTML='Multiply the '+'<span style="color:'+PCOL[p]+'">'+w+'</span>: '+m+' '+X+' '+d+' '+w+' = ?';
+    q.innerHTML='';
+    choiceQ(q,api,numChoices(pr,[pr+m,pr-m,d+m,pr+1,pr+10]).map(function(x){return {label:String(x),ok:x===pr,why:m+' '+X+' '+d+' is not '+x+'. Count in '+m+'s: '+countIn(m,d||1)+'.'}}),function(){
+      var old=carry;drawMat(p,tot,old,true);sPop();
+      later(function(){q.innerHTML='';
+        if(old){say.innerHTML=pr+' '+w+' + the <span class="ca">'+old+'</span> carried = ?';
+          choiceQ(q,api,numChoices(tot,[tot+1,tot-1,tot+10,pr]).map(function(x){return {label:String(x),ok:x===tot,why:'Count all the counters in the '+w+' column. '+pr+' + '+old+' = '+tot+'.'}}),function(){later(function(){exch(p,tot)},300)},{cls:function(){return 'big plain'}});
+        }else exch(p,tot);
+      },500);
+    },{cls:function(){return 'big plain'}});
+  }
+  function exch(p,tot){
+    q.innerHTML='';var w=PLACE[p];
+    if(tot<10){say.innerHTML=tot+' '+w+'. Less than 10, so no swap. Write <b>'+tot+'</b>.';ansC[p].textContent=String(tot);ansC[p].classList.add('pop');sWrite();carry=0;
+      q.appendChild(h('div',{class:'next-row'},[h('button',{class:'big go small',onclick:function(){stepPlace(p+1)}},['Next column →'])]));return}
+    var k=Math.floor(tot/10),r=tot%10;
+    say.innerHTML=tot+' '+w+'! Make groups of 10. <b>10 '+w+' = 1 '+PLACE1[p+1]+'</b>.';
+    Array.prototype.forEach.call(mc[p].fr.querySelectorAll('.tf.full'),function(t){t.classList.add('glow')});
+    var b=h('button',{class:'big both'},['🔄 Swap '+(k*10)+' '+w+' for '+k+' '+(k===1?PLACE1[p+1]:PLACE[p+1])]);q.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.disabled=true;
+      var dx=(mc[p].el.getBoundingClientRect().left-mc[p+1].el.getBoundingClientRect().left)||120;
+      Array.prototype.forEach.call(mc[p].fr.querySelectorAll('.tf.full'),function(t){t.style.setProperty('--fx',dx+'px');t.classList.remove('glow');t.classList.add('fly')});
+      sSnap();
+      later(function(){
+        drawMat(p,r,0,false);drawMat(p+1,k,k,true);
+        ansC[p].textContent=String(r);ansC[p].classList.add('pop');carC[p+1].textContent=String(k);carC[p+1].classList.add('pop');sWrite();
+        carry=k;q.innerHTML='';
+        say.innerHTML='Write <b>'+r+'</b> in the '+w+'. Carry <span class="ca">'+k+'</span> '+(k===1?PLACE1[p+1]:PLACE[p+1])+'.';
+        q.appendChild(h('div',{class:'next-row'},[h('button',{class:'big go small',onclick:function(){stepPlace(p+1)}},['Next column →'])]));
+      },650);
+    };
+  }
+  function finish(){
+    for(var k=0;k<cols;k++){numC[k].classList.remove('now');ansC[k].classList.remove('now')}
+    say.innerHTML='<b>'+n+' '+X+' '+m+' = '+prod+'</b>';sGood();later(function(){done(prod)},400);
+  }
+  stepPlace(0);
+}
+
+/* Solve: estimate first, then a method (grid or column), then check against the estimate. */
+function Solve(host,api,n,m,done,opts){
+  opts=opts||{};
+  var area=h('div');host.appendChild(area);
+  area.appendChild(h('div',{class:'qhead'},[n+' '+X+' '+m]));
+  var est=null;
+  function method(){
+    if(opts.method){run(opts.method);return}
+    var ch=h('div',{class:'test'});area.appendChild(ch);
+    ch.appendChild(h('div',{class:'stepsay'},['Choose your method. Use the one you understand best!']));
+    var r=h('div',{class:'chooser'});ch.appendChild(r);
+    [['grid','▦ Grid method'],['column','🧮 Compact method']].forEach(function(o){r.appendChild(h('button',{class:'big '+(o[0]==='grid'?'plain':'plain'),onclick:function(){ch.remove();run(o[0])}},[o[1]]))});
+  }
+  function run(k){(k==='grid'?GridMethod:ColumnMethod)(area,api,n,m,check)}
+  function check(ans){
+    var msg='<b>'+n+' '+X+' '+m+' = '+ans+'</b>';
+    if(est!=null)msg+='<br>Check: '+ans+' is close to our estimate of <span class="es">'+est+'</span>. ✓ It makes sense!';
+    feedback(area,'good',msg);done(ans);
+  }
+  if(opts.est===false)method();else Estimate(area,api,n,m,function(E){est=E;method()});
+}
+
+/* quick multiple choice quiz (exit ticket) */
+function quiz(st,api,items,after){
+  var k=0,area=h('div');st.appendChild(area);
+  function q(){
+    area.innerHTML='';if(k>=items.length){after();return}
+    var it=items[k];
+    area.appendChild(h('div',{class:'qcount',style:'text-align:center;font-weight:800;color:var(--soft)'},['Question '+(k+1)+' of '+items.length]));
+    area.appendChild(bigQ(it.q));
+    if(it.show)area.appendChild(it.show());
+    choiceQ(area,api,shuffle(it.opts),function(){
+      var viz=it.viz?it.viz():null;
+      feedback(area,'good','<b>Yes!</b> '+it.why,viz);
+      area.appendChild(h('div',{class:'next-row'},[h('button',{class:'big go',onclick:function(){k++;q()}},['Next →'])]));
+    },{cls:function(){return 'big plain'},col:it.col});
+  }
+  q();
+}
+function runQs(st,api,Q,doneMsg){
+  var k=0,bar=h('div',{class:'row'}),area=h('div');st.appendChild(bar);st.appendChild(area);
+  function drawBar(){bar.innerHTML='';Q.forEach(function(q,j){bar.appendChild(h('span',{class:'chip',style:'background:'+(j<k?'var(--good)':j===k?'var(--e4)':'#C9D8EE')},['Q'+q.n]))})}
+  function next(){k++;if(k<Q.length)go();else api.done(doneMsg)}
+  function go(){drawBar();area.innerHTML='';Q[k].f(area,api,function(){area.appendChild(h('div',{class:'next-row'},[h('button',{class:'big go',onclick:function(){next();window.scrollTo({top:0,behavior:'smooth'})}},[k<Q.length-1?'Next question →':'Finish ✓'])]))})}
+  go();
+}
+/* parts a, b, c … one after another inside one question */
+function runParts(a,list,done){
+  var k=0,bar=h('div',{class:'row center'}),area=h('div');a.appendChild(bar);a.appendChild(area);
+  function draw(){bar.innerHTML='';list.forEach(function(p,j){bar.appendChild(h('span',{class:'chip',style:'background:'+(j<k?'var(--good)':j===k?'var(--purple)':'#C9D8EE')},[p.k]))})}
+  function go(){draw();area.innerHTML='';list[k].f(area,function(){
+    if(k<list.length-1)area.appendChild(h('div',{class:'next-row'},[h('button',{class:'big go small',onclick:function(){k++;go();later(function(){bar.scrollIntoView({behavior:'smooth',block:'start'})},50)}},['Next part →'])]));
+    else{k++;draw();done()}})}
+  go();
+}
+function mascot(cls,mood){return h('div',{class:'mascot '+(cls||''),'aria-hidden':'true',html:bugSVG(mood)})}
+function guide(text,mood){
+  var g=h('div',{class:'guide'});g.appendChild(mascot('',mood));
+  var s=h('div',{class:'say'});
+  if(canSpeak){s.appendChild(h('button',{class:'spk','aria-label':'Read to me',onclick:function(){speak(text)}},['🔊']))}
+  s.appendChild(h('span',{class:'nm'},['Cubey says']));
+  s.appendChild(h('span',{html:cw(text)}));
+  g.appendChild(s);return g;
+}
+
+/* ---------- feedback + choices ---------- */
+function feedback(host,kind,html,viz){
+  var old=host.querySelector(':scope > .fb');if(old)old.remove();
+  var f=h('div',{class:'fb '+kind,role:'status'});
+  f.innerHTML='<span class="face" aria-hidden="true">'+(kind==='good'?'⭐':kind==='bad'?'🤔':'💡')+'</span><div class="msg">'+html+'</div>';
+  if(viz){var v=h('div',{class:'viz'});v.appendChild(viz);f.appendChild(v)}
+  host.appendChild(f);later(function(){f.scrollIntoView({behavior:'smooth',block:'nearest'})},80);
+  return f;
+}
+function choiceQ(box,api,opts,onRight,cfg){
+  cfg=cfg||{};var wrap=h('div',{class:'choices'+(cfg.col?' col':'')}),solved=false;
+  opts.forEach(function(o){
+    var b=h('button',{class:(cfg.cls?cfg.cls(o):'opt'),html:o.html||o.label});
+    b.addEventListener('click',function(){
+      if(solved)return;
+      if(o.ok){solved=true;b.classList.add('right','sel');sGood();Array.prototype.forEach.call(wrap.children,function(x){if(x!==b)x.disabled=true});onRight(o,b)}
+      else{api.miss();sBad();b.classList.add('wrongpick');b.disabled=true;feedback(box,'bad',o.why||cfg.wrongMsg||'Not quite. Try again!',o.viz?o.viz():null)}
+    });
+    wrap.appendChild(b);
+  });
+  box.appendChild(wrap);return wrap;
+}
+function numChoices(right,dist,max){max=max||4;var s={};s[right]=1;var out=[right];dist.forEach(function(d){if(d>0&&!s[d]&&out.length<max){s[d]=1;out.push(d)}});return shuffle(out)}
+function pickMany(area,api,opts,need,onDone,onPick){
+  var wrap=h('div',{class:'choices'}),got=0;
+  opts.forEach(function(o){var b=h('button',{class:'opt',html:o.label});b.onclick=function(){
+    if(b.disabled)return;b.disabled=true;
+    if(o.ok){b.classList.add('right');sGood();got++;if(onPick)onPick(o);if(got===need){Array.prototype.forEach.call(wrap.children,function(x){x.disabled=true});onDone()}}
+    else{b.classList.add('wrongpick');sBad();api.miss();feedback(area,'bad',o.why)}};wrap.appendChild(b)});
+  area.appendChild(wrap);return wrap;
+}
+function bigQ(t){return h('div',{class:'statement',html:t})}
+/* BookView: a (cropped) real book page. Answers are written into it in handwriting. */
+function BookView(key,opts){
+  opts=opts||{};var P=PAGES[key];var y0=opts.crop?opts.crop[0]:0,y1=opts.crop?opts.crop[1]:P.h;
+  var wrap=h('div',{class:'bookwrap '+P.book});var el=h('div',{class:'book '+P.book});el.style.aspectRatio=P.w+' / '+(y1-y0);
+  if(opts.maxw)wrap.style.maxWidth=opts.maxw;
+  var sheet=h('div',{class:'sheet'});sheet.style.top=(-y0/(y1-y0)*100)+'%';sheet.style.height=(P.h/(y1-y0)*100)+'%';
+  sheet.appendChild(h('img',{src:IMG+key+'.jpg',alt:BOOKNAME[P.book]+' page '+P.n,draggable:'false'}));
+  var svg=sv('svg',{class:'lines',viewBox:'0 0 '+P.w+' '+P.h,preserveAspectRatio:'none'});sheet.appendChild(svg);
+  el.appendChild(sheet);
+  wrap.appendChild(h('div',{class:'label'},[BOOKNAME[P.book]+' · page '+P.n]));wrap.appendChild(el);
+  function pos(node,x,y,w,hh){node.style.left=(x/P.w*100)+'%';node.style.top=(y/P.h*100)+'%';node.style.width=(w/P.w*100)+'%';node.style.height=(hh/P.h*100)+'%';return node}
+  var api={el:wrap,book:el,sheet:sheet,P:P,written:{}};
+  api.put=function(x,y,w,hh,text,align,fontPx,shown){
+    var n=pos(h('div',{class:'hw '+(align==='c'?'c':'')+(shown?' shown':'')},[text]),x,y,w,hh);
+    n.style.setProperty('--fs',(fontPx/P.w*100).toFixed(3));sheet.appendChild(n);return n};
+  api.write=function(id,delay){
+    var a=ANS[id];if(!a||a[0]!==key||api.written[id])return;api.written[id]=true;
+    if(a[8])api.patch(a);var n=api.put(a[1],a[2],a[3],a[4],a[5],a[6],a[7],false);
+    later(function(){n.classList.add('go');sWrite();later(function(){api.sparkle(a[1]+(a[6]==='c'?a[3]*.5:Math.min(a[3],a[7]*a[5].length*.45)),a[2]+a[4]/2)},700)},delay||0);
+  };
+  api.show=function(id){var a=ANS[id];if(!a||a[0]!==key||api.written[id])return;api.written[id]=true;if(a[8])api.patch(a,true);api.put(a[1],a[2],a[3],a[4],a[5],a[6],a[7],true)};
+  api.sparkle=function(x,y){for(var i=0;i<7;i++){var s=h('span',{class:'spark'},['✨']);s.style.left=(x/P.w*100)+'%';s.style.top=(y/P.h*100)+'%';var ang=Math.random()*Math.PI*2,r=30+Math.random()*40;s.style.setProperty('--dx',Math.cos(ang)*r+'px');s.style.setProperty('--dy',Math.sin(ang)*r+'px');sheet.appendChild(s);(function(s){later(function(){s.remove()},1000)})(s)}};
+  api.patch=function(a,inst){var p=pos(h('div',{class:'patch'}),a[1],a[2],a[3],a[4]);sheet.appendChild(p);if(inst)p.classList.add('on');else requestAnimationFrame(function(){requestAnimationFrame(function(){p.classList.add('on')})});return p};
+  api.hot=function(x,y,w,hh,label,fn,hint){var b=pos(h('button',{class:'hot'+(hint===false?'':' hint'),'aria-label':label}),x,y,w,hh);b.onclick=fn;sheet.appendChild(b);return b};
+  api.shade=function(x,y,w,hh,cls,instant){var s=pos(h('div',{class:'shade '+(cls||'')}),x,y,w,hh);sheet.insertBefore(s,svg);if(instant)s.classList.add('on');else requestAnimationFrame(function(){requestAnimationFrame(function(){s.classList.add('on')})});return s};
+  api.marker=function(x,y,w,hh,delay){var m=pos(h('div',{class:'marker'}),x,y,w,hh);sheet.insertBefore(m,svg);later(function(){m.classList.add('on')},delay||200);return m};
+  api.line=function(x1,y1,x2,y2,bad,instant){var l=sv('line',{x1:x1,y1:y1,x2:x2,y2:y2});if(bad)l.setAttribute('class','bad');if(instant){l.style.animation='none';l.style.strokeDashoffset='0'}svg.appendChild(l);return l};
+  api.ring=function(cx,cy,rx,ry,instant){var e=sv('ellipse',{cx:cx,cy:cy,rx:rx,ry:ry});if(instant){e.style.animation='none';e.style.strokeDashoffset='0'}svg.appendChild(e);return e};
+  api.dot=function(cx,cy){var c=sv('circle',{cx:cx,cy:cy,r:9,class:'dotp'});svg.appendChild(c);return c};
+  api.bad=function(b){b.classList.remove('badtap');void b.offsetWidth;b.classList.add('badtap')};
+  (opts.show||[]).forEach(api.show);
+  return api;
+}
+/* =====================================================================
+   LESSON ENGINE
+   ===================================================================== */
+function schoolLogo(){return h('img',{class:'schoollogo',src:'img/insightia-logo.png',alt:'Insightia International Academy'})}
+function topBar(back){
+  var b=h('div',{class:'bar noprint'});
+  if(back)b.appendChild(h('button',{class:'pill',onclick:home},['← Lesson map']));
+  else if(window.FBH_STANDALONE)b.appendChild(h('a',{class:'pill',href:'../',style:'text-decoration:none'},['← Grade 3 games']));
+  b.appendChild(h('div',{class:'grow'}));
+  b.appendChild(h('button',{class:'pill',onclick:function(){answerBook()}},['📖 Copy to my book']));
+  b.appendChild(h('button',{class:'pill',onclick:wordBank},['Word bank']));
+  var m=h('button',{class:'pill'},[muted?'🔇 Sound':'🔊 Sound']);
+  m.onclick=function(){muted=!muted;SAVE.muted=muted;persist();m.textContent=muted?'🔇 Sound':'🔊 Sound'};
+  b.appendChild(m);return b;
+}
+function runLesson(id,start){
+  var L=LESSONS[id],i=start||0,mistakes=0;
+  app.innerHTML='';app.appendChild(topBar(true));
+  var head=h('div',{class:'lesson-head'});
+  head.appendChild(mascot());
+  head.appendChild(h('div',{style:'flex:1;min-width:220px'},[h('div',{class:'today',html:L.when}),h('h2',null,[L.title]),h('div',{class:'today',html:'Today I can: <b>'+L.goal+'</b>'})]));
+  head.appendChild(schoolLogo());
+  app.appendChild(head);
+  var stepper=h('div',{class:'stepper'});app.appendChild(stepper);
+  var card=h('section',{class:'card'});app.appendChild(card);
+  function drawStepper(){
+    stepper.innerHTML='';
+    L.stations.forEach(function(s,k){
+      var ec=s.c||E5[k%5].c;
+      var b=h('button',{class:'step'+(k===i?' now':'')+(SAVE.done[id+k]?' done':''),style:'--ec:'+ec,onclick:function(){i=k;show()}});
+      b.innerHTML='<span class="n"><span>'+(s.short||k+1)+'</span></span><span class="t">'+s.name+'</span>';
+      stepper.appendChild(b);
+    });
+  }
+  function show(){
+    drawStepper();card.innerHTML='';window.scrollTo({top:0,behavior:'smooth'});
+    var s=L.stations[i],ec=s.c||E5[i%5].c;card.style.borderColor=ec;
+    var t=h('div',{class:'estage-title'});t.innerHTML='<span class="badge" style="--ec:'+ec+'">'+s.name+'</span>'+(s.src?'<span class="today">'+s.src+'</span>':'');
+    card.appendChild(t);
+    var stage=h('div');card.appendChild(stage);
+    var finished=false;
+    var api={
+      miss:function(){mistakes++},
+      done:function(msg){
+        if(finished)return;finished=true;SAVE.done[id+i]=true;persist();drawStepper();sGood();
+        var r=h('div',{class:'next-row'});
+        if(msg)stage.appendChild(feedback(h('div'),'good',msg));
+        var last=i===L.stations.length-1;
+        var b=h('button',{class:'big go',onclick:function(){if(last)certificate(id,mistakes);else{i++;show()}}},[last?'Finish 🏆':'Next: '+L.stations[i+1].name+' →']);
+        r.appendChild(b);stage.appendChild(r);later(function(){r.scrollIntoView({behavior:'smooth',block:'nearest'})},300);
+      }
+    };
+    s.render(stage,api);
+  }
+  show();
+}
+function certificate(id,mistakes){
+  var L=LESSONS[id];var s=mistakes===0?3:mistakes<=3?2:1;
+  if(!SAVE.stars[id]||SAVE.stars[id]<s){SAVE.stars[id]=s;persist()}
+  app.innerHTML='';app.appendChild(topBar(true));
+  var c=h('section',{class:'card cert'});
+  c.appendChild(h('div',{class:'row center'},[mascot('huge','wow')]));
+  c.appendChild(h('h2',{style:'font-size:clamp(32px,5vw,48px)'},['Amazing work, builder!']));
+  c.appendChild(h('div',{class:'bigstars',html:starStr(s)}));
+  var lw=h('div',{class:'lwicd'});lw.innerHTML='<div class="t">Look what I can do!</div>'+L.lookWhat.map(function(t,k){return '<div class="bdy"><div class="box"><span style="animation-delay:'+(.6+k*.5)+'s">✓</span></div><div>'+t+'</div></div>'}).join('');c.appendChild(lw);
+  if(L.copy){c.appendChild(h('p',{class:'task'},['Now copy the answers into your book.']));}
+  var r=h('div',{class:'row center',style:'margin-top:10px'});
+  if(L.copy)r.appendChild(h('button',{class:'big both',onclick:function(){answerBook(L.copy)}},['📖 Copy to my book']));
+  r.appendChild(h('button',{class:'big go',onclick:home},['Lesson map']));
+  c.appendChild(r);app.appendChild(c);sWin();confetti(120);later(function(){confetti(60)},900);
+}
+
+/* =====================================================================
+   THE BOOK PAGES and their answer key
+   ===================================================================== */
+var PAGES={
+  lb67:{w:1480,h:1920,book:'lb',n:67},lb68:{w:1480,h:1920,book:'lb',n:68},lb69:{w:1480,h:1920,book:'lb',n:69},lb70:{w:1480,h:1920,book:'lb',n:70},lb71:{w:1480,h:550,book:'lb',n:71},
+  wb65:{w:1480,h:1880,book:'wb',n:65},wb66:{w:1480,h:1920,book:'wb',n:66},wb67:{w:1480,h:1920,book:'wb',n:67},wb68:{w:1480,h:1920,book:'wb',n:68}
+};
+var BOOKNAME={lb:"Learner's Book",wb:'Workbook'};
+/* [page, x, y, w, h, text, align, fontPx, 'p' = cover an ink blot first] in page pixels */
+function blot(pg,cx,cy,t,fs){return [pg,cx-37,cy-28,74,56,t,'c',fs||34,'p']}
+var ANS={
+  lb1a:['lb69',745,1395,60,55,'2','c',48,'p'],lb1b:['lb69',832,1456,60,55,'2','c',48,'p'],
+  q3a:['lb70',300,735,160,55,'= 235','l',40],q3b:['lb70',598,735,160,55,'= 116','l',40],q3c:['lb70',888,735,160,55,'= 267','l',40],q3d:['lb70',1182,735,160,55,'= 444','l',40],
+  q4a1:blot('lb70',306,1117,'120'),q4a2:blot('lb70',456,1077,'120'),
+  q4b1:blot('lb70',935,1067,'90'),q4b2:blot('lb70',937,1136,'360'),q4b3:blot('lb70',1106,1102,'360'),
+  q4c1:blot('lb70',302,1315,'250'),q4c2:blot('lb70',375,1315,'5'),q4c3:blot('lb70',456,1277,'250'),
+  q4d1:blot('lb70',1025,1267,'7'),q4d2:blot('lb70',937,1327,'320'),q4d3:blot('lb70',1106,1292,'320'),
+  q5:['lb70',605,1365,180,55,'= 280','l',40],
+  q6:['lb70',1030,1470,420,55,'380c = $3.80','l',38],
+  q7a:['lb70',153,1598,50,52,'3','c',42],q7b:['lb70',203,1598,50,52,'2','c',42],q7c:['lb70',295,1598,52,52,'5','c',42],q7d:['lb70',360,1598,200,52,'= 160','l',40],
+  q8a:['lb71',305,192,170,55,'= 696','l',38],q8b:['lb71',630,192,170,55,'= 903','l',38],q8c:['lb71',958,192,170,55,'= 567','l',38],q8d:['lb71',1285,192,180,55,'= 952','l',36],
+  w1:['wb65',252,1550,93,95,'30','c',52],
+  t1l:['wb66',242,403,88,89,'39','c',48],t1r:['wb66',418,403,88,89,'65','c',48],t1b:['wb66',330,555,88,89,'15','c',48],
+  t2l:['wb66',922,403,88,89,'68','c',48],t2r:['wb66',1098,403,88,89,'238','c',40],t2b:['wb66',1010,555,88,89,'14','c',48],
+  t3l:['wb66',242,833,88,89,'42','c',48],t3r:['wb66',418,833,88,89,'56','c',48],t3b:['wb66',330,987,88,89,'12','c',48],
+  t4l:['wb66',922,833,88,89,'105','c',40],t4r:['wb66',1098,833,88,89,'15','c',48],t4b:['wb66',1010,987,88,89,'63','c',48],
+  w3:['wb66',150,1180,200,50,'156','l',44],w4:['wb66',150,1320,200,50,'522','l',44],
+  w5a:['wb66',153,1647,69,70,'1','c',40],w5b:['wb66',262,1647,69,70,'36','c',40],w5c:['wb66',370,1647,69,70,'36','c',40],
+  w5d:['wb66',837,1647,69,70,'2','c',40],w5e:['wb66',945,1647,69,70,'18','c',40],w5f:['wb66',1053,1647,69,70,'36','c',40],
+  w5g:['wb66',153,1732,69,70,'3','c',40],w5h:['wb66',262,1732,69,70,'12','c',40],w5i:['wb66',370,1732,69,70,'36','c',40],
+  e1:['wb67',420,478,93,92,'18','c',46],e2:['wb67',557,478,93,92,'5','c',46],e3:['wb67',420,583,93,92,'90','c',46],
+  a1:['wb67',888,478,93,92,'9','c',46],a2:['wb67',1025,478,93,92,'10','c',46],a3:['wb67',888,583,93,92,'90','c',46],
+  w6a:['wb67',190,705,1180,50,'Astrid’s method is better: 2 × 5 = 10 first','l',38],
+  m1:['wb67',420,1152,93,92,'10','c',46],m2:['wb67',557,1152,93,92,'7','c',46],m3:['wb67',420,1257,93,92,'70','c',46],
+  i1:['wb67',893,1152,93,92,'2','c',46],i2:['wb67',1030,1152,93,92,'35','c',46],i3:['wb67',893,1257,93,92,'70','c',46],
+  w6b:['wb67',190,1380,1180,50,'Mario’s method is better: 2 × 5 = 10 first','l',38],
+  w7a:['wb68',202,585,148,55,'200','c',44],w7b:['wb68',640,585,145,55,'414','c',44],w7c:['wb68',1078,585,145,55,'684','c',44],
+  w9a:blot('wb68',338,1238,'120'),w9b:blot('wb68',533,1200,'441'),
+  w10a:['wb68',153,1357,94,90,'2','c',50],w10b:['wb68',248,1357,92,90,'5','c',50],w10c:['wb68',340,1357,92,90,'0','c',50],w10d:['wb68',508,1357,94,90,'3','c',50],
+  w10e:['wb68',150,1540,1240,55,'Also: 375 × 2, 150 × 5, 125 × 6','l',40]
+};
+var Q8RING={300:[468,818],600:[735,818],400:[468,923],800:[735,923],900:[205,818],301:[205,923]};
+function fillPage(v,key){
+  Object.keys(ANS).forEach(function(id){if(ANS[id][0]===key)v.show(id)});
+  if(key==='wb68')['300','600','400','800'].forEach(function(k){var c=Q8RING[k];v.ring(c[0],c[1],96,42,true)});
+}
+var CROPS={lb71:null};
+function zoomPage(key){
+  var m=h('div',{class:'modal',role:'dialog','aria-modal':'true'});var inner=h('div',{class:'inner'});
+  inner.appendChild(h('div',{class:'closeb'},[h('button',{class:'big plain small',onclick:function(){m.remove()}},['✕ Close'])]));
+  var v=BookView(key);fillPage(v,key);inner.appendChild(v.el);m.appendChild(inner);document.body.appendChild(m);
+}
+var E5=[{k:'Warm up',c:'var(--e1)'},{k:'Discover',c:'var(--e2)'},{k:'Learn the rule',c:'var(--e3)'},{k:'Practise',c:'var(--e4)'},{k:'Check',c:'var(--e5)'}];
+
+/* =====================================================================
+   LESSON 1 — Group numbers to multiply: the associative law (Learner's Book pp. 67–69)
+   ===================================================================== */
+function l1Warm(st,api){
+  st.appendChild(guide('This chocolate bar has 24 pieces. We can split it in two ways. Tap both buttons and watch!'));
+  var bk=BookView('lb67',{crop:[600,1420]});st.appendChild(bk.el);
+  var bar=ChocBar(4,6),say=bigQ('24 pieces'),seen={};
+  var r=h('div',{class:'chooser'});
+  [['4 '+X+' 6','cols','6 lots of 4'],['6 '+X+' 4','rows','4 lots of 6']].forEach(function(o){
+    var b=h('button',{class:'big plain'},[o[0]]);
+    b.onclick=function(){bar[o[1]]();sPop();say.innerHTML=o[2]+' = <b>24</b> pieces';b.classList.add('sel');seen[o[1]]=1;if(seen.cols&&seen.rows&&!asked){asked=true;later(ask,700)}};
+    r.appendChild(b);
+  });
+  var asked=false;
+  st.appendChild(r);st.appendChild(bar.el);st.appendChild(say);
+  var q=h('div');st.appendChild(q);
+  function ask(){
+    q.appendChild(h('p',{class:'task',style:'text-align:center'},['Did the number of pieces change?']));
+    choiceQ(q,api,[{label:'No! 4 '+X+' 6 and 6 '+X+' 4 are both 24',ok:true},{label:'Yes, 6 '+X+' 4 is more',why:'Count them: 4 rows of 6 is still 24. We only moved the pieces.'}],function(){
+      bk.marker(20,690,980,60,200);
+      st.appendChild(h('div',{class:'frame',html:'4 '+X+' 6 = 6 '+X+' 4 = 24<br>You can multiply numbers in <b>any order</b>. The answer stays the same!'}));
+      api.done();
+    },{col:true});
+  }
+}
+function l1Discover(st,api){
+  st.appendChild(guide('Worked example 2: 18 × 5. That is 18 fives! Counting 18 fives is slow. Let us find a faster way.'));
+  var bk=BookView('lb68',{crop:[80,620]});st.appendChild(bk.el);
+  st.appendChild(bigQ('18 '+X+' 5 = 18 fives'));
+  var fp=FivePairs(st,18),q=h('div');st.appendChild(q);
+  q.appendChild(h('p',{class:'task',style:'text-align:center'},['Step 1: 18 = 9 '+X+' ?']));
+  choiceQ(q,api,[2,3,6].map(function(v){return {label:String(v),ok:v===2,why:'9 '+X+' '+v+' = '+(9*v)+', not 18.'}}),function(){
+    feedback(q,'good','<b>18 = 9 '+X+' 2.</b> So 18 fives = 9 lots of 2 fives.');
+    var b=h('button',{class:'big both'},['✨ Put the fives in pairs']);q.appendChild(h('div',{class:'row center'},[b]));
+    b.onclick=function(){b.remove();fp.pair();
+      q.appendChild(h('div',{class:'statement',html:'2 fives = 10! Now we have <span class="te">9 tens</span>.'}));
+      var c=h('button',{class:'big go'},['Count the tens']);q.appendChild(h('div',{class:'row center'},[c]));
+      c.onclick=function(){c.remove();fp.count(function(){
+        q.appendChild(h('p',{class:'task',style:'text-align:center'},['9 tens = ?']));
+        choiceQ(q,api,[90,45,19,900].map(function(v){return {label:String(v),ok:v===90,why:'Count in tens: 10, 20, 30 … 90.'}}),function(){
+          q.appendChild(guide('Now write it like the book. Tap 18 to break it into 9 × 2. Then tap the × between 2 and 5.'));
+          Chain(q,api,[18,5],{split:{18:[9,2]},only:1,onlyWhy:'Multiply 2 '+X+' 5 first. It makes 10!',done:function(){
+            bk.marker(40,300,700,170,200);
+            api.done('<b>18 '+X+' 5 = 9 '+X+' 2 '+X+' 5 = 9 '+X+' 10 = 90</b>')}});
+        },{cls:function(){return 'big plain'}});
+      })};
+    };
+  },{cls:function(){return 'big plain'}});
+}
+function l1Rule(st,api){
+  st.appendChild(guide('The associative law: when you multiply three numbers, you can choose which two to multiply first. Let us try both ways!'));
+  st.appendChild(h('div',{class:'frame',html:'6 '+X+' 2 '+X+' 5'}));
+  var a=h('div');st.appendChild(a);
+  Chain(a,api,[6,2,5],{title:'Way 1: multiply the <b>first two</b> numbers first. Tap the first '+X+'.',only:0,onlyWhy:'For Way 1, tap the first '+X+'.',done:function(){
+    var b=h('div');st.appendChild(b);
+    Chain(b,api,[6,2,5],{title:'Way 2: multiply the <b>last two</b> numbers first. Tap the second '+X+'.',only:1,onlyWhy:'For Way 2, tap the second '+X+'.',done:function(){
+      var c=h('div');st.appendChild(c);
+      c.appendChild(h('div',{class:'statement',html:'Both ways = <b>60</b>!'}));
+      c.appendChild(h('p',{class:'task',style:'text-align:center'},['Which way was easier?']));
+      choiceQ(c,api,[{label:'Way 2: 2 '+X+' 5 = 10, then 6 '+X+' 10 = 60',ok:true},{label:'Way 1: 6 '+X+' 2 = 12, then 12 '+X+' 5 = 60',why:'It works, but 12 '+X+' 5 is harder. 6 '+X+' 10 is super easy!'}],function(){
+        c.appendChild(h('div',{class:'frame',html:'<b>Associative law</b>: you can group the numbers in any way. The answer is the same.<br>Look for a pair that makes a tens number, like <b>2 '+X+' 5 = 10</b>. Multiply that pair first!'}));
+        api.done();
+      },{col:true});
+    }});
+  }});
+}
+function lbQ1(a,api,done){
+  a.appendChild(guide('Magda spilled ink! She is working out 14 × 5. What number is under the ink blots?'));
+  var bk=BookView('lb69',{crop:[1180,1760]});a.appendChild(bk.el);
+  a.appendChild(bigQ('14 = 7 '+X+' ?'));
+  choiceQ(a,api,[2,7,4].map(function(v){return {label:String(v),ok:v===2,why:'7 '+X+' '+v+' = '+(7*v)+', not 14.'}}),function(){
+    bk.write('lb1a');bk.write('lb1b',600);
+    var fp=FivePairs(a,14);later(function(){fp.pair()},700);
+    feedback(a,'good','<b>2!</b> 14 = 7 '+X+' 2, so 14 '+X+' 5 = 7 '+X+' 2 '+X+' 5 = 7 '+X+' 10 = 70.<br>14 fives = 7 tens = 70.');done();
+  },{cls:function(){return 'big plain'}});
+}
+function lbQ2(a,api,done){
+  a.appendChild(guide('Amir and Ben both work out 4 × 15. Do Amir’s way, then Ben’s way.'));
+  var bk=BookView('lb70',{crop:[60,690]});a.appendChild(bk.el);
+  Chain(a,api,[4,5,3],{title:'<b>Amir</b>: 4 '+X+' 15 = 4 '+X+' 5 '+X+' 3. Multiply 4 '+X+' 5 first.',only:0,onlyWhy:'Amir multiplies 4 '+X+' 5 first.',done:function(){
+    Chain(a,api,[2,2,15],{title:'<b>Ben</b>: 4 '+X+' 15 = 2 '+X+' 2 '+X+' 15. Multiply 2 '+X+' 15 first.',only:1,onlyWhy:'Ben multiplies 2 '+X+' 15 first.',done:function(){
+      a.appendChild(h('div',{class:'statement',html:'Amir: 60. Ben: 60. Both are right!'}));
+      a.appendChild(h('p',{class:'task',style:'text-align:center'},['Which method do you like best?']));
+      choiceQ(a,api,[{label:'Amir’s: 20 '+X+' 3',ok:true},{label:'Ben’s: 2 '+X+' 30',ok:true}],function(){
+        feedback(a,'good','Good choice! Both methods break a number into <b>factors</b> (4 = 2 '+X+' 2, 15 = 5 '+X+' 3) to make a tens number. Tell your partner why you like it.');done();
+      },{cls:function(){return 'big plain'}});
+    }});
+  }});
+}
+function l1Practise(st,api){runQs(st,api,[{n:1,f:lbQ1},{n:2,f:lbQ2}],'<b>Questions 1 and 2 finished!</b>')}
+function l1Check(st,api){
+  st.appendChild(guide('Exit ticket! Find the easy pair.'));
+  quiz(st,api,[
+    {q:'7 '+X+' 2 '+X+' 5<br>Which pair first?',opts:[{label:'2 '+X+' 5 = 10',ok:true},{label:'7 '+X+' 2 = 14',why:'You can, but then 14 '+X+' 5 is harder.'}],why:'2 '+X+' 5 = 10, and 7 '+X+' 10 = 70.'},
+    {q:'16 '+X+' 5 = 8 '+X+' 2 '+X+' 5 = 8 '+X+' ?',opts:[10,16,7].map(function(v){return {label:String(v),ok:v===10,why:'2 '+X+' 5 = 10.'}}),why:'8 '+X+' 10 = 80. So 16 '+X+' 5 = 80.'},
+    {q:'3 '+X+' 4 '+X+' 5 = ?',opts:[60,12,35,20].map(function(v){return {label:String(v),ok:v===60,why:'Try 4 '+X+' 5 = 20 first. Then 3 '+X+' 20.'}}),why:'4 '+X+' 5 = 20, and 3 '+X+' 20 = 60.'},
+    {q:'Is 4 '+X+' 6 the same as 6 '+X+' 4?',opts:[{label:'Yes, both are 24',ok:true},{label:'No',why:'Turn the chocolate bar around: still 24 pieces!'}],why:'You can multiply in any order.',viz:function(){var b=ChocBar(4,6);later(function(){b.rows()},200);return b.el}}
+  ],function(){api.done('<b>Exit ticket done!</b>')});
+}
+
+/* =====================================================================
+   LESSON 2 — Estimate, then multiply a 2-digit number (Learner's Book pp. 68–70)
+   ===================================================================== */
+function l2Warm(st,api){
+  st.appendChild(guide('Before we multiply, we estimate. An estimate is a number that is close to the answer. First, round each number to the nearest ten.'));
+  var list=[27,47,89,74],k=0,area=h('div');st.appendChild(area);
+  var res=h('div',{class:'found'});st.appendChild(res);
+  function go(){area.innerHTML='';RoundLine(area,api,list[k],function(r){res.appendChild(h('span',{class:'got'},[list[k]+' → '+r]));k++;if(k<list.length)later(go,700);else api.done('Nearest ten: if the ones digit is <b>5 or more</b>, round up. If it is <b>4 or less</b>, round down.')})}
+  go();
+}
+function l2Discover(st,api){
+  st.appendChild(guide('Worked example 3: 27 × 4. First estimate. Then break 27 into tens and ones, and build it 4 times!'));
+  var bk=BookView('lb68',{crop:[620,1440]});st.appendChild(bk.el);
+  Solve(st,api,27,4,function(){
+    st.appendChild(h('div',{class:'frame',html:'Mental method: <span class="te">20 '+X+' 4 = 80</span> and <span class="onx">7 '+X+' 4 = 28</span>.<br>80 + 28 = <b>108</b>'}));
+    bk.marker(20,1290,1000,80,200);api.done();
+  },{method:'grid'});
+}
+function l2Rule(st,api){
+  st.appendChild(guide('Now the compact method. Start with the ones. If you get 10 or more, swap 10 ones for 1 ten. That is called carrying!'));
+  var bk=BookView('lb69',{crop:[80,1110]});st.appendChild(bk.el);
+  ColumnMethod(st,api,27,4,function(){
+    st.appendChild(h('div',{class:'frame',html:'7 '+X+' 4 = 28. Write <b>8</b>, <span class="ca">carry 2</span> tens.<br>2 '+X+' 4 = 8 tens, + 2 = 10 tens. Write <b>0</b>, <span class="ca">carry 1</span> hundred.<br>Answer: <b>108</b>'}));
+    bk.marker(20,1000,350,60,200);api.done();
+  });
+}
+function lbQ3(a,api,done){
+  a.appendChild(guide('Estimate first. Then choose the method you like: the grid or the compact method.'));
+  var bk=BookView('lb70',{crop:[690,860]});a.appendChild(bk.el);
+  runParts(a,[[47,5,'q3a'],[29,4,'q3b'],[89,3,'q3c'],[74,6,'q3d']].map(function(p,i){return {k:'abcd'[i],f:function(ar,next){Solve(ar,api,p[0],p[1],function(){bk.write(p[2]);next()})}}}),function(){
+    feedback(a,'good','<b>All four done!</b> Tell your partner which method you liked and why.');done()});
+}
+function lbQ4(a,api,done){
+  a.appendChild(guide('Sultan spilled ink on his grids! Work out each number under the ink.'));
+  var bk=BookView('lb70',{crop:[880,1380]});a.appendChild(bk.el);
+  var G=[
+    {n:47,m:3,asks:[{q:'3 '+X+' 40 = ?',a:120,ids:['q4a1','q4a2']}]},
+    {n:93,m:4,asks:[{q:'93 = ? + 3',a:90,ids:['q4b1']},{q:'4 '+X+' 90 = ?',a:360,ids:['q4b2','q4b3']}]},
+    {n:51,m:5,asks:[{q:'5 '+X+' 50 = ?',a:250,ids:['q4c1','q4c3']},{q:'5 '+X+' 1 = ?',a:5,ids:['q4c2']}]},
+    {n:87,m:4,asks:[{q:'87 = 80 + ?',a:7,ids:['q4d1']},{q:'4 '+X+' 80 = ?',a:320,ids:['q4d2','q4d3']}]}
+  ];
+  runParts(a,G.map(function(g,i){return {k:'abcd'[i],f:function(ar,next){
+    ar.appendChild(h('div',{class:'qhead'},[g.n+' '+X+' '+g.m+' =']));
+    var P=parts(g.n),tbl=h('table',{class:'gridm'}),t1=h('tr'),t2=h('tr');tbl.appendChild(t1);tbl.appendChild(t2);
+    t1.appendChild(h('th',{class:'hx'},[X]));P.forEach(function(v){var c=h('th',{class:['po','pt','ph'][pvIndex(v)]});c.appendChild(h('div',null,[String(v)]));c.appendChild(blocksFor(v,3));t1.appendChild(c)});
+    t2.appendChild(h('th',{class:'hx',style:'color:var(--ink)'},[String(g.m)]));P.forEach(function(v){t2.appendChild(h('td',{html:'<span class="val">'+(v*g.m)+'</span>'}))});
+    var hide=h('div',{style:'overflow-x:auto'});hide.appendChild(tbl);
+    var k=0,qa=h('div');ar.appendChild(qa);
+    function ask(){
+      if(k>=g.asks.length){ar.insertBefore(hide,qa);ar.appendChild(h('div',{class:'sumline',html:P.map(function(v){return v*g.m}).join(' + ')+' = '+(g.n*g.m)+' ✓'}));next();return}
+      var s=g.asks[k];qa.innerHTML='';qa.appendChild(bigQ(s.q));
+      choiceQ(qa,api,numChoices(s.a,[s.a+10,s.a*10,s.a+g.m,Math.max(1,s.a-g.m)]).map(function(v){return {label:String(v),ok:v===s.a,why:s.q.indexOf('+')>0?'Split '+g.n+' into tens and ones: '+P.join(' + ')+'.':'Count in tens! '+s.q.replace(' = ?','')+' = '+s.a+'. Look at the blocks.'}}),function(){
+        s.ids.forEach(function(id,j){bk.write(id,j*400)});k++;later(ask,700)},{cls:function(){return 'big plain'}});
+    }
+    ask();
+  }}}),function(){feedback(a,'good','<b>All the ink is gone!</b>');done()});
+}
+function lbQ5(a,api,done){
+  a.appendChild(guide('Product means the answer when you multiply. Find the product of 56 and 5.'));
+  var bk=BookView('lb70',{crop:[1370,1440]});a.appendChild(bk.el);
+  Solve(a,api,56,5,function(){bk.write('q5');done()});
+}
+function lbQ6(a,api,done){
+  a.appendChild(guide('Pencils are sold in packs of 5. Each pack costs 95 cents. Fatima buys 4 packs. How much does she spend?'));
+  var bk=BookView('lb70',{crop:[1440,1530]});a.appendChild(bk.el);
+  a.appendChild(h('div',{class:'statement',html:'📦 95c &nbsp; 📦 95c &nbsp; 📦 95c &nbsp; 📦 95c'}));
+  a.appendChild(h('p',{class:'task',style:'text-align:center'},['Which calculation do we need?']));
+  choiceQ(a,api,shuffle([{label:'4 '+X+' 95',ok:true},{label:'95 + 4',why:'She buys 4 packs, and each pack costs 95 cents. That is 4 lots of 95.'},{label:'5 '+X+' 95',why:'5 is the number of pencils in a pack. She buys 4 packs.'}]),function(){
+    Solve(a,api,95,4,function(){
+      a.appendChild(h('p',{class:'task',style:'text-align:center'},['380 cents. How much is that in dollars?']));
+      choiceQ(a,api,shuffle([{label:'$3.80',ok:true},{label:'$38.00',why:'100 cents = $1. So 380 cents = $3 and 80 cents.'},{label:'$0.38',why:'100 cents = $1. 380 cents is more than $3.'}]),function(){bk.write('q6');feedback(a,'good','<b>Fatima spends 380 cents = $3.80.</b>');done()},{cls:function(){return 'big plain'}});
+    });
+  },{cls:function(){return 'big plain'}});
+}
+var CARDC=[['#C2185B','#F3D1E2'],['#3A86C8','#CFE3F5'],['#E8873A','#FBE0CB'],['#1FA563','#DDF6E8'],['#7A4CE0','#EEE7FF'],['#7B1F2B','#EDCFD7']];
+/* Digit cards: fill the slots to make a 2-digit × 1-digit multiplication */
+function CardBuilder(host,api,digits,onTry){
+  var cards=h('div',{class:'dcards'}),slots=h('div',{class:'slots'}),out=h('div',{class:'statement'});
+  var pick=null,fill=[null,null,null],btns=[];
+  digits.forEach(function(d,i){var c=h('button',{class:'dcard',style:'--c:'+CARDC[i][0]+';--b:'+CARDC[i][1]},[String(d)]);c.onclick=function(){if(pick!==null)btns[pick].classList.remove('pick');pick=i;c.classList.add('pick');sPop()};btns.push(c);cards.appendChild(c)});
+  var sl=[0,1,2].map(function(k){var b=h('button',{'aria-label':'Box '+(k+1)});b.onclick=function(){
+    if(fill[k]!==null){btns[fill[k]].classList.remove('used');fill[k]=null;b.textContent='';b.className='';out.innerHTML='';return}
+    if(pick===null){feedback(host,'info','Tap a card first, then tap a box.');return}
+    fill[k]=pick;b.textContent=String(digits[pick]);b.className='full';b.style.setProperty('--c',CARDC[pick][0]);b.style.setProperty('--b',CARDC[pick][1]);btns[pick].classList.remove('pick');btns[pick].classList.add('used');pick=null;sSnap();
+    if(fill.every(function(f){return f!==null})){var a=digits[fill[0]]*10+digits[fill[1]],m=digits[fill[2]];onTry(a,m,out,reset)}
+  };return b});
+  slots.appendChild(sl[0]);slots.appendChild(sl[1]);slots.appendChild(h('span',null,[X]));slots.appendChild(sl[2]);
+  function reset(){fill=[null,null,null];sl.forEach(function(b){b.textContent='';b.className=''});btns.forEach(function(b){b.classList.remove('used','pick')});out.innerHTML=''}
+  host.appendChild(cards);host.appendChild(slots);host.appendChild(out);
+}
+function lbQ7(a,api,done){
+  a.appendChild(guide('Use the digits 2, 3 and 5 once each. Make the multiplication with the greatest product! Try different ways.'));
+  var bk=BookView('lb70',{crop:[1530,1800]});a.appendChild(bk.el);
+  var tries=h('div',{class:'found'}),seen={},ended=false;
+  CardBuilder(a,api,[2,3,5],function(n,m,out,reset){
+    var p=n*m;out.innerHTML=n+' '+X+' '+m+' = <b>'+p+'</b>';sGood();
+    if(!seen[n]){seen[n]=1;tries.appendChild(h('span',{class:'got'},[n+' '+X+' '+m+' = '+p]))}
+    if(p===160&&!ended){ended=true;bk.write('q7a');bk.write('q7b',300);bk.write('q7c',600);bk.write('q7d',900);
+      feedback(a,'good','<b>32 '+X+' 5 = 160 is the greatest!</b> The 5 is the 1-digit number, so it multiplies <b>both</b> the 3 tens and the 2 ones. 52 '+X+' 3 = 156 is close, but smaller.');done();return}
+    later(function(){if(!ended){reset();if(Object.keys(seen).length>=3)feedback(a,'info','Hint: put the <b>biggest</b> digit as the 1-digit number. Then make the 2-digit number as big as you can.')}},1500);
+  });
+  a.appendChild(tries);
+}
+function l2Practise(st,api){runQs(st,api,[{n:3,f:lbQ3},{n:4,f:lbQ4},{n:5,f:lbQ5},{n:6,f:lbQ6},{n:7,f:lbQ7}],'<b>Questions 3 to 7 finished!</b> Every answer is written in the book page.')}
+function l2Check(st,api){
+  st.appendChild(guide('Exit ticket! Estimate, carry and multiply.'));
+  quiz(st,api,[
+    {q:'Estimate 38 '+X+' 4',opts:[{label:'40 '+X+' 4 = 160',ok:true},{label:'30 '+X+' 4 = 120',why:'38 is closer to 40 than to 30.'}],why:'38 rounds to 40. So 38 '+X+' 4 is about 160.'},
+    {q:'6 '+X+' 7 ones = 42 ones.<br>Write ? in the ones and carry ?',opts:[{label:'Write 2, carry 4 tens',ok:true},{label:'Write 4, carry 2 tens',why:'42 = 4 tens and 2 ones. The ones digit is 2.'}],why:'42 ones = 4 tens and 2 ones.'},
+    {q:'23 '+X+' 4 = ?',opts:[92,82,812,27].map(function(v){return {label:String(v),ok:v===92,why:'20 '+X+' 4 = 80 and 3 '+X+' 4 = 12. 80 + 12 = 92.'}}),why:'80 + 12 = 92.'},
+    {q:'45 '+X+' 3 = ?',opts:[135,125,1215,48].map(function(v){return {label:String(v),ok:v===135,why:'40 '+X+' 3 = 120 and 5 '+X+' 3 = 15. 120 + 15 = 135.'}}),why:'120 + 15 = 135. Estimate: 50 '+X+' 3 = 150. Close!'}
+  ],function(){api.done('<b>Exit ticket done!</b>')});
+}
+
+/* =====================================================================
+   LESSON 3 — Multiply a 3-digit number (Workbook p. 65, Learner's Book p. 71)
+   ===================================================================== */
+function l3Warm(st,api){
+  st.appendChild(guide('Big numbers now! To estimate, round a 3-digit number to the nearest hundred.'));
+  var list=[174,129,189,119],k=0,area=h('div');st.appendChild(area);
+  var res=h('div',{class:'found'});st.appendChild(res);
+  function go(){area.innerHTML='';RoundLine(area,api,list[k],function(r){res.appendChild(h('span',{class:'got'},[list[k]+' → '+r]));k++;if(k<list.length)later(go,700);else api.done('Look at the <span class="te">tens</span> digit. <b>5 or more</b>: round up. <b>4 or less</b>: round down.')})}
+  go();
+}
+function l3Discover(st,api){
+  st.appendChild(guide('Worked example: 345 × 9. The book rounds 345 up to 350 and 9 up to 10. Both went up, so the answer must be less than 350 × 10.'));
+  var bk=BookView('wb65',{crop:[260,1180]});st.appendChild(bk.el);
+  var q=h('div');st.appendChild(q);
+  q.appendChild(bigQ('350 '+X+' 10 = ?'));
+  choiceQ(q,api,[3500,350,35000,360].map(function(v){return {label:String(v),ok:v===3500,why:'Multiply by 10: every digit moves one place bigger. 350 '+X+' 10 = 3500.'}}),function(){
+    q.appendChild(h('div',{class:'statement',html:'<span class="estbox">345 '+X+' 9 is less than 3500</span>'}));
+    GridMethod(st,api,345,9,function(ans){
+      bk.marker(20,620,450,60,200);
+      api.done('<b>345 '+X+' 9 = 3105</b>. It is less than 3500 ✓');
+    });
+  },{cls:function(){return 'big plain'}});
+}
+function l3Rule(st,api){
+  st.appendChild(guide('The compact method works for 3-digit numbers too. Just one more column! Start with the ones.'));
+  ColumnMethod(st,api,345,9,function(){
+    st.appendChild(h('div',{class:'frame',html:'5 '+X+' 9 = 45. Write 5, <span class="ca">carry 4</span>.<br>4 '+X+' 9 = 36, + 4 = 40. Write 0, <span class="ca">carry 4</span>.<br>3 '+X+' 9 = 27, + 4 = 31. Write <b>31</b>.<br>Answer: <b>3105</b>, the same as the grid!'}));
+    api.done();
+  });
+}
+function lbQ8(a,api,done){
+  a.appendChild(guide('Estimate first. Then choose your method.'));
+  var bk=BookView('lb71',{crop:[60,330]});a.appendChild(bk.el);
+  runParts(a,[[174,4,'q8a'],[129,7,'q8b'],[189,3,'q8c'],[119,8,'q8d']].map(function(p,i){return {k:'abcd'[i],f:function(ar,next){Solve(ar,api,p[0],p[1],function(){bk.write(p[2]);next()})}}}),function(){
+    feedback(a,'good','<b>All four done!</b> Which method works best for you? Why?');done()});
+}
+function l3Practise(st,api){runQs(st,api,[{n:8,f:lbQ8}],'<b>Question 8 finished!</b>')}
+function l3Check(st,api){
+  st.appendChild(guide('Exit ticket! Big numbers.'));
+  quiz(st,api,[
+    {q:'123 '+X+' 3 = ?',opts:[369,363,3609,126].map(function(v){return {label:String(v),ok:v===369,why:'300 + 60 + 9 = 369.'}}),why:'100 '+X+' 3 = 300, 20 '+X+' 3 = 60, 3 '+X+' 3 = 9. No carrying!'},
+    {q:'5 '+X+' 4 ones = 20 ones.',opts:[{label:'Write 0, carry 2 tens',ok:true},{label:'Write 2, carry 0',why:'20 ones = 2 tens and 0 ones.'}],why:'20 ones = 2 tens and 0 ones.'},
+    {q:'Estimate 412 '+X+' 6',opts:[{label:'400 '+X+' 6 = 2400',ok:true},{label:'500 '+X+' 6 = 3000',why:'412 is closer to 400.'}],why:'412 rounds to 400. 4 hundreds '+X+' 6 = 24 hundreds = 2400.'},
+    {q:'216 '+X+' 4 = ?',opts:[864,844,824,220].map(function(v){return {label:String(v),ok:v===864,why:'200 '+X+' 4 = 800, 10 '+X+' 4 = 40, 6 '+X+' 4 = 24. Add them.'}}),why:'800 + 40 + 24 = 864.'}
+  ],function(){api.done('<b>Exit ticket done!</b>')});
+}
+
+/* =====================================================================
+   HOMEWORK — Workbook pages 65–68 (Exercise 5.2, Focus and Practice)
+   ===================================================================== */
+function wbLook(st,api){
+  st.appendChild(guide('Look at the worked example. Add the parts of the grid together.'));
+  var bk=BookView('wb65',{crop:[260,1180]});st.appendChild(bk.el);
+  st.appendChild(bigQ('2700 + 360 + 45 = ?'));
+  choiceQ(st,api,[3105,3015,3150,2805].map(function(v){return {label:String(v),ok:v===3105,why:'2700 + 360 = 3060. Then 3060 + 45 = 3105.'}}),function(){bk.marker(20,620,450,60,200);api.done('<b>345 '+X+' 9 = 3105</b>')},{cls:function(){return 'big plain'}});
+}
+function wbQ1(st,api){
+  st.appendChild(guide('Complete the calculation. Tap the × between 6 and 5.'));
+  var bk=BookView('wb65',{crop:[1240,1700]});st.appendChild(bk.el);
+  Chain(st,api,[6,5,3],{only:0,onlyWhy:'The lines in the book join 6 and 5.',done:function(){bk.write('w1');api.done('<b>6 '+X+' 15 = 6 '+X+' 5 '+X+' 3 = 30 '+X+' 3 = 90</b>')}});
+}
+function triSVG(t,got){
+  var s=sv('svg',{viewBox:'0 0 320 260',class:'tri',role:'img','aria-label':'Triangle with '+t.join(', ')});
+  var P=[[160,40],[45,215],[275,215]];
+  [[0,1],[0,2],[1,2]].forEach(function(e){s.appendChild(sv('line',{x1:P[e[0]][0],y1:P[e[0]][1],x2:P[e[1]][0],y2:P[e[1]][1],stroke:'#1D2B4F','stroke-width':3}))});
+  P.forEach(function(p,i){s.appendChild(sv('circle',{cx:p[0],cy:p[1],r:30,fill:'#fff',stroke:'#1D2B4F','stroke-width':3}));s.appendChild(sv('text',{x:p[0],y:p[1]+10,'text-anchor':'middle','font-size':28,fill:'#1D2B4F'},String(t[i])))});
+  var S=[[[0,1],102,128],[[0,2],218,128],[[1,2],160,215]];
+  S.forEach(function(q,i){var v=got[i];s.appendChild(sv('rect',{x:q[1]-32,y:q[2]-26,width:64,height:52,fill:v==null?'#fff':'#DDF6E8',stroke:v==null?'#7A4CE0':'#1FA563','stroke-width':v==null?4:3,rx:6,'stroke-dasharray':v==null?'7 5':''}));
+    s.appendChild(sv('text',{x:q[1],y:q[2]+10,'text-anchor':'middle','font-size':v!=null&&v>99?24:28,fill:v==null?'#7A4CE0':'#D81B60'},v==null?'?':String(v)))});
+  return s;
+}
+function wbQ2(st,api){
+  st.appendChild(guide('Multiply the two circles next to each square. Write the product in the square.'));
+  var bk=BookView('wb66',{crop:[60,1100]});st.appendChild(bk.el);
+  var T=[[13,3,5,['t1l','t1r','t1b']],[34,2,7,['t2l','t2r','t2b']],[14,3,4,['t3l','t3r','t3b']],[5,21,3,['t4l','t4r','t4b']]];
+  runParts(st,T.map(function(t,i){return {k:'△'+(i+1),f:function(ar,next){
+    var got=[null,null,null],pairs=[[t[0],t[1]],[t[0],t[2]],[t[1],t[2]]],k=0;
+    var pic=h('div');ar.appendChild(pic);var qa=h('div');ar.appendChild(qa);
+    function draw(){pic.innerHTML='';pic.appendChild(triSVG(t,got))}
+    function ask(){draw();if(k>=3){next();return}
+      var a=pairs[k][0],b=pairs[k][1],p=a*b;qa.innerHTML='';qa.appendChild(bigQ(a+' '+X+' '+b+' = ?'));
+      var tip=(a>10||b>10)?h('div',{class:'stepsay',html:'Big number? Split it: '+Math.max(a,b)+' = '+parts(Math.max(a,b)).join(' + ')+'. '+parts(Math.max(a,b)).map(function(v){return v+' '+X+' '+Math.min(a,b)+' = '+v*Math.min(a,b)}).join(', ')+'.'}):null;
+      choiceQ(qa,api,numChoices(p,[p+Math.min(a,b),p-Math.min(a,b),a+b,p+10]).map(function(v){return {label:String(v),ok:v===p,why:'Not '+v+'. Try splitting the bigger number into tens and ones.'}}),function(){got[k]=p;bk.write(t[3][k]);k++;later(ask,500)},{cls:function(){return 'big plain'}});
+      if(tip)qa.appendChild(tip);
+    }
+    ask();
+  }}}),function(){api.done('<b>All four triangles done!</b>')});
+}
+function wbQ3(st,api){
+  st.appendChild(guide('Double means multiply by 2. What is double 78?'));
+  var bk=BookView('wb66',{crop:[1100,1260]});st.appendChild(bk.el);
+  Solve(st,api,78,2,function(){bk.write('w3');api.done('<b>Double 78 = 78 '+X+' 2 = 156</b>')});
+}
+function wbQ4(st,api){
+  st.appendChild(guide('Find the product of 58 and 9. Product means multiply!'));
+  var bk=BookView('wb66',{crop:[1260,1400]});st.appendChild(bk.el);
+  Solve(st,api,58,9,function(){bk.write('w4');api.done('<b>58 '+X+' 9 = 522</b>')});
+}
+function wbQ5(st,api){
+  st.appendChild(guide('Use each card once to make three products with the same answer. 1 × 36 = 36, so the answer is 36! Tap two cards that make 36.'));
+  var bk=BookView('wb66',{crop:[1400,1820]});st.appendChild(bk.el);
+  var nums=[1,2,3,12,18,36],used={},pick=null,found=0,ids=[['w5a','w5b','w5c'],['w5d','w5e','w5f'],['w5g','w5h','w5i']];
+  var row=h('div',{class:'dcards'}),out=h('div',{class:'found'});st.appendChild(row);st.appendChild(out);
+  var btns=nums.map(function(v,i){var b=h('button',{class:'dcard',style:'--c:'+CARDC[i][0]+';--b:'+CARDC[i][1]+';width:auto;min-width:56px;padding:0 8px'},[String(v)]);
+    b.onclick=function(){
+      if(pick===null){pick=i;b.classList.add('pick');sPop();return}
+      if(pick===i){b.classList.remove('pick');pick=null;return}
+      var a=nums[pick],c=v,pb=btns[pick];pb.classList.remove('pick');pick=null;
+      if(a*c===36){pb.classList.add('used');b.classList.add('used');var lo=Math.min(a,c),hi=Math.max(a,c);out.appendChild(h('span',{class:'got'},[lo+' '+X+' '+hi+' = 36']));sGood();
+        var row3=lo===1?0:lo===2?1:2;ids[row3].forEach(function(id,j){bk.write(id,j*300)});found++;if(found===3)api.done('<b>1 '+X+' 36 = 2 '+X+' 18 = 3 '+X+' 12 = 36</b>')}
+      else{api.miss();sBad();feedback(st,'bad',a+' '+X+' '+c+' = '+(a*c)+', not 36. Try again!')}
+    };row.appendChild(b);return b});
+}
+function wbQ6(st,api){
+  st.appendChild(guide('Two friends calculate the same thing in different ways. Complete both. Who chose the better method?'));
+  var bk=BookView('wb67',{crop:[100,1460]});st.appendChild(bk.el);
+  runParts(st,[
+    {k:'a',f:function(ar,next){
+      Chain(ar,api,[9,2,5],{title:'<b>Emma</b> joins 9 '+X+' 2 first.',only:0,onlyWhy:'Emma’s lines join 9 and 2.',done:function(){['e1','e2','e3'].forEach(function(id,j){bk.write(id,j*300)});
+        Chain(ar,api,[9,2,5],{title:'<b>Astrid</b> joins 2 '+X+' 5 first.',only:1,onlyWhy:'Astrid’s lines join 2 and 5.',done:function(){['a1','a2','a3'].forEach(function(id,j){bk.write(id,j*300)});
+          ar.appendChild(h('p',{class:'task',style:'text-align:center'},['Who chose the better method?']));
+          choiceQ(ar,api,[{label:'Astrid: 9 '+X+' 10 is easy',ok:true},{label:'Emma: 18 '+X+' 5',why:'Both get 90, but 18 '+X+' 5 is harder than 9 '+X+' 10.'}],function(){bk.write('w6a');next()},{col:true});
+        }});
+      }});
+    }},
+    {k:'b',f:function(ar,next){
+      Chain(ar,api,[2,5,7],{title:'<b>Mario</b> joins 2 '+X+' 5 first.',only:0,onlyWhy:'Mario’s lines join 2 and 5.',done:function(){['m1','m2','m3'].forEach(function(id,j){bk.write(id,j*300)});
+        Chain(ar,api,[2,5,7],{title:'<b>Ian</b> joins 5 '+X+' 7 first.',only:1,onlyWhy:'Ian’s lines join 5 and 7.',done:function(){['i1','i2','i3'].forEach(function(id,j){bk.write(id,j*300)});
+          ar.appendChild(h('p',{class:'task',style:'text-align:center'},['Who chose the better method?']));
+          choiceQ(ar,api,[{label:'Mario: 10 '+X+' 7 is easy',ok:true},{label:'Ian: 2 '+X+' 35',why:'Both get 70, but 10 '+X+' 7 is the easiest.'}],function(){bk.write('w6b');next()},{col:true});
+        }});
+      }});
+    }}
+  ],function(){api.done('Look for <b>2 '+X+' 5 = 10</b>. Multiply that pair first!')});
+}
+function wbQ7(st,api){
+  st.appendChild(guide('Estimate first. Then show your method.'));
+  var bk=BookView('wb68',{crop:[60,680]});st.appendChild(bk.el);
+  runParts(st,[[25,8,'w7a'],[69,6,'w7b'],[76,9,'w7c']].map(function(p,i){return {k:'abc'[i],f:function(ar,next){Solve(ar,api,p[0],p[1],function(){bk.write(p[2]);next()})}}}),function(){api.done('<b>200, 414 and 684</b>')});
+}
+function wbQ8(st,api){
+  st.appendChild(guide('Find all the products equal to 2400. Tip: 300 × 8 is 3 hundreds × 8 = 24 hundreds!'));
+  var bk=BookView('wb68',{crop:[690,960]});st.appendChild(bk.el);
+  var L=[[900,3,900],[300,8,300],[600,4,600],[300,7,301],[400,6,400],[800,3,800]],got=0;
+  var row=h('div',{class:'bigpick'});st.appendChild(row);
+  L.forEach(function(t){var p=t[0]*t[1],hd=t[0]/100;var b=h('button',null,[t[0]+' '+X+' '+t[1]]);
+    b.onclick=function(){if(b.disabled)return;b.disabled=true;
+      if(p===2400){b.className='yes';var c=Q8RING[t[2]];bk.ring(c[0],c[1],96,42);sGood();got++;
+        feedback(st,'good',hd+' hundreds '+X+' '+t[1]+' = '+(hd*t[1])+' hundreds = <b>2400</b> ✓');if(got===4)api.done('<b>300 '+X+' 8, 600 '+X+' 4, 400 '+X+' 6 and 800 '+X+' 3</b> all make 2400.')}
+      else{b.className='no';api.miss();sBad();feedback(st,'bad',hd+' hundreds '+X+' '+t[1]+' = '+(hd*t[1])+' hundreds = '+p+'. Not 2400.')}};row.appendChild(b)});
+}
+function wbQ9(st,api){
+  st.appendChild(guide('Pierre spilled ink on his grid for 147 × 3. What numbers are under the ink blots?'));
+  var bk=BookView('wb68',{crop:[980,1290]});st.appendChild(bk.el);
+  st.appendChild(bigQ('3 '+X+' 40 = ?'));
+  choiceQ(st,api,[120,43,12,140].map(function(v){return {label:String(v),ok:v===120,why:'3 '+X+' 4 tens = 12 tens = 120.'}}),function(){bk.write('w9a');
+    st.appendChild(bigQ('300 + 120 + 21 = ?'));
+    choiceQ(st,api,[441,431,421,341].map(function(v){return {label:String(v),ok:v===441,why:'300 + 120 = 420. Then 420 + 21 = 441.'}}),function(){bk.write('w9b');api.done('<b>120 and 441</b>. 147 '+X+' 3 = 441.')},{cls:function(){return 'big plain'}});
+  },{cls:function(){return 'big plain'}});
+}
+function wbQ10(st,api){
+  st.appendChild(guide('A 3-digit number times a 1-digit number makes 750. Pick the 1-digit number. Does it work?'));
+  var bk=BookView('wb68',{crop:[1290,1700]});st.appendChild(bk.el);
+  var row=h('div',{class:'facts'}),list=h('div',{class:'found'}),got={},need=[2,3,5,6],n=0,first=true;
+  for(var d=1;d<=9;d++)(function(d){var b=h('button',null,[String(d)]);b.onclick=function(){if(b.disabled)return;b.disabled=true;
+    if(750%d===0){var q=750/d;b.className='yes';sGood();
+      var P=parts(q);list.appendChild(h('span',{class:'got'},[q+' '+X+' '+d+' = 750']));
+      feedback(st,'good','<b>'+q+' '+X+' '+d+' = 750</b> ✓<br>Check: '+P.map(function(v){return v+' '+X+' '+d+' = '+v*d}).join(', ')+'. Total '+P.map(function(v){return v*d}).join(' + ')+' = 750.'+(d===1?'<br>That one is a bit of a trick! Can you find more?':''));
+      if(need.indexOf(d)>=0){if(first){first=false;bk.write('w10a');bk.write('w10b',200);bk.write('w10c',400);bk.write('w10d',600)}n++;if(n===4){bk.write('w10e',800);api.done('<b>250 '+X+' 3, 375 '+X+' 2, 150 '+X+' 5 and 125 '+X+' 6</b> all make 750. Well done!')}}}
+    else{b.className='no';api.miss();sBad();feedback(st,'bad','750 cannot be shared into '+d+' equal groups. '+d+' '+X+' '+Math.floor(750/d)+' = '+(d*Math.floor(750/d))+', and '+d+' '+X+' '+(Math.floor(750/d)+1)+' = '+(d*(Math.floor(750/d)+1))+'.')}};row.appendChild(b)})(d);
+  st.appendChild(row);st.appendChild(list);
+}
+
+/* =====================================================================
+   LESSONS
+   ===================================================================== */
+var LESSONS={
+  l1:{title:'Group numbers to multiply',when:'Lesson 1 · Learner’s Book pages 67–70',color:'var(--e1)',
+    goal:'I can group numbers in different ways to help me multiply.',
+    lookWhat:['I can group numbers in different ways to help me multiply.'],copy:null,
+    stations:[
+      {name:'Warm up',render:l1Warm,src:'The chocolate bar · Learner’s Book p. 67'},
+      {name:'Discover',render:l1Discover,src:"Worked example 2 · Learner's Book p. 68"},
+      {name:'Learn the rule',render:l1Rule,src:'The associative law'},
+      {name:'Practise',render:l1Practise,src:"Learner's Book questions 1–2"},
+      {name:'Check',render:l1Check,src:'Find the easy pair'}
+    ]},
+  l2:{title:'Estimate, then multiply',when:'Lesson 2 · Learner’s Book pages 68–70',color:'var(--e3)',
+    goal:'I can estimate, then multiply a 2-digit number by a 1-digit number.',
+    lookWhat:['I can estimate answers to a calculation before doing the calculation.','I can multiply a whole number by a 1-digit number.'],copy:'lb',
+    stations:[
+      {name:'Warm up',render:l2Warm,src:'Round to the nearest ten'},
+      {name:'Discover',render:l2Discover,src:"Worked example 3 · grid method · Learner's Book p. 68"},
+      {name:'Learn the rule',render:l2Rule,src:'Compact method with carrying · Learner’s Book p. 69'},
+      {name:'Practise',render:l2Practise,src:"Learner's Book questions 3–7"},
+      {name:'Check',render:l2Check,src:'Estimate, carry, multiply'}
+    ]},
+  l3:{title:'Multiply 3-digit numbers',when:'Lesson 3 · Workbook p. 65 · Learner’s Book p. 71',color:'var(--e4)',
+    goal:'I can multiply a 3-digit number by a 1-digit number.',
+    lookWhat:['I can group numbers in different ways to help me multiply.','I can estimate answers to a calculation before doing the calculation.','I can multiply a whole number by a 1-digit number.'],copy:'lb',
+    stations:[
+      {name:'Warm up',render:l3Warm,src:'Round to the nearest hundred'},
+      {name:'Discover',render:l3Discover,src:'Worked example 2 · Workbook p. 65'},
+      {name:'Learn the rule',render:l3Rule,src:'Compact method with 3 digits'},
+      {name:'Practise',render:l3Practise,src:"Learner's Book question 8"},
+      {name:'Check',render:l3Check,src:'Big numbers'}
+    ]},
+  hw:{title:'Homework: Workbook pages 65–68',when:'Homework · Workbook pages 65–68',color:'#5B6B8F',
+    goal:'I can multiply in different ways.',lookWhat:['I finished Workbook Exercise 5.2.'],copy:'wb',
+    stations:[
+      {name:'p. 65',short:'👀',c:'#5B6B8F',render:wbLook,src:'Worked example 2'},
+      {name:'Q1',short:'1',c:'#2F7BF5',render:wbQ1,src:'Workbook p. 65'},
+      {name:'Q2',short:'2',c:'#1FA563',render:wbQ2,src:'Workbook p. 66'},
+      {name:'Q3',short:'3',c:'#7A4CE0',render:wbQ3,src:'Workbook p. 66'},
+      {name:'Q4',short:'4',c:'#E0559B',render:wbQ4,src:'Workbook p. 66'},
+      {name:'Q5',short:'5',c:'#FF7A3D',render:wbQ5,src:'Workbook p. 66'},
+      {name:'Q6',short:'6',c:'#2F7BF5',render:wbQ6,src:'Workbook p. 67'},
+      {name:'Q7',short:'7',c:'#1FA563',render:wbQ7,src:'Workbook p. 68'},
+      {name:'Q8',short:'8',c:'#7A4CE0',render:wbQ8,src:'Workbook p. 68'},
+      {name:'Q9',short:'9',c:'#E0559B',render:wbQ9,src:'Workbook p. 68'},
+      {name:'Q10',short:'10',c:'#FF7A3D',render:wbQ10,src:'Workbook p. 68'}
+    ]}
+};
+
+/* =====================================================================
+   SCREENS
+   ===================================================================== */
+function home(){
+  app.innerHTML='';app.appendChild(topBar(false));
+  var hero=h('section',{class:'hero'});
+  hero.appendChild(mascot('huge'));
+  hero.appendChild(h('div',null,[
+    h('div',{class:'tag'},['Grade 3 · 5.2 Multiplication · by Teacher Dima Abuhaifa']),
+    h('h1',{html:'<span class="te">Multiplication</span> <span class="onx">Builders</span>'}),
+    h('p',{class:'sub',style:'font-size:18px;margin-top:6px'},['Real book pages. Build every multiplication with blocks, see every carry happen, and estimate first. Answers written right into the book.'])]));
+  hero.appendChild(schoolLogo());
+  app.appendChild(hero);
+  var key=h('div',{class:'row center',style:'margin-top:12px'},[h('span',{class:'chip',style:'background:var(--hun)'},['hundreds']),h('span',{class:'chip',style:'background:var(--ten)'},['tens']),h('span',{class:'chip',style:'background:var(--one)'},['ones']),h('span',{class:'chip',style:'background:var(--est)'},['estimate']),h('span',{class:'chip',style:'background:var(--pen)'},['carry'])]);
+  app.appendChild(key);
+  var days=h('div',{class:'days'});
+  ['l1','l2','l3'].forEach(function(id){
+    var L=LESSONS[id];var b=h('button',{class:'day',style:'--c:'+L.color,onclick:function(){runLesson(id)}});
+    var path=h('div',{class:'epath'});L.stations.forEach(function(s,k){path.appendChild(h('span',{class:'echip'+(SAVE.done[id+k]?' done':''),style:'--ec:'+E5[k].c,html:'<b>'+(k+1)+'</b>'+s.name}))});
+    b.appendChild(h('div',{class:'when'},[L.when]));
+    b.appendChild(h('h2',null,[L.title]));
+    b.appendChild(h('div',{class:'goal',html:'Today I can: '+L.goal}));
+    b.appendChild(path);
+    b.appendChild(h('div',{class:'daystars',html:starStr(SAVE.stars[id]||0)}));
+    days.appendChild(b);
+  });
+  app.appendChild(days);
+  var more=h('div',{class:'mini-cards'});
+  var hb=h('button',{class:'day',style:'--c:'+LESSONS.hw.color,onclick:function(){runLesson('hw')}});
+  hb.innerHTML='<div class="when">📓 Homework</div><h2 style="font-size:22px">Workbook pages 65–68</h2><div class="daystars">'+starStr(SAVE.stars.hw||0)+'</div>';more.appendChild(hb);
+  var cb=h('button',{class:'day',style:'--c:var(--pen)',onclick:function(){answerBook()}});
+  cb.innerHTML='<div class="when">📖 Copy to my book</div><h2 style="font-size:22px">See every page with the answers written in</h2><div class="sub">One book at a time</div>';more.appendChild(cb);
+  var pb=h('button',{class:'day',style:'--c:var(--est)',onclick:playground});
+  pb.innerHTML='<div class="when">🧱 Free build</div><h2 style="font-size:22px">Multiply any number</h2><div class="sub">Type your own numbers and watch them being built</div>';more.appendChild(pb);
+  app.appendChild(more);
+}
+function answerBook(which){
+  app.innerHTML='';app.appendChild(topBar(true));
+  var c=h('section',{class:'card'});
+  c.appendChild(h('h2',{style:'font-size:clamp(26px,4vw,36px)'},['📖 Copy to my book']));
+  c.appendChild(guide('Here are your book pages with the answers written in. Copy one book first. Then do the other book.'));
+  var tabs=h('div',{class:'booktabs noprint'}),list=h('div');var cur=which||'lb';
+  var pages={lb:['lb69','lb70','lb71'],wb:['wb65','wb66','wb67','wb68']},crops={wb65:[1200,1880]};
+  function draw(){
+    tabs.innerHTML='';['lb','wb'].forEach(function(bk){tabs.appendChild(h('button',{class:bk+(cur===bk?' on':''),onclick:function(){cur=bk;draw()}},[(bk==='lb'?'1. ':'2. ')+BOOKNAME[bk]]))});
+    list.innerHTML='';
+    pages[cur].forEach(function(k){
+      list.appendChild(h('div',{class:'row'},[h('div',{class:'pagehead',style:'flex:1'},[BOOKNAME[cur]+' · page '+PAGES[k].n]),h('button',{class:'big plain small noprint',onclick:function(){zoomPage(k)}},['🔍 Bigger'])]));
+      var v=BookView(k,{crop:crops[k]});fillPage(v,k);list.appendChild(v.el);
+    });
+    var other=cur==='lb'?'wb':'lb';
+    list.appendChild(h('div',{class:'row center noprint',style:'margin-top:16px'},[h('button',{class:'big go',onclick:function(){cur=other;draw();window.scrollTo(0,0)}},['Now the '+BOOKNAME[other]+' →'])]));
+    list.appendChild(h('div',{class:'row center noprint',style:'margin-top:10px'},[h('button',{class:'big plain',onclick:function(){window.print()}},['🖨 Print these pages'])]));
+  }
+  c.appendChild(tabs);c.appendChild(list);app.appendChild(c);draw();window.scrollTo(0,0);
+}
+/* Free build: any 2- or 3-digit number times a 1-digit number */
+function playground(){
+  app.innerHTML='';app.appendChild(topBar(true));
+  var c=h('section',{class:'card'});app.appendChild(c);
+  c.appendChild(h('h2',{style:'font-size:clamp(26px,4vw,36px)'},['🧱 Free build']));
+  c.appendChild(guide('Choose any number from 10 to 999 and a number from 2 to 9. Then watch it being built!'));
+  var a=h('input',{type:'number',min:'10',max:'999',value:'36',style:'width:130px;font:800 30px var(--display);text-align:center;border:3px solid var(--line);border-radius:14px;padding:4px','aria-label':'Big number'});
+  var b=h('input',{type:'number',min:'2',max:'9',value:'7',style:'width:90px;font:800 30px var(--display);text-align:center;border:3px solid var(--line);border-radius:14px;padding:4px','aria-label':'1-digit number'});
+  var out=h('div');
+  var go=function(k){var n=Math.round(+a.value),m=Math.round(+b.value);if(!(n>=10&&n<=999&&m>=2&&m<=9)){feedback(c,'info','Use a number from 10 to 999 and a number from 2 to 9.');return}
+    out.innerHTML='';Solve(out,{miss:function(){}},n,m,function(){},{method:k})};
+  c.appendChild(h('div',{class:'row center',style:'font:800 34px var(--display)'},[a,h('span',null,[X]),b]));
+  c.appendChild(h('div',{class:'chooser'},[h('button',{class:'big plain',onclick:function(){go('grid')}},['▦ Grid method']),h('button',{class:'big plain',onclick:function(){go('column')}},['🧮 Compact method'])]));
+  c.appendChild(out);
+}
+function wordBank(){
+  var m=h('div',{class:'modal',role:'dialog','aria-modal':'true'}),inner=h('div',{class:'inner card',style:'max-width:720px'});
+  inner.appendChild(h('div',{class:'closeb'},[h('button',{class:'big plain small',onclick:function(){m.remove()}},['✕ Close'])]));
+  inner.appendChild(h('h2',null,['Word bank']));
+  [['associative law','When you multiply three numbers, you can multiply any two first. The answer is the same. 9 × 2 × 5 = 9 × 10 = 90.'],
+   ['<span class="es">estimate</span>','A number that is close to the answer. 27 × 4 is about 30 × 4 = 120.'],
+   ['<span class="ca">carry</span>','When a column makes 10 or more, swap 10 for 1 in the next column and carry it. 28 ones = 2 tens and 8 ones.'],
+   ['product','The answer when you multiply. The product of 56 and 5 is 280.'],
+   ['<span class="hu">hundreds</span>, <span class="te">tens</span> and <span class="onx">ones</span>','345 = 300 + 40 + 5.',function(){return blocksNum(345,4)}],
+   ['grid method','Split the number into hundreds, tens and ones. Multiply each part. Add the answers.'],
+   ['double','Multiply by 2. Double 78 = 156.']].forEach(function(w){
+    var d=h('div',{class:'test',style:'margin:8px 0'});d.appendChild(h('div',{class:'row'},[h('b',{style:'font-family:var(--display);font-size:26px',html:w[0]}),canSpeak?h('button',{class:'big plain small',onclick:function(){speak(w[0].replace(/<[^>]+>/g,'')+'. '+w[1])}},['🔊']):null]));
+    d.appendChild(h('div',{style:'font-weight:700',html:w[1]}));if(w[2])d.appendChild(w[2]());inner.appendChild(d)});
+  m.appendChild(inner);m.addEventListener('click',function(e){if(e.target===m)m.remove()});document.body.appendChild(m);
+}
+home();
+})();
+</script>
+</body></html>
