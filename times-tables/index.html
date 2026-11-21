@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap">
 <style>
-/* Times Tables Trainer: for Grade 2 and Grade 3, tables 1 to 10.
+/* Times Tables Trainer: one version for every child, tables 1 to 10.
    Every table follows the same 4 steps:  See it (arrays + number line + a trick)  ->  Count it (skip-count song + fill the gaps)
    ->  Practise it (answer with help ready)  ->  Master it (quick check, no help).  A daily warm-up brings facts back (spaced practice)
    and the facts grid fills in as facts are mastered. 3 x 4 and 4 x 3 are the same fact, so 100 facts are only 55 to learn. */
@@ -47,10 +47,6 @@ h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
 .mascot{flex:none;width:80px;height:80px;animation:bob 2.4s ease-in-out infinite}
 .mascot.huge{width:110px;height:110px}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.gradepick{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.gradepick button{border-radius:999px;padding:6px 16px;font-weight:800;font-size:17px;border:3px solid var(--line);background:var(--paper)}
-.gradepick button.on{color:#fff;border-color:transparent}
-.gradepick .g2.on{background:var(--g2)}.gradepick .g3.on{background:var(--g3)}
 
 /* home */
 .quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:16px 0}
@@ -73,11 +69,6 @@ h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
 .tile .mbar{width:80%;height:10px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden}
 .tile .mbar b{display:block;height:100%;background:#fff;border-radius:99px}
 .tile .crown{position:absolute;right:10px;top:6px;font-size:26px;z-index:1}
-.teacher{margin-top:26px}
-.teacher summary{cursor:pointer;font-weight:800;font-size:18px;padding:12px 16px;background:var(--paper);border:3px solid var(--line);border-radius:20px}
-.teacher[open] summary{border-radius:20px 20px 0 0}
-.teacher .tbody{background:var(--paper);border:3px solid var(--line);border-top:0;border-radius:0 0 20px 20px;padding:4px 20px 16px;font-size:16px}
-.teacher li{margin:6px 0}
 
 /* guide speech */
 .guide{display:flex;gap:12px;align-items:flex-start;margin:6px 0 12px}
@@ -219,7 +210,7 @@ h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
 @media (max-width:760px){.seegrid{grid-template-columns:1fr}}
 @media (max-width:600px){
   .fg td button,.fg th{border-radius:6px!important}
-  .hero{grid-template-columns:auto 1fr;padding:16px}.hero .schoollogo{position:absolute;top:10px;right:10px;width:58px}
+  .hero{grid-template-columns:auto 1fr;padding:16px}.hero>div:not(.mascot){padding-right:56px;min-width:0}.hero .schoollogo{position:absolute;top:10px;right:10px;width:58px}
   .hero .mascot{width:64px;height:64px}
   .tables{grid-template-columns:repeat(2,1fr)}
   .tile .x{font-size:46px}
@@ -256,21 +247,19 @@ var STEPS=[
 var STORE='timesTablesTrainer.v1';
 var SAVE={};try{SAVE=JSON.parse(localStorage.getItem(STORE)||'{}')||{}}catch(e){SAVE={}}
 SAVE.p=SAVE.p||{};
-var qg=/[?&]g=([23])/.exec(location.search);
-if(qg)SAVE.grade=+qg[1];
-if(SAVE.grade!==2&&SAVE.grade!==3)SAVE.grade=2;
-SAVE.input=SAVE.input||{2:'choice',3:'pad'};
+/* one progress for everyone; older saves kept progress per grade, so carry over the fuller one */
+if(!SAVE.all){var o2=SAVE.p[2],o3=SAVE.p[3],sz=function(o){return o&&o.facts?Object.keys(o.facts).length:-1};
+  SAVE.all=sz(o2)>=sz(o3)?(o2||null):o3;}
+if(typeof SAVE.input!=='string')SAVE.input='choice';
 function persist(){try{localStorage.setItem(STORE,JSON.stringify(SAVE))}catch(e){}}
-function P(){var g=SAVE.grade;if(!SAVE.p[g])SAVE.p[g]={facts:{},steps:{},stars:{}};var p=SAVE.p[g];p.facts=p.facts||{};p.steps=p.steps||{};p.stars=p.stars||{};return p}
+function P(){if(!SAVE.all)SAVE.all={facts:{},steps:{},stars:{}};var p=SAVE.all;p.facts=p.facts||{};p.steps=p.steps||{};p.stars=p.stars||{};return p}
 function key(a,b){return Math.min(a,b)+'x'+Math.max(a,b)}
 function box(a,b){return P().facts[key(a,b)]||0}
 function setBox(a,b,v){P().facts[key(a,b)]=Math.max(0,Math.min(3,v));persist()}
 function stepDone(n,s){return !!P().steps[n+s]}
 function markStep(n,s){P().steps[n+s]=1;persist()}
 function mastered(n){var c=0;for(var k=1;k<=10;k++)if(box(n,k)>=3)c++;return c}
-function inputMode(){return SAVE.input[SAVE.grade]||'choice'}
-function applyGrade(){document.documentElement.style.setProperty('--accent',SAVE.grade===2?'#1FA563':'#7A4CE0')}
-applyGrade();
+function inputMode(){return SAVE.input==='pad'?'pad':'choice'}
 
 /* ---------- sound + voice ---------- */
 var muted=!!SAVE.muted,ac=null;
@@ -377,10 +366,8 @@ function fingers3(k){
 /* ---------- HOME ---------- */
 function home(){
   var p=P();
-  var gp=h('div',{class:'gradepick',role:'group','aria-label':'Grade'},[2,3].map(function(g){
-    return h('button',{class:'g'+g+(SAVE.grade===g?' on':''),onclick:function(){SAVE.grade=g;persist();applyGrade();go(home)}},'Grade '+g)}));
   app.appendChild(h('div',{class:'bar'},[h('a',{class:'pill',href:'../'},'← All grades'),h('span',{class:'grow'}),soundBtn()]));
-  app.appendChild(h('section',{class:'hero'},[mascot('huge'),h('div',null,[h('div',{class:'tag'},'Tables 1 to 10'),h('h1',null,'Times Tables Trainer'),h('p',{class:'sub'},'See it, count it, practise it, master it! Who is playing?'),gp]),logoEl()]));
+  app.appendChild(h('section',{class:'hero'},[mascot('huge'),h('div',null,[h('div',{class:'tag'},'Tables 1 to 10'),h('h1',null,'Times Tables Trainer'),h('p',{class:'sub'},'See it, count it, practise it, master it!')]),logoEl()]));
   var known=0,met=0;for(var a=1;a<=10;a++)for(var b=a;b<=10;b++){var x=box(a,b);if(x>=3)known++;if(x>=1)met++}
   app.appendChild(h('div',{class:'quick'},[
     h('button',{class:'qcard',onclick:function(){go(warmup)}},[h('span',{class:'ic'},'☀️'),h('span',null,[h('h2',null,'Daily warm-up'),h('p',null,met?'10 quick facts you have met. A little every day helps facts stick!':'Learn your first table, then come back here every day.')])]),
@@ -397,22 +384,9 @@ function home(){
       h('span',{class:'mbar'},h('b',{style:'width:'+m*10+'%'})),h('span',{style:'font-size:13px;font-weight:800'},m+'/10 mastered')]))});
   app.appendChild(tb);
   var mode=h('div',{class:'row',style:'margin-top:18px'},[h('b',null,'Answer with:'),
-    h('button',{class:'pill',style:inputMode()==='choice'?'border-color:var(--accent);background:var(--warm)':'',onclick:function(){SAVE.input[SAVE.grade]='choice';persist();go(home)}},'🔘 Buttons (easier)'),
-    h('button',{class:'pill',style:inputMode()==='pad'?'border-color:var(--accent);background:var(--warm)':'',onclick:function(){SAVE.input[SAVE.grade]='pad';persist();go(home)}},'🔢 Number pad')]);
+    h('button',{class:'pill',style:inputMode()==='choice'?'border-color:var(--accent);background:var(--warm)':'',onclick:function(){SAVE.input='choice';persist();go(home)}},'🔘 Buttons (easier)'),
+    h('button',{class:'pill',style:inputMode()==='pad'?'border-color:var(--accent);background:var(--warm)':'',onclick:function(){SAVE.input='pad';persist();go(home)}},'🔢 Number pad')]);
   app.appendChild(mode);
-  var reset=h('button',{class:'pill',style:'margin-top:10px'},'↺ Reset Grade '+SAVE.grade+' progress on this device');
-  reset.addEventListener('click',function(){if(reset.dataset.arm){delete SAVE.p[SAVE.grade];persist();go(home)}else{reset.dataset.arm=1;reset.textContent='Tap again to reset (cannot be undone)';reset.style.borderColor='var(--bad)'}});
-  app.appendChild(h('details',{class:'teacher'},[h('summary',null,'👩‍🏫 For teachers: how this trainer helps memory'),h('div',{class:'tbody',html:
-    '<ul>'+
-    '<li><b>Concrete, pictorial, abstract.</b> Every fact is first built as an array (groups of dots) and as jumps on a number line before children see the number sentence.</li>'+
-    '<li><b>Skip counting with rhythm.</b> The 100 square lights up each multiple as it is spoken, so children hear and see the pattern (columns for 2s, 5s and 10s, a diagonal for 9s). Then they fill gaps in the count.</li>'+
-    '<li><b>Derived-fact strategies.</b> Each table has one trick that links it to facts already known: doubles for 2s, 4s and 8s, half of 10s for 5s, double the 3s for 6s, 5s + 2s for 7s, the finger trick for 9s and place value for 10s.</li>'+
-    '<li><b>The turn-around (commutative) rule.</b> 3 × 4 and 4 × 3 are one fact, so the grid fills both cells at once. 100 facts become 55, and by the 7s almost everything is already known.</li>'+
-    '<li><b>Retrieval practice with instant, kind feedback.</b> A wrong answer shows the array and the skip count, and the fact comes back again later in the round.</li>'+
-    '<li><b>Spaced practice.</b> Facts move through 3 boxes (yellow: met, light green: getting there, green: mastered). The daily warm-up brings back the weakest facts first. No timers, so there is no time pressure.</li>'+
-    '<li><b>Suggested order:</b> 1, 10, 2, 5, 3, 4, 8, 6, 9, 7. Grade 2 can focus on 2, 5 and 10 first.</li>'+
-    '<li>Progress is saved on this device only, separately for Grade 2 and Grade 3. Use <b>?g=2</b> or <b>?g=3</b> at the end of the link to open a grade directly.</li>'+
-    '</ul>'}),h('div',{class:'tbody',style:'border-top:0;padding-top:0'},reset)]));
 }
 
 /* ---------- TABLE PAGE ---------- */
@@ -675,7 +649,7 @@ function grid(){
   app.style.setProperty('--tc','#1FA563');
   app.appendChild(h('div',{class:'bar'},[h('button',{class:'pill',onclick:function(){go(home)}},'← Home'),h('span',{class:'grow'}),soundBtn()]));
   var known=0,cells=0;for(var a=1;a<=10;a++)for(var b=1;b<=10;b++){if(box(a,b)>=3){cells++;if(a<=b)known++}}
-  app.appendChild(h('div',{class:'thead'},[h('span',{class:'badge',style:'background:var(--good)'},'🟩'),h('div',null,[h('h2',null,'My facts grid'),h('p',{class:'sub'},'Grade '+SAVE.grade+' · fill in the boxes')]),logoEl()]));
+  app.appendChild(h('div',{class:'thead'},[h('span',{class:'badge',style:'background:var(--good)'},'🟩'),h('div',null,[h('h2',null,'My facts grid'),h('p',{class:'sub'},'Fill in the boxes')]),logoEl()]));
   app.appendChild(guide('Tap an <b>empty box</b> and fill in the answer! The box is <b>row number × column number</b>. When you fill <b>3&nbsp;×&nbsp;4</b>, its turn-around <b>4&nbsp;×&nbsp;3</b> fills too, because they are the same fact!','Tap an empty box and fill in the answer! The box is the row number times the column number.'));
   var card=h('div',{class:'card'});app.appendChild(card);
   card.appendChild(h('div',{class:'bigcount',html:'<span style="color:var(--good)">'+known+'</span> / 55 facts mastered'}));
