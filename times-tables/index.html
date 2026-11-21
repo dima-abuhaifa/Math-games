@@ -200,6 +200,8 @@ h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
 .fg th{color:#fff;font-family:var(--display);font-size:clamp(14px,3vw,22px)}
 .fg th.corner{background:var(--ink)}
 .fg td button{width:100%;height:100%;padding:0;min-width:0;font-size:inherit;border-radius:10px;font-weight:800;border:2px solid var(--line);background:#F6F8FC;color:#B4BFD3}
+.fg td button.empty{background:#fff;border:2px dashed #9FB3D1}.fg td button.empty.met{background:#FFFBEA;border-color:#F2C94C}
+.fg td button.empty:hover{border-style:solid;border-color:var(--accent);background:var(--warm)}
 .fg td button.b1{background:#FFF1C2;border-color:#F2C94C;color:var(--ink)}
 .fg td button.b2{background:#D9F2E3;border-color:#7FD3A4;color:var(--ink)}
 .fg td button.b3{background:var(--good);border-color:var(--good);color:#fff}
@@ -216,6 +218,7 @@ h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
 
 @media (max-width:760px){.seegrid{grid-template-columns:1fr}}
 @media (max-width:600px){
+  .fg td button,.fg th{border-radius:6px!important}
   .hero{grid-template-columns:auto 1fr;padding:16px}.hero .schoollogo{position:absolute;top:10px;right:10px;width:58px}
   .hero .mascot{width:64px;height:64px}
   .tables{grid-template-columns:repeat(2,1fr)}
@@ -484,7 +487,7 @@ function see(n){
 function count(n){
   actHead(n,'Step 2: Count in '+n+'s','count');
   var mults=[];for(var i=1;i<=10;i++)mults.push(i*n);
-  app.appendChild(guide('Press <b>Play</b> and count along out loud: '+mults.slice(0,4).join(', ')+'…','Press play and count along out loud.'));
+  app.appendChild(guide('No answers here, just <b>watch and listen</b>! Press <b>Play</b>, watch the boxes light up and count along out loud: '+mults.slice(0,4).join(', ')+'… Then press <b>Fill the gaps</b> to answer.','No answers here, just watch and listen! Press play, watch the boxes light up and count along out loud. Then press fill the gaps to answer.'));
   var card=h('div',{class:'card'});app.appendChild(card);
   var sq=h('div',{class:'hsq'}),cells={};
   for(i=1;i<=100;i++){var c=h('div',{class:mults.indexOf(i)>=0?'mul':''},String(i));cells[i]=c;sq.appendChild(c)}
@@ -672,18 +675,41 @@ function grid(){
   app.style.setProperty('--tc','#1FA563');
   app.appendChild(h('div',{class:'bar'},[h('button',{class:'pill',onclick:function(){go(home)}},'← Home'),h('span',{class:'grow'}),soundBtn()]));
   var known=0,cells=0;for(var a=1;a<=10;a++)for(var b=1;b<=10;b++){if(box(a,b)>=3){cells++;if(a<=b)known++}}
-  app.appendChild(h('div',{class:'thead'},[h('span',{class:'badge',style:'background:var(--good)'},'🟩'),h('div',null,[h('h2',null,'My facts grid'),h('p',{class:'sub'},'Grade '+SAVE.grade+' · tap any square to see the fact')]),logoEl()]));
-  app.appendChild(guide('There are 100 squares but only <b>55 facts</b> to learn, because <b>3&nbsp;×&nbsp;4</b> and <b>4&nbsp;×&nbsp;3</b> are the same fact! When you master one, its turn-around turns green too.','There are 100 squares but only 55 facts to learn, because 3 times 4 and 4 times 3 are the same fact.'));
+  app.appendChild(h('div',{class:'thead'},[h('span',{class:'badge',style:'background:var(--good)'},'🟩'),h('div',null,[h('h2',null,'My facts grid'),h('p',{class:'sub'},'Grade '+SAVE.grade+' · fill in the boxes')]),logoEl()]));
+  app.appendChild(guide('Tap an <b>empty box</b> and fill in the answer! The box is <b>row number × column number</b>. When you fill <b>3&nbsp;×&nbsp;4</b>, its turn-around <b>4&nbsp;×&nbsp;3</b> fills too, because they are the same fact!','Tap an empty box and fill in the answer! The box is the row number times the column number.'));
   var card=h('div',{class:'card'});app.appendChild(card);
   card.appendChild(h('div',{class:'bigcount',html:'<span style="color:var(--good)">'+known+'</span> / 55 facts mastered'}));
   card.appendChild(h('p',{class:'sub',style:'text-align:center'},cells+' of 100 squares are green'));
   var tbl=h('table',{class:'fg'}),tr=h('tr');tr.appendChild(h('th',{class:'corner'},'×'));
   for(b=1;b<=10;b++)tr.appendChild(h('th',{style:'background:'+COL[b]},String(b)));tbl.appendChild(tr);
   for(a=1;a<=10;a++){tr=h('tr');tr.appendChild(h('th',{style:'background:'+COL[a]},String(a)));
-    for(b=1;b<=10;b++)(function(a,b){var x=box(a,b);tr.appendChild(h('td',null,h('button',{class:x?'b'+x:'','aria-label':a+' × '+b+(x>=3?' mastered':''),onclick:function(){showFact(a,b)}},x?String(a*b):'?')))})(a,b);
+    for(b=1;b<=10;b++)(function(a,b){var x=box(a,b),shown=x>=3||FILLED[key(a,b)];
+      tr.appendChild(h('td',null,h('button',{class:(shown?(x?'b'+x:''):'empty'+(x?' met':'')),'aria-label':a+' × '+b+(shown?' = '+a*b:', empty box'),onclick:function(){if(shown)showFact(a,b);else fillBox(a,b)}},shown?String(a*b):'')))})(a,b);
     tbl.appendChild(tr)}
+  card.appendChild(h('div',{class:'row center',style:'margin:4px 0 12px'},h('button',{class:'big go',onclick:function(){var e=nextEmpty(0,0);if(e)fillBox(e[0],e[1])}},'✏️ Fill the next box')));
   card.appendChild(h('div',{class:'gridwrap'},tbl));
-  card.appendChild(h('div',{class:'legend'},[h('span',null,[h('i',{style:'background:#F6F8FC'}),'Not met yet']),h('span',null,[h('i',{style:'background:#FFF1C2;border-color:#F2C94C'}),'Met it']),h('span',null,[h('i',{style:'background:#D9F2E3;border-color:#7FD3A4'}),'Getting there']),h('span',null,[h('i',{style:'background:var(--good);border-color:var(--good)'}),'Mastered ★'])]));
+  card.appendChild(h('div',{class:'legend'},[h('span',null,[h('i',{style:'background:#fff;border:2px dashed #9FB3D1'}),'Empty box: tap to fill']),h('span',null,[h('i',{style:'background:#FFF1C2;border-color:#F2C94C'}),'Met it']),h('span',null,[h('i',{style:'background:#D9F2E3;border-color:#7FD3A4'}),'Getting there']),h('span',null,[h('i',{style:'background:var(--good);border-color:var(--good)'}),'Mastered ★'])]));
+}
+/* fill-the-box: boxes filled in this visit stay filled; mastered facts are always filled */
+var FILLED={};
+function nextEmpty(a0,b0){for(var i=1;i<=100;i++){var idx=(a0-1)*10+(b0-1)+i;if(a0===0)idx=i-1;idx=((idx%100)+100)%100;var a=Math.floor(idx/10)+1,b=idx%10+1;if(!(box(a,b)>=3||FILLED[key(a,b)]))return [a,b]}return null}
+function fillBox(a,b){
+  var tc=COL[Math.max(a,b)];
+  var m=h('div',{class:'modal',onclick:function(e){if(e.target===m){m.remove();go(grid)}}}),c=h('div',{class:'card',style:'--tc:'+tc});m.appendChild(c);
+  c.appendChild(h('div',{class:'words',style:'color:var(--ink)'},'Fill the box: row '+a+', column '+b));
+  var holder=h('div',{style:'width:100%'});c.appendChild(holder);
+  document.body.appendChild(m);
+  askQ(holder,{a:a,b:b,form:'n'},tc,{},function(first,helped){
+    if(first&&!helped)setBox(a,b,box(a,b)+1);else if(first)setBox(a,b,Math.max(1,box(a,b)));else setBox(a,b,1);
+    FILLED[key(a,b)]=1;sPop();holder.innerHTML='';
+    holder.appendChild(h('div',{class:'eq',style:'font-size:44px'},a+' × '+b+' = '+a*b+' ✓'));
+    if(a!==b)holder.appendChild(h('p',{class:'sub',style:'text-align:center'},'Its turn-around '+b+' × '+a+' = '+a*b+' is filled too!'));
+    var nx=nextEmpty(a,b);
+    holder.appendChild(h('div',{class:'row center',style:'margin-top:10px'},[
+      h('button',{class:'big plain small',onclick:function(){m.remove();go(grid)}},'See my grid'),
+      nx?h('button',{class:'big go small',onclick:function(){m.remove();go(grid);fillBox(nx[0],nx[1])}},'Next box ▶'):null]));
+  });
+  c.appendChild(h('button',{class:'pill',onclick:function(){m.remove();go(grid)}},'✕ Close'));
 }
 function showFact(a,b){
   var turned=false,tc=COL[Math.max(a,b)];
