@@ -2,9 +2,11 @@
    then add one line here. code = unit number, title = lesson name, path = folder name. */
 window.MATH_GAMES={
   2:{color:'var(--g2)',lessons:[
+    {code:'1–10',title:'Times Tables Trainer',about:'Learn and remember the times tables 1 to 10: see it, count it, practise it, master it',path:'../times-tables/?g=2'},
     {code:'5.1',title:'Multiplication Magicians',about:'Multiples of 2, 5 and 10, fact families and multiplying by 10',path:'5.1-multiplication-magicians/'}
   ]},
   3:{color:'var(--g3)',lessons:[
+    {code:'1–10',title:'Times Tables Trainer',about:'Learn and remember the times tables 1 to 10: see it, count it, practise it, master it',path:'../times-tables/?g=3'},
     {code:'3.3',title:'Odd and Even Detectives',about:'Generalising with odd and even numbers',path:'3.3-odd-and-even-detectives/'},
     {code:'5.1',title:'Factor Bug Hunters',about:'Tables, multiples and factors: chocolate bars, factor bugs and the 7 times table',path:'5.1-factor-bug-hunters/'},
     {code:'5.2',title:'Multiplication Builders',about:'The associative law, estimating, and multiplying with the grid and compact methods',path:'5.2-multiplication-builders/'},
