@@ -2,12 +2,14 @@
    then add one line here. code = unit number, title = lesson name, path = folder name. */
 window.MATH_GAMES={
   2:{color:'var(--g2)',lessons:[
+    {code:'1–10',title:'Times Tables Trainer',about:'Learn and remember the times tables 1 to 10: see it, count it, practise it, master it',path:'../times-tables/?g=2'},
     {code:'5.1',title:'Multiplication Magicians',about:'Multiples of 2, 5 and 10, fact families and multiplying by 10',path:'5.1-multiplication-magicians/'},
     {code:'5.2',title:'Doubling Spiders',about:'Build the 4 and 8 times tables by doubling the 2s: squares, spiders and the 100 square',path:'5.2-doubling-spiders/'},
     {code:'5.3',title:'Kangaroo Jumps',about:'Connect the 3, 6 and 9 times tables: counting stick, brick walls and dominoes',path:'5.3-kangaroo-jumps/'},
     {code:'5 ✓',title:'Times Table Stars',about:'Unit 5 Check your progress: fact families, multiples, times facts and sequences',path:'unit-5-check-your-progress/'}
   ]},
   3:{color:'var(--g3)',lessons:[
+    {code:'1–10',title:'Times Tables Trainer',about:'Learn and remember the times tables 1 to 10: see it, count it, practise it, master it',path:'../times-tables/?g=3'},
     {code:'3.3',title:'Odd and Even Detectives',about:'Generalising with odd and even numbers',path:'3.3-odd-and-even-detectives/'},
     {code:'5.1',title:'Factor Bug Hunters',about:'Tables, multiples and factors: chocolate bars, factor bugs and the 7 times table',path:'5.1-factor-bug-hunters/'}
   ]}
