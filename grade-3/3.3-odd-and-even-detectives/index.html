@@ -161,6 +161,7 @@ h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
 .tests .test{margin:0}
 .rl{text-align:center;font-weight:800;font-size:17px;margin-top:2px}
 .eqline{font-family:var(--display);font-size:26px;font-weight:800;text-align:center}
+.chip.qjump{font-size:18px;padding:6px 14px;min-height:40px;cursor:pointer;border:0}
 .chip{display:inline-block;border-radius:999px;padding:1px 12px;font-size:16px;font-weight:800;color:#fff;vertical-align:middle}
 .chip.odd{background:var(--odd)}.chip.even{background:var(--even)}
 .claim{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;font-weight:800;margin:6px 0}
@@ -614,21 +615,23 @@ function runLesson(id,start){
       stepper.appendChild(b);
     });
   }
+  var stages={}; /* each station keeps its work, so children can move between stations freely */
   function show(){
     drawStepper();card.innerHTML='';window.scrollTo({top:0,behavior:'smooth'});
-    var s=L.stations[i],ec=s.c||E5[i%5].c;card.style.borderColor=ec;
+    var me=i,s=L.stations[i],ec=s.c||E5[i%5].c;card.style.borderColor=ec;
     var t=h('div',{class:'estage-title'});t.innerHTML='<span class="badge" style="--ec:'+ec+'">'+s.name+'</span>'+(s.src?'<span class="today">'+s.src+'</span>':'');
     card.appendChild(t);
-    var stage=h('div');card.appendChild(stage);
+    if(stages[me]){card.appendChild(stages[me]);return}
+    var stage=h('div');stages[me]=stage;card.appendChild(stage);
     var finished=false;
     var api={
       miss:function(){mistakes++},
       done:function(msg){
-        if(finished)return;finished=true;SAVE.done[id+i]=true;persist();drawStepper();sGood();
+        if(finished)return;finished=true;SAVE.done[id+me]=true;persist();drawStepper();sGood();
         var r=h('div',{class:'next-row'});
         if(msg)stage.appendChild(feedback(h('div'),'good',msg));
-        var last=i===L.stations.length-1;
-        var b=h('button',{class:'big go',onclick:function(){if(last)certificate(id,mistakes);else{i++;show()}}},[last?'Finish 🏆':'Next: '+L.stations[i+1].name+' →']);
+        var last=me===L.stations.length-1;
+        var b=h('button',{class:'big go',onclick:function(){if(last)certificate(id,mistakes);else{i=me+1;show()}}},[last?'Finish 🏆':'Next: '+L.stations[me+1].name+' →']);
         r.appendChild(b);stage.appendChild(r);later(function(){r.scrollIntoView({behavior:'smooth',block:'nearest'})},300);
       }
     };
@@ -834,11 +837,22 @@ function d2Explain(st,api){
 }
 /* Learner's Book Exercise 3.3, pp. 51–52, question by question on the real page */
 function d2Elaborate(st,api){
-  var Q=[lbQ1,lbQ2,lbQ3,lbQ4,lbQ5,lbQ6,lbQ7],k=0;
-  var bar=h('div',{class:'row'}),area=h('div');st.appendChild(bar);st.appendChild(area);
-  function drawBar(){bar.innerHTML='';Q.forEach(function(_,j){bar.appendChild(h('span',{class:'chip',style:'background:'+(j<k?'var(--good)':j===k?'var(--e4)':'#C9D8EE')},['Q'+(j+1)]))})}
-  function next(){k++;if(k<Q.length)go();else api.done('<b>Exercise 3.3 finished!</b> Every answer is written in the book pages.')}
-  function go(){drawBar();area.innerHTML='';Q[k](area,api,function(){area.appendChild(h('div',{class:'next-row'},[h('button',{class:'big go',onclick:function(){next();window.scrollTo({top:0,behavior:'smooth'})}},[k<Q.length-1?'Next question →':'Finish exercise ✓'])]))})}
+  runQs(st,api,[lbQ1,lbQ2,lbQ3,lbQ4,lbQ5,lbQ6,lbQ7].map(function(f,j){return {n:j+1,f:f}}),'<b>Exercise 3.3 finished!</b> Every answer is written in the book pages.');
+}
+function runQs(st,api,Q,doneMsg){
+  /* free navigation: tap any question, in any order. Each question keeps its answers when you come back. */
+  var k=0,fin={},panes={},bar=h('div',{class:'row'}),area=h('div'),nav=h('div',{class:'next-row'});st.appendChild(bar);st.appendChild(area);st.appendChild(nav);
+  bar.appendChild(h('span',{class:'today'},['Tap any question:']));var chips=h('div',{class:'row'});bar.appendChild(chips);
+  function open(from){for(var j=1;j<=Q.length;j++){var c=(from+j)%Q.length;if(!fin[c])return c}return -1}
+  function jump(j){k=j;go();window.scrollTo({top:0,behavior:'smooth'})}
+  function drawBar(){chips.innerHTML='';Q.forEach(function(q,j){chips.appendChild(h('button',{class:'chip qjump',style:'background:'+(j===k?'var(--e4)':fin[j]?'var(--good)':'#9DB0CC')+(j===k?';outline:4px solid var(--star)':''),'aria-label':'Question '+q.n,onclick:function(){if(j!==k)jump(j)}},['Q'+q.n+(fin[j]?' ✓':'')]))});
+    nav.innerHTML='';if(Q.length<2)return;
+    var nx=fin[k]?open(k):(k+1)%Q.length;
+    if(nx>=0&&nx!==k)nav.appendChild(h('button',{class:fin[k]?'big go':'big plain small',onclick:function(){jump(nx)}},[(fin[k]?'Next question: Q':'Skip to Q')+Q[nx].n+' →']))}
+  function go(){for(var j in panes)panes[j].style.display=(+j===k?'':'none');
+    if(!panes[k]){var me=k,p=h('div');panes[me]=p;area.appendChild(p);
+      Q[me].f(p,api,function(){if(fin[me])return;fin[me]=1;drawBar();if(open(me)<0)api.done(doneMsg);else if(me===k)later(function(){nav.scrollIntoView({behavior:'smooth',block:'nearest'})},200)})}
+    drawBar()}
   go();
 }
 function pickMany(area,api,opts,need,onDone){

@@ -786,21 +786,23 @@ function runLesson(id,start){
       stepper.appendChild(b);
     });
   }
+  var stages={}; /* each station keeps its work, so children can move between stations freely */
   function show(){
     drawStepper();card.innerHTML='';window.scrollTo({top:0,behavior:'smooth'});
-    var s=L.stations[i],ec=s.c||E5[i%5].c;card.style.borderColor=ec;
+    var me=i,s=L.stations[i],ec=s.c||E5[i%5].c;card.style.borderColor=ec;
     var t=h('div',{class:'estage-title'});t.innerHTML='<span class="badge" style="--ec:'+ec+'">'+s.name+'</span>'+(s.src?'<span class="today">'+s.src+'</span>':'');
     card.appendChild(t);
-    var stage=h('div');card.appendChild(stage);
+    if(stages[me]){card.appendChild(stages[me]);return}
+    var stage=h('div');stages[me]=stage;card.appendChild(stage);
     var finished=false;
     var api={
       miss:function(){mistakes++},
       done:function(msg){
-        if(finished)return;finished=true;SAVE.done[id+i]=true;persist();drawStepper();sGood();
+        if(finished)return;finished=true;SAVE.done[id+me]=true;persist();drawStepper();sGood();
         var r=h('div',{class:'next-row'});
         if(msg)feedback(stage,'good',msg);
-        var last=i===L.stations.length-1;
-        r.appendChild(h('button',{class:'big go',onclick:function(){if(last)certificate(id,mistakes);else{i++;show()}}},[last?'Finish 🏆':'Next: '+L.stations[i+1].name+' →']));
+        var last=me===L.stations.length-1;
+        r.appendChild(h('button',{class:'big go',onclick:function(){if(last)certificate(id,mistakes);else{i=me+1;show()}}},[last?'Finish 🏆':'Next: '+L.stations[me+1].name+' →']));
         stage.appendChild(r);later(function(){r.scrollIntoView({behavior:'smooth',block:'nearest'})},300);
       }
     };
@@ -825,11 +827,19 @@ function certificate(id,mistakes){
 }
 /* one book question after another, with Q chips */
 function questionRun(st,api,Q,names,doneMsg){
-  var k=0,gen=0,fin={},bar=h('div',{class:'qbar'}),area=h('div');st.appendChild(bar);st.appendChild(area);
-  function drawBar(){bar.innerHTML='';Q.forEach(function(_,j){bar.appendChild(h('button',{class:'qchip'+(j===k?' now':''),title:'Go to '+names[j],style:'background:'+(fin[j]?'var(--good)':j===k?'var(--e4)':'#9FB3D1'),onclick:function(){if(j!==k){k=j;go();window.scrollTo({top:0,behavior:'smooth'})}}},[(fin[j]?'✓ ':'')+names[j]]))});
-    bar.appendChild(h('span',{class:'qhint'},['Tap any question to jump to it']))}
-  function next(){for(var j=1;j<=Q.length;j++){var c=(k+j)%Q.length;if(!fin[c]){k=c;go();return}}api.done(doneMsg)}
-  function go(){var my=++gen;drawBar();area.innerHTML='';Q[k](area,api,function(){if(my!==gen)return;fin[k]=true;drawBar();var left=Q.filter(function(_,j){return !fin[j]}).length;nextBtn(area,left?'Next question →':'Finish ✓',function(){next();window.scrollTo({top:0,behavior:'smooth'})})})}
+  /* free navigation: tap any question, in any order. Each question keeps its answers when you come back. */
+  var k=0,fin={},panes={},bar=h('div',{class:'qbar'}),area=h('div'),nav=h('div',{class:'next-row'});st.appendChild(bar);st.appendChild(area);st.appendChild(nav);
+  function open(from){for(var j=1;j<=Q.length;j++){var c=(from+j)%Q.length;if(!fin[c])return c}return -1}
+  function jump(j){k=j;go();window.scrollTo({top:0,behavior:'smooth'})}
+  function drawBar(){bar.innerHTML='';Q.forEach(function(_,j){bar.appendChild(h('button',{class:'qchip'+(j===k?' now':''),title:'Go to '+names[j],style:'background:'+(fin[j]?'var(--good)':j===k?'var(--e4)':'#9FB3D1'),onclick:function(){if(j!==k)jump(j)}},[(fin[j]?'✓ ':'')+names[j]]))});
+    bar.appendChild(h('span',{class:'qhint'},['Tap any question to jump to it']));
+    nav.innerHTML='';if(Q.length<2)return;
+    var nx=fin[k]?open(k):(k+1)%Q.length;
+    if(nx>=0&&nx!==k)nav.appendChild(h('button',{class:fin[k]?'big go':'big plain small',onclick:function(){jump(nx)}},[(fin[k]?'Next question: ':'Skip to ')+names[nx]+' →']))}
+  function go(){for(var j in panes)panes[j].style.display=(+j===k?'':'none');
+    if(!panes[k]){var me=k,p=h('div');panes[me]=p;area.appendChild(p);
+      Q[me](p,api,function(){if(fin[me])return;fin[me]=1;drawBar();if(open(me)<0)api.done(doneMsg);else if(me===k)later(function(){nav.scrollIntoView({behavior:'smooth',block:'nearest'})},200)})}
+    drawBar()}
   go();
 }
 function whoSays(host,who,col,say){var w=h('div',{class:'guide'});w.innerHTML='<div class="mascot" style="animation:none;display:grid;place-items:center;border-radius:50%;background:'+col+';color:#fff;font-family:var(--display);font-weight:800;font-size:34px;border:4px solid #fff;box-shadow:0 0 0 3px var(--line)">'+who[0]+'</div><div class="say"><span class="nm">'+who+' says</span>'+say+'</div>';host.appendChild(w);return w}
